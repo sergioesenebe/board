@@ -1,0 +1,14 @@
+# Usa una imagen base con Apache y PHP
+FROM php:8.1-apache
+
+# Instala extensiones de PHP necesarias para tu proyecto
+RUN docker-php-ext-install mysqli pdo pdo_mysql
+
+# Copia el código de tu proyecto al contenedor
+COPY . /var/www/html/
+
+# Expon el puerto 80 (Apache)
+EXPOSE 80
+
+# Comando para iniciar Apache
+CMD ["apache2-foreground"]
