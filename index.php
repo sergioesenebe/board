@@ -2,7 +2,6 @@
 // Obtener las variables de entorno
 $host = getenv('DB_HOST');
 $dbname = getenv('DB_NAME');
-$dbname = "boardDB";
 $user = getenv('DB_USER');
 $password = getenv('DB_PASSWORD');
 $port = getenv('DB_PORT');
@@ -12,7 +11,6 @@ echo "<h1>Conexión a la base de datos</h1>";
 echo "<p><strong>Host:</strong> $host</p>";
 echo "<p><strong>Nombre de la base de datos:</strong> $dbname</p>";
 echo "<p><strong>Usuario:</strong> $user</p>";
-echo "<p><strong>Contraseña:</strong> $password</p>";
 echo "<p><strong>Puerto:</strong> $port</p>";
 
 try {
