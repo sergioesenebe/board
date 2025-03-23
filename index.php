@@ -1,23 +1,25 @@
 <?php
-// Configuración de la base de datos (lee de variables de entorno)
-$db_host = getenv('DB_HOST');
-$db_user = getenv('DB_USER');
-$db_password = getenv('DB_PASSWORD');
-$db_name = getenv('DB_NAME');
-$db_port = getenv('DB_PORT');
-// Mostrar mensaje de inicio
-echo "<h1>¡Tu página PHP está funcionando!</h1>";
+// Obtener las variables de entorno
+$host = getenv('DB_HOST');
+$dbname = getenv('DB_NAME');
+$dbname = "boardDB";
+$user = getenv('DB_USER');
+$password = getenv('DB_PASSWORD');
+$port = getenv('DB_PORT');
 
-// Intentar conexión a la base de datos
-echo "<h2>Verificando conexión a la base de datos...</h2>";
+// Mostrar las variables de entorno
+echo "<h1>Conexión a la base de datos</h1>";
+echo "<p><strong>Host:</strong> $host</p>";
+echo "<p><strong>Nombre de la base de datos:</strong> $dbname</p>";
+echo "<p><strong>Usuario:</strong> $user</p>";
+echo "<p><strong>Contraseña:</strong> $password</p>";
+echo "<p><strong>Puerto:</strong> $port</p>";
 
-$conn = new mysqli($db_host, $db_user, $db_password, $db_name, $db_port);
-
-if ($conn->connect_error) {
-    echo "<p style='color: red;'>Error de conexión: " . $conn->connect_error . "</p>";
-} else {
-    echo "<p style='color: green;'>Conexión exitosa a la base de datos</p>";
-    $conn->close();
+try {
+    // Intentar conectar a la base de datos usando las variables de entorno
+    $conexion = mysqli_connect($host,$user,$password,$dbname);
+} catch (PDOException $e) {
+    echo "<p><strong>Error al conectar:</strong> " . $e->getMessage() . "</p>";
 }
 
 ?>
