@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <title>esenebe board</title>
-    <link rel="stylesheet" href="styleboard.css">
+    <link rel="stylesheet" href="stylelogsignin.css">
 </head>
 
 <body>
@@ -13,28 +13,29 @@
         <img class="logo" src="https://res.cloudinary.com/drmjf3gno/image/upload/v1743427606/Logos/esenebe_board_logo.png">
         <!-- Divide the screen in two -->
         <!-- Left screen -->
-        <div class="half left">
+        <div class="left">
             <!-- A form to get the login and a button for sign up -->
             <form>
                 <h1>Welcome Back</h1>
-                <div class="info">
-                    <input type="text" id="username" name="username" placeholder="Username"><br><br>
-                    <input type="password" id="password" name="password" placeholder="Password"><br><br>
-                </div>
-                <div class="logingroup">
+                    <div class="field">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" placeholder="Username"><br><br>
+                    </div>
+                    <div>
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Password"><br><br>
+                    </div>
                     <button class="button-blue" type="submit">Login</button>
                     <button class="button-blue" type="submit">Sign Up</button>
-                </div>
             </form>
         </div>
         <!-- Right screen for an image and a text inside-->
-        <div class="half right">
-            <img class="rightimg" src="https://res.cloudinary.com/drmjf3gno/image/upload/v1743427836/Wallpapers/login.jpg">
-            <div class="inside-image">
-                <h1>A place to organize yourself</h1>
-                <p>Create notes, boards and save all your events in your calendar.
-                    Share with your friends or colleagues.</p>
-
+        <div class="right">
+            <img src="https://res.cloudinary.com/drmjf3gno/image/upload/v1743427836/Wallpapers/login.jpg">
+                <div class="centered">
+                    <h1>A place to organize yourself</h1>
+                    <p>Create notes, boards and save all your events in your calendar. Share with your friends or colleagues.</p>
+                </div>
             </div>
         </div>
     </div>
