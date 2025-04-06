@@ -1,44 +1,41 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="es">
 <head>
-    <meta charset="utf-8">
-    <title>esenebe board</title>
-    <link rel="stylesheet" href="stylelogsignin.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>esenebe board - Login</title>
+    <link rel="stylesheet" href="stylelogin.css">
 </head>
-
 <body>
-    <!-- Create a white box -->
-    <div class=" box boxlogin">
-        <img class="logo" src="https://res.cloudinary.com/drmjf3gno/image/upload/v1743427606/Logos/esenebe_board_logo.png">
-        <!-- Divide the screen in two -->
-        <!-- Left screen -->
+    <div class="box">
         <div class="left">
-            <!-- A form to get the login and a button for sign up -->
-            <form>
-                <h1>Welcome Back</h1>
-                    <div class="field">
-                        <label for="username">Username</label>
-                        <input type="text" id="username" name="username" placeholder="Username"><br><br>
-                    </div>
-                    <div>
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" placeholder="Password"><br><br>
-                    </div>
-                    <button class="button-blue" type="submit">Login</button>
-                    <button class="button-blue" type="submit">Sign Up</button>
+            <img class="logoleft" src="https://res.cloudinary.com/drmjf3gno/image/upload/v1743427606/Logos/esenebe_board_logo.png">
+            <form class="loginform">
+                <img class="logoform" src="https://res.cloudinary.com/drmjf3gno/image/upload/v1743427606/Logos/esenebe_board_logo.png">
+                <h2>Welcome Back</h2>
+                
+                <div class="field">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" required>
+                </div>
+        
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                </div>
+        
+        
+                <button type="submit" class="blue-button">Login</button>
+                <button type="submit" class="blue-button">Sign Up</button>
             </form>
         </div>
-        <!-- Right screen for an image and a text inside-->
+        
         <div class="right">
             <img src="https://res.cloudinary.com/drmjf3gno/image/upload/v1743427836/Wallpapers/login.jpg">
-                <div class="centered">
+                <div class="inside-image">
                     <h1>A place to organize yourself</h1>
                     <p>Create notes, boards and save all your events in your calendar. Share with your friends or colleagues.</p>
-                </div>
-            </div>
         </div>
     </div>
 </body>
-
 </html>
