@@ -73,27 +73,53 @@
         background-color: white;
         box-sizing: border-box;
         padding: 15px;
-        /*Enables horizontal and vertical scrolling*/
-        overflow: auto;
-        padding-bottom: 5%;
+        /*Enables horizontal scrolling*/
+        overflow-x: auto;
+        padding-left: 2%;
+        padding-right: 2%;
     }
     /*Column with all the events*/
     .column{
-
+        
+        
     }
     /**/
     .events{
         background-color: #EDE7DC;
         height: 100%;
-        
+        padding: 10px;
+        border-radius: 20px;
+        height: 80%;
+        /*Enables horizontal scrolling*/
+        overflow-y: auto;
+
     }
     /*Events*/
     .event{
-
+        height: fit-content;
+        background-color: white;
+        border-radius: 20px;
+        margin-bottom: 20px;
+        padding: 20px;
+    }
+    /*The plus event*/
+    .event img{
+        height: 20px;
+        width: auto;
+        /*align in the center*/
+        margin: auto;
+        display: block;
+        position: relative;
+        margin-bottom: 0;
+        padding: 0;
     }
     /*Properties*/
     .property{
-
+        width: fit-content;
+        border-radius: 20px;
+        padding-left: 5px;
+        padding-right: 5px;
+        margin-bottom: 10px;
     }
     /* bar in the left */
     .optionsbar {
