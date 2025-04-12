@@ -17,6 +17,7 @@
     /*Font of the whole page*/
     * {
         font-family: Arial, sans-serif;
+        box-sizing: border-box;
     }
 
     /*Title margins*/
@@ -60,8 +61,7 @@
         grid-area: bar;
         display: flex;
         flex-direction: column;
-        gap: 5%;
-
+        gap:5%;
     }
 
     .halfboard {
