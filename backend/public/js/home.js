@@ -94,7 +94,14 @@ function getLastUsedBoardLastColumn(username) {
                     const percentageValue = taskNumber / total * 100;
                     percentage.textContent = percentageValue.toFixed(2) + '%';
                     document.getElementById('orange-line').style.width = percentageValue + '%';
-                    const boardName = getBoardById(boardId);
+                    (async () => {
+                        const boardName = await getBoardById(boardId);
+                        //Add Board Name
+                        const boardTitle = document.getElementById('board-name');
+                        boardTitle.textContent = boardName;
+                    
+                    })();
+                    
 
                 })
                 .catch(error => {

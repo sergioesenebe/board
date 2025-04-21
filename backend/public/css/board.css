@@ -1,5 +1,5 @@
     /*Cut if the titles are to longs*/
-    .column h1{
+    .column h2{
         width: 250px; /* It couldn't be greater */
         white-space: nowrap; /* do not let the text go down the line */
         overflow: hidden; /* hide the text that is outgoing */
@@ -55,6 +55,30 @@
     /*Column with all the events*/
     .column{
         height: 100%;
+    }
+    /*The plus column*/
+    #new-column div{
+        height: 30px;
+        width: 250px;
+        /*align in the center*/
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background-color: #EDE7DC;
+        border-radius: 20px;
+        margin:15px;
+    }
+    /*The plus column*/
+    #new-column img{
+        height: 20px;
+        width: auto;
+        /*align in the center*/
+        display: block;
+        position: relative;
+        margin-bottom: 0;
+        padding: 0;
+        
     }
     /**/
     .events{
