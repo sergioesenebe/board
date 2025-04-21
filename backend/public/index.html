@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Conexión Node.js + MySQL</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; background: #f5f5f5; }
+    table { border-collapse: collapse; width: 100%; background: #fff; }
+    th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
+    th { background-color: #eee; }
+  </style>
+</head>
+<body>
+  <h1>Datos desde MySQL</h1>
+  <table id="data-table">
+    <thead>
+      <tr><th>ID</th><th>Nombre</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    fetch('/users')
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.querySelector('#data-table tbody');
+        data.forEach(row => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${row.user_id}</td><td>${row.name}</td>`;
+          tbody.appendChild(tr);
+        });
+      })
+      .catch(error => {
+        document.body.innerHTML += `<p style="color:red;">Error: ${error}</p>`;
+        console.error('Error cargando datos:', error);
+      });
+  </script>
+</body>
+</html>

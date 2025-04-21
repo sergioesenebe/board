@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<!--  -->
+
+<head>
+    <meta charset="utf8">
+    <title>esenebe board - Home</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="icon" href="https://res.cloudinary.com/drmjf3gno/image/upload/v1743428301/Logos/esenebe_logo.png" />
+</head>
+
+<body>
+    <div class="home-half-content">
+        <div class="half-bar">
+            <img class="icon"
+                src="https://res.cloudinary.com/drmjf3gno/image/upload/v1743428301/Logos/esenebe_logo.png">
+            <div class="options-bar">
+                <button class="button-home-selected"></button>
+                <a href="./boards.html"><button class="button-not-selected button-board"></button></a>
+                <a href="./notes.html"><button class="button-not-selected button-notes"></button></a>
+                <a href="./calendar.html"><button class="button-not-selected button-calendar"></button></a>
+            </div>
+            <div class="profile-bar">
+                <a href="./settings.html"><button class="button-not-selected buton-settings"></button></a>
+                <img id="avatar">
+            </div>
+        </div>
+        <header>
+            <h1 id="hello"></h1>
+        </header>
+        <div id="half-board" class="components-click">
+            <h2>Your Boards</h2>
+            <div id="boards">
+            </div>
+        </div>
+        <div class="half-calendar components-click">
+            <h2>Your Calendar</h2>
+            <table id="calendar-table">
+                <tbody id="tbody">
+                    <tr>
+                        <th>S</th>
+                        <th>M</th>
+                        <th>T</th>
+                        <th>W</th>
+                        <th>T</th>
+                        <th>F</th>
+                        <th>S</th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="half-task components-click">
+            <h2 id="board-name"></h2>
+            <span id="task-name" style="float:left; font-size:25px"></span>
+            <span id="percentage" style="float:right; font-size:25px"></span>
+            </br><span id="line"><span id="orange-line">
+        </div>
+        <div class="half-event components-click">
+            <h2>Upcoming Event</h2>
+            <span id="event-name" style="font-size: 20px"></span><br />
+            <span id="event-date"></span>
+        </div>
+
+        <div class="half-notes components-click">
+            <h1>Your Notes</h1>
+            <div id="home-notes">
+            </div>
+        </div>
+    </div>
+    <script type="module" src="js/home.js"></script>
+</body>
+
+</html>
