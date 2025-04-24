@@ -429,7 +429,7 @@ app.post('/addYellowToEvents', (req, res) => {
     }
   });
 });
-//Updates
+//Update Board Name
 app.post('/updateBoardName', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the usernames and passwords from the body
@@ -450,7 +450,32 @@ app.post('/updateBoardName', (req, res) => {
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Username not found' });
+      return res.status(200).json({ success: false, message: 'Board not found' });
+    }
+  });
+});
+//Updates Columns
+app.post('/updateColumnName', (req, res) => {
+  console.log('Body of the application:', req.body);
+  // Takes the usernames and passwords from the body
+  const { newName, column } = req.body;
+
+  if (!newName || !column) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+
+  // SELECT to show month events for a user
+  db.query('UPDATE `columns` SET `name`=? WHERE column_id=?;', [newName, column], (err, results) => {
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the Database' });
+    }
+
+    // If there is more than one note will return true
+    if (results.length > 0) {
+      return res.status(200).json(results);
+    } else {
+      return res.status(200).json({ success: false, message: 'Column not found' });
     }
   });
 });

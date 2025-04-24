@@ -45,6 +45,7 @@ fetchJson('/getColumns', 'POST', { board: boardId })
     .then(data => {
         data.forEach((column, index) => {
             const columnId = column.column_id;
+            console.log(columnId);
             const boardColumn = document.createElement('div');
             boardColumn.classList.add('column');
             board.appendChild(boardColumn);
@@ -68,13 +69,11 @@ fetchJson('/getColumns', 'POST', { board: boardId })
                 search = hideSearch(search);
                 hideColumnOptions();
                 optionsBoard = hideOptions(optionsBoard);
-                console.log(textEditing);
                 textEditing = addInputToChange(columnHead.id, textEditing);
                 event.stopPropagation(); //prevent document.addEventListener
             })
             //When the button edit click, the title will be an input to edit it
             editOption.addEventListener('click', (event) => {
-                console.log(textEditing);
                 if (columnHead.id != textEditing) {
                     search = hideSearch(search);
                     hideColumnOptions();
@@ -82,7 +81,6 @@ fetchJson('/getColumns', 'POST', { board: boardId })
                     hideColumnOptions();
                     optionsBoard = hideOptions(optionsBoard);
                     textEditing = addInputToChange(columnHead.id, textEditing);
-                    console.log(textEditing);
                     const optionsDiv = editOption.parentNode;
                     optionsDiv.classList.add('hidden')
                     event.stopPropagation(); //prevent document.addEventListener
@@ -245,9 +243,14 @@ document.addEventListener('click', () => {
     search = hideSearch(search);
     hideColumnOptions();
     optionsBoard = hideOptions(optionsBoard);
-    console.log("textEditing: ",textEditing);
-    textEditing = returnToText(textEditing,boardId);
-    console.log("engaño");
+    if(textEditing.startsWith('board-title')){
+        textEditing = returnToText(textEditing,boardId);
+    }
+    else if(textEditing.startsWith('column-title-')){
+        const columnId = textEditing.replace('column-title-','')
+        console.log(columnId);
+        textEditing = returnToText(textEditing,columnId);
+    }
 });
 //Delete the input value when the page refresh
 document.addEventListener('DOMContentLoaded', () => {
@@ -278,7 +281,6 @@ editGeneral.addEventListener('click', (event) => {
         hideColumnOptions();
         optionsBoard = hideOptions(optionsBoard);
         textEditing = addInputToChange(boardTitle, textEditing);
-        console.log(textEditing);
         const optionsDiv = editGeneral.parentNode;
         optionsDiv.classList.add('hidden')
         event.stopPropagation(); //prevent document.addEventListener
@@ -289,14 +291,12 @@ editGeneral.addEventListener('click', (event) => {
 const inputToDelete = document.getElementById(`inputChange-${textEditing}`);
 document.addEventListener('keydown', (event) => {
     if (event.key === "Enter") {
-        if (textEditing = "board-title"){
+        if(textEditing.startsWith('board-title')){
             textEditing = returnToText(textEditing,boardId);
         }
-        else if(textEditing.startsWith('column-title')){
+        else if(textEditing.startsWith('column-title-')){
             const columnId = textEditing.replace('column-title-','')
-            console.log("columnid: ",columnId);
-            //textEditing = returnToText(textEditing,boardId);
-
+            textEditing = returnToText(textEditing,boardId);
         }
         
     }

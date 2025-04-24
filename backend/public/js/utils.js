@@ -347,15 +347,23 @@ export function addInputToChange(id, textEditing) {
 //Function to update, delete the input and return the text
 export function returnToText(textEditing,change) {
     if (textEditing != '') {
-        console.log(textEditing);
         const textToReturn = document.getElementById(textEditing);
         textToReturn.classList.remove('hidden');
         const inputToDelete = document.getElementById(`inputChange-${textEditing}`);
         const newName = inputToDelete.value;
 
         if (textEditing === 'board-title'){
-            console.log(newName, change);
             fetchJson('/updateBoardName', 'POST', { newName: newName, board: change })
+            
+            .then(()=>{
+                textToReturn.textContent = newName;
+            })
+            .catch(error => {
+                console.error("Error Updating the board name: ", error);
+            })
+        }
+        else if (textEditing.startsWith('column-title-')){
+            fetchJson('/updateColumnName', 'POST', { newName: newName, column: change })
             
             .then(()=>{
                 textToReturn.textContent = newName;
