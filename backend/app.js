@@ -248,7 +248,7 @@ app.post('/getCardsNumber', (req, res) => {
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Board not found' });
+      return res.status(200).json({ success: false, message: 'Column not found' });
     }
   });
 });
@@ -273,7 +273,32 @@ app.post('/getCards', (req, res) => {
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Board not found' });
+      return res.status(200).json({ success: false, message: 'Column not found' });
+    }
+  });
+});
+//Query to show cards of a column
+app.post('/getProperties', (req, res) => {
+  console.log('Body of the application:', req.body);
+  // Takes the usernames and passwords from the body
+  const { card } = req.body;
+
+  if (!card) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+
+  // SELECT to show properties of a card
+  db.query('SELECT PT.prop_type_id, PT.name FROM `card_prop_types` CPT,  prop_types PT WHERE CPT.prop_type_id=PT.prop_type_id AND CPT.card_id = ?', [card], (err, results) => {
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the Database' });
+    }
+
+    // If the username doesn't exist will return true
+    if (results.length > 0) {
+      return res.status(200).json(results);
+    } else {
+      return res.status(200).json({ success: false, message: 'Card not found' });
     }
   });
 });
@@ -404,7 +429,31 @@ app.post('/addYellowToEvents', (req, res) => {
     }
   });
 });
+//Updates
+app.post('/updateBoardName', (req, res) => {
+  console.log('Body of the application:', req.body);
+  // Takes the usernames and passwords from the body
+  const { newName, board } = req.body;
 
+  if (!newName || !board) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+
+  // SELECT to show month events for a user
+  db.query('UPDATE boards SET name = ?,last_updated = NOW() WHERE board_id = ?; ;', [newName, board], (err, results) => {
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the Database' });
+    }
+
+    // If there is more than one note will return true
+    if (results.length > 0) {
+      return res.status(200).json(results);
+    } else {
+      return res.status(200).json({ success: false, message: 'Username not found' });
+    }
+  });
+});
 
 
 /*Open port*/

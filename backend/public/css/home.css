@@ -1,3 +1,23 @@
+/*Configuring size and order of the containers and the resize to one line*/
+.home-half-content {
+    height: 90%;
+    width: 100%;
+    display: grid;
+    justify-content: center;
+    /*Center the elements*/
+    /*Divide the page in 4 (one for the bar) and the other three to put two containers, 
+        one will occupy twice as much space. The header will occupy the three holes*/
+    grid-template-columns: 10% 30% 30% 30%;
+    grid-template-rows: 4fr 20fr 10fr 10fr;
+    grid-template-areas:
+        "bar header header header"
+        "bar halfboard halfboard halfcalendar"
+        "bar halftask halfnotes halfnotes"
+        "bar halfevent halfnotes halfnotes";
+    gap: 20px;
+    margin-left: 5%;
+    margin-right: 5%;
+}
 /*Divs for all the components display (boards, calendar, notes, etc.)*/
 #half-board {
     grid-area: halfboard;

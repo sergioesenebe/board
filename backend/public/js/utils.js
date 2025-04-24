@@ -25,25 +25,34 @@ export function addBoards(username, openBoards) {
     const divBoards = document.getElementById('boards');
     fetchJson('/getBoards', 'POST', { username })
         .then(data => {
-            data.forEach(board => {
-                const divBoard = document.createElement('div');
-                const table = document.createElement('table');
-                const title = document.createElement('h3');
-                title.textContent = board.name;
-                divBoard.classList.add('board');
-                divBoards.appendChild(divBoard);
-                divBoard.appendChild(table);
-                table.appendChild(title);
-                const boardId = board.board_id;
-                divBoard.id = boardId;
-                //if openBoards is true, will allow to open the components
-                if (openBoards) {
-                    //Call the openComponent to allow go to page of board and save the id of the table
-                    
-                    openComponent(boardId, "./board.html", "boardId");
+            if (data.length > 0) {
+                data.forEach(board => {
+                    const divBoard = document.createElement('div');
+                    const table = document.createElement('table');
+                    const title = document.createElement('h3');
+                    divBoard.classList.add('board');
+                    divBoards.appendChild(divBoard);
+                    divBoard.appendChild(table);
+                    table.appendChild(title);
+                    const boardId = board.board_id;
+                    divBoard.id = boardId;
+                    title.textContent = board.name;
+                    //if openBoards is true, will allow to open the components
+                    if (openBoards) {
+                        //Call the openComponent to allow go to page of board and save the id of the table
+
+                        openComponent(boardId, "./board.html", "boardId");
+                    }
+                    addColumns(board.board_id, table, openBoards);
+                });
+            }
+            else {
+                const noNotes = document.getElementById("no-boards")
+                if (noNotes) {
+                    noNotes.textContent = "You don't have notes";
                 }
-                addColumns(board.board_id, table, openBoards);
-            });
+            }
+
             //If you want to open the boards in other page an add the plus to add more boards
             if (openBoards) {
                 //Create a plus at the end
@@ -57,7 +66,7 @@ export function addBoards(username, openBoards) {
                 divBoard.id = boardId;
                 //Call the openComponent to allow go to page of board and save the id of the table
                 openComponent(boardId, "./board.html", "boardId");
-                
+
 
             }
         })
@@ -121,17 +130,25 @@ export function addNotes(username) {
     const homenotes = document.getElementById('home-notes');
     fetchJson('/getNotes', 'POST', { username })
         .then(data => {
-            data.forEach(note => {
-                const homenote = document.createElement('div');
-                const title = document.createElement('h2');
-                const content = document.createElement('div');
-                title.textContent = note.name;
-                homenote.classList.add('home-note');
-                homenotes.appendChild(homenote);
-                homenote.appendChild(title);
-                homenote.appendChild(content);
-                content.innerHTML = note.content;
-            });
+            if (data.length > 0) {
+                data.forEach(note => {
+                    const homenote = document.createElement('div');
+                    const title = document.createElement('h2');
+                    const content = document.createElement('div');
+                    title.textContent = note.name;
+                    homenote.classList.add('home-note');
+                    homenotes.appendChild(homenote);
+                    homenote.appendChild(title);
+                    homenote.appendChild(content);
+                    content.innerHTML = note.content;
+                });
+            }
+            else {
+                const noNotes = document.getElementById("no-notes")
+                if (noNotes) {
+                    noNotes.textContent = "You don't have notes";
+                }
+            }
         })
         .catch(error => {
             console.error("Error fetching board data: ", error);
@@ -191,17 +208,18 @@ export function generateCalendar() {
 export function addColorToEvents(username, month) {
     fetchJson('/addYellowToEvents', 'POST', { username, month })
         .then(data => {
-            data.forEach(event => {
-                const eventDate = new Date(event.start_date);
-                const eventDay = eventDate.getDate();
-                const eventTd = document.getElementById(`calendar-day-${eventDay}`);
-                eventTd.classList.add('yellow-day');
-            })
+            if (data.length > 0) {
+                data.forEach(event => {
+                    const eventDate = new Date(event.start_date);
+                    const eventDay = eventDate.getDate();
+                    const eventTd = document.getElementById(`calendar-day-${eventDay}`);
+                    eventTd.classList.add('yellow-day');
+                })
+            }
+
             //Add red to today
             const today = new Date();//Function to add columns for boards
             const todayMonth = today.getMonth() + 1;
-            console.log("Today Month: ", todayMonth);
-            console.log("passed Month: ", month);
             if (todayMonth === month) {
                 const todayDay = today.getDate();
                 const todayTd = document.getElementById(`calendar-day-${todayDay}`);
@@ -219,13 +237,137 @@ export function addColorToEvents(username, month) {
 export function openComponent(componentId, page, saveItem) {
     const component = document.getElementById(componentId);
     component.classList.add('components-click');
-    
+
     component.addEventListener('click', () => {
         if (saveItem) {
             localStorage.setItem(saveItem, componentId);
         }
-        console.log(componentId);
-            window.location.href = page; // Redirect to selected page
+        window.location.href = page; // Redirect to selected page
     });
-    
+
+}
+//Get the input when writing and show just the elements that match.
+//If you want to search just for example the board don't add valuesClass, if you want to search the cards of a board add bouth parameters
+export function showSearch(tablesClass, valuesClass) {
+    const input = document.getElementById('search-input');
+    input.addEventListener('input', () => {
+        const searchContent = input.value.toLowerCase();
+        const tables = document.querySelectorAll(`.${tablesClass}`);
+        if (valuesClass) {
+            tables.forEach(table => {
+                const values = table.querySelectorAll(`.${valuesClass}`);
+
+                values.forEach(value => {
+                    const valueContent = value.textContent.toLocaleLowerCase();
+                    if (searchContent === '' || valueContent.includes(searchContent)) {
+                        value.classList.remove('hidden');
+                    }
+
+                    else {
+                        value.classList.add('hidden');
+                    }
+
+                })
+            })
+        }
+        else {
+            tables.forEach(table => {
+                const tableContent = table.textContent.toLocaleLowerCase();
+                if (searchContent === '' || tableContent.includes(searchContent)) {
+                    table.classList.remove('hidden');
+                }
+
+                else {
+                    table.classList.add('hidden');
+                }
+            })
+        }
+    });
+}
+//Function to hide Search if its open
+export function hideSearch(search) {
+    const searchInput = document.getElementById('search-input');
+    if (search === 'display' && searchInput.value == '') {
+        const searchDiv = document.getElementById('search');
+        searchDiv.classList.remove('search-focus');
+        searchInput.classList.add('hidden');
+        searchInput.value = null;
+        return 'hidden';
+    }
+}
+//Function to hide Options Board if its open
+export function hideOptions(options) {
+    if (options === 'display') {
+        const optionsGeneralDiv = document.getElementById('options-general');
+        optionsGeneralDiv.classList.add('hidden');
+        return 'hidden';
+    }
+}
+//Function to hide Column Options if its open
+export function hideColumnOptions(optionsColumnOpen) {
+    if (optionsColumnOpen != 'hidden') {
+        const optionsColumnDiv = document.getElementById(`options-column-${optionsColumnOpen}`);
+        optionsColumnDiv.classList.add('hidden');
+        return 'hidden';
+    }
+}
+
+
+//Function to change input for the text
+export function addInputToChange(id, textEditing) {
+    if (id != textEditing) {
+        returnToText(textEditing);
+    }
+    const textToInput = document.getElementById(id);
+    textToInput.classList.add('hidden');
+    const inputChange = document.createElement('input');
+    inputChange.value = textToInput.textContent;
+    const parent = textToInput.parentNode;
+    parent.insertBefore(inputChange, textToInput);
+    //We put the same size and characteristics
+    const styles = window.getComputedStyle(textToInput);
+    // Copiar estilos visuales importantes
+    inputChange.style.fontSize = styles.fontSize;
+    inputChange.style.fontFamily = styles.fontFamily;
+    inputChange.style.fontWeight = styles.fontWeight;
+    inputChange.style.color = styles.color;
+    inputChange.style.lineHeight = styles.lineHeight;
+    inputChange.style.letterSpacing = styles.letterSpacing;
+    inputChange.style.textAlign = styles.textAlign;
+    inputChange.classList.add('input-change');
+    inputChange.id = `inputChange-${id}`;
+    //Focus when click to avoid click twice
+    inputChange.focus();
+    //prevent document.addEventListener for Input when change
+    inputChange.addEventListener('click', (event) => {
+        event.stopPropagation(); //prevent document.addEventListener
+    })
+    return id;
+}
+//Function to update, delete the input and return the text
+export function returnToText(textEditing,change) {
+    if (textEditing != '') {
+        console.log(textEditing);
+        const textToReturn = document.getElementById(textEditing);
+        textToReturn.classList.remove('hidden');
+        const inputToDelete = document.getElementById(`inputChange-${textEditing}`);
+        const newName = inputToDelete.value;
+
+        if (textEditing === 'board-title'){
+            console.log(newName, change);
+            fetchJson('/updateBoardName', 'POST', { newName: newName, board: change })
+            
+            .then(()=>{
+                textToReturn.textContent = newName;
+            })
+            .catch(error => {
+                console.error("Error Updating the board name: ", error);
+            })
+        }
+        inputToDelete.remove();
+        return '';
+    }
+    else {
+        return '';
+    }
 }
