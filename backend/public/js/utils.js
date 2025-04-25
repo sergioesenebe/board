@@ -40,7 +40,6 @@ export function addBoards(username, openBoards) {
                     //if openBoards is true, will allow to open the components
                     if (openBoards) {
                         //Call the openComponent to allow go to page of board and save the id of the table
-
                         openComponent(boardId, "./board.html", "boardId");
                     }
                     addColumns(board.board_id, table, openBoards);
@@ -49,7 +48,7 @@ export function addBoards(username, openBoards) {
             else {
                 const noNotes = document.getElementById("no-boards")
                 if (noNotes) {
-                    noNotes.textContent = "You don't have notes";
+                    noNotes.textContent = "You don't have boards";
                 }
             }
 
@@ -64,10 +63,23 @@ export function addBoards(username, openBoards) {
                 divBoard.classList.add('board');
                 const boardId = "new-board";
                 divBoard.id = boardId;
-                //Call the openComponent to allow go to page of board and save the id of the table
-                openComponent(boardId, "./board.html", "boardId");
-
-
+                //Create a new board
+                //if openBoards is true, will allow to open the components
+                divBoard.classList.add('components-click');
+                if (openBoards) {
+                    divBoard.addEventListener('click', () => {
+                        const newName = "New Board";
+                        fetchJson('/insertBoard', 'POST', { newBoardName: newName, username: username })
+                            .then(data => {
+                                //Call the openComponent to allow go to page of board and save the id of the table
+                                localStorage.setItem('boardId', data.boardId);
+                                window.location.href = "./board.html"; // Redirect to selected page
+                            })
+                            .catch(error => {
+                                console.error("Error Inserting a Board: ", error);
+                            })
+                    });
+                }
             }
         })
         .catch(error => {
@@ -80,14 +92,16 @@ export function addColumns(board, table, addData) {
     table.appendChild(tr);
     fetchJson('/getColumns', 'POST', { board })
         .then(data => {
-            data.forEach(column => {
-                const columnName = document.createElement('th');
-                tr.appendChild(columnName);
-                columnName.textContent = column.name;
-                (async () => {
-                    await addCards(column.column_id, table, addData);
-                })();
-            })
+            if (data.success != false) {
+                data.forEach(column => {
+                    const columnName = document.createElement('th');
+                    tr.appendChild(columnName);
+                    columnName.textContent = column.name;
+                    (async () => {
+                        await addCards(column.column_id, table, addData);
+                    })();
+                })
+            }
 
         })
         .catch(error => {
@@ -99,26 +113,28 @@ function addCards(column, table, addData) {
     fetchJson('/getCards', 'POST', { column })
         .then(data => {
             var i = 0;
-            data.forEach((card, index) => {
-                var tr;
-                const tableName = table.querySelector('h3').textContent;
-                if (!document.getElementById(`tr-card-${tableName}-${index}`)) {
-                    tr = document.createElement('tr');
-                    table.appendChild(tr);
-                    tr.id = `tr-card-${tableName}-${index}`;
-                }
-                else {
-                    tr = document.getElementById(`tr-card-${tableName}-${index}`);
-                }
-                const td = document.createElement('td');
-                tr.appendChild(td);
-                if (addData) {
-                    td.textContent = card.name;
-                }
-                else {
-                    td.classList.add('home-lit-event');
-                }
-            });
+            if (data.success != false) {
+                data.forEach((card, index) => {
+                    var tr;
+                    const tableName = table.querySelector('h3').textContent;
+                    if (!document.getElementById(`tr-card-${tableName}-${index}`)) {
+                        tr = document.createElement('tr');
+                        table.appendChild(tr);
+                        tr.id = `tr-card-${tableName}-${index}`;
+                    }
+                    else {
+                        tr = document.getElementById(`tr-card-${tableName}-${index}`);
+                    }
+                    const td = document.createElement('td');
+                    tr.appendChild(td);
+                    if (addData) {
+                        td.textContent = card.name;
+                    }
+                    else {
+                        td.classList.add('home-lit-event');
+                    }
+                });
+            }
         })
         .catch(error => {
             console.error("Error fetching cards data: ", error);
@@ -345,32 +361,32 @@ export function addInputToChange(id, textEditing) {
     return id;
 }
 //Function to update, delete the input and return the text
-export function returnToText(textEditing,change) {
+export function returnToText(textEditing, change) {
     if (textEditing != '') {
         const textToReturn = document.getElementById(textEditing);
         textToReturn.classList.remove('hidden');
         const inputToDelete = document.getElementById(`inputChange-${textEditing}`);
         const newName = inputToDelete.value;
 
-        if (textEditing === 'board-title'){
+        if (textEditing === 'board-title') {
             fetchJson('/updateBoardName', 'POST', { newName: newName, board: change })
-            
-            .then(()=>{
-                textToReturn.textContent = newName;
-            })
-            .catch(error => {
-                console.error("Error Updating the board name: ", error);
-            })
+
+                .then(() => {
+                    textToReturn.textContent = newName;
+                })
+                .catch(error => {
+                    console.error("Error Updating the board name: ", error);
+                })
         }
-        else if (textEditing.startsWith('column-title-')){
+        else if (textEditing.startsWith('column-title-')) {
             fetchJson('/updateColumnName', 'POST', { newName: newName, column: change })
-            
-            .then(()=>{
-                textToReturn.textContent = newName;
-            })
-            .catch(error => {
-                console.error("Error Updating the board name: ", error);
-            })
+
+                .then(() => {
+                    textToReturn.textContent = newName;
+                })
+                .catch(error => {
+                    console.error("Error Updating the board name: ", error);
+                })
         }
         inputToDelete.remove();
         return '';

@@ -1,7 +1,7 @@
 /*Configuring size and order of the containers and the resize to one line*/
 .home-half-content {
     height: 90%;
-    width: 100%;
+    width: 90%;
     display: grid;
     justify-content: center;
     /*Center the elements*/
@@ -227,4 +227,19 @@
     min-width: 20px;
     width: auto;
     color: black;
+}
+@media (max-width: 1325px) {
+    .home-half-content {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: min-content min-content min-content min-content min-content;
+        grid-template-areas:
+            "bar bar"
+            "header header"
+            "halfboard halfboard"
+            "halftask halfcalendar"
+            "halfevent halfcalendar"
+            "halfnotes halfnotes";
+        width: 90%;
+        padding: 0;
+    }
 }

@@ -100,7 +100,10 @@ function getLastUsedBoardLastColumn(username) {
                 Promise.all(promises)
                     .then(() => {
                         const percentage = document.getElementById('percentage');
-                        const percentageValue = taskNumber / total * 100;
+                        let percentageValue = 0;
+                        if(total!=0){
+                            percentageValue = taskNumber / total * 100;
+                        }
                         percentage.textContent = percentageValue.toFixed(2) + '%';
                         document.getElementById('orange-line').style.width = percentageValue + '%';
                         (async () => {

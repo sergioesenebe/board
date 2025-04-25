@@ -10,6 +10,8 @@ import { hideSearch } from './utils.js';
 
 //Declare to know if search or options are open or hidden, by default will be hidden
 var search = 'hidden';
+
+
 //Function to hide Search if its open
 search = hideSearch(search);
 //Show all boards with the plus at the end and the text of cards (true)
