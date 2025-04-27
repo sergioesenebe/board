@@ -50,7 +50,8 @@ function getUpcomingEvent(username) {
         .then(data => {
             const eventName = document.getElementById('event-name');
             const eventDate = document.getElementById('event-date');
-            if (data[0] !== undefined) {
+            console.log(data);
+            if (data[0] != undefined) {
                 const eventdate = new Date(data[0].start_date);
 
                 eventName.textContent = data[0].name;

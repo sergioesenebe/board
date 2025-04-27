@@ -20,7 +20,7 @@ var search = 'hidden'
 var optionsColumnOpen = 'hidden';
 var textEditing = '';
 var columnIndex = 0;
-var dragging;
+var dragging = null;
 
 //Get boardId from the other page
 const boardId = localStorage.getItem('boardId')
@@ -86,8 +86,8 @@ function addColumn(column, index) {
         event.stopPropagation(); //prevent document.addEventListener
     })*/
     //Columns could be move to order them
-    boardColumn.draggable = true;
-    dragAndDrop(boardColumn, 'X');
+    columnHeader.draggable = true;
+    dragAndDrop(columnHeader, 'X');
     //When the button edit click, the title will be an input to edit it
     editOption.addEventListener('click', (event) => {
         if (columnHead.id != textEditing) {
@@ -153,15 +153,18 @@ function addCards(columnId) {
                     //Add card
                     addCard(card, divColumn);
                 })
-
             }
             //Show a plus at the end of the cards
             const plusEvent = document.createElement('div');
             divEvents.appendChild(plusEvent);
+            const plusEventContent = document.createElement('div');
+            plusEventContent.classList.add('content-card');
+            plusEvent.appendChild(plusEventContent);
             plusEvent.classList.add('card', "new-card-plus");
             const plusImage = document.createElement('img');
-            plusEvent.appendChild(plusImage);
+            plusEventContent.appendChild(plusImage);
             plusImage.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1743961025/Icons/Black/plus_black.png";
+            dragAndDrop(plusEvent, 'X');
             //When clicking in plus a new card will be added
             plusEvent.addEventListener('click', () => {
                 const newCardName = 'New Card';
@@ -190,6 +193,10 @@ function addCard(card) {
     const divColumn = document.getElementById(card.column_id);
     const divCard = document.createElement('div');
     const divEvents = divColumn.querySelector('.cards');
+    divCard.id = card.card_id;
+    const contentCard = document.createElement('div');
+    divCard.appendChild(contentCard);
+    contentCard.classList.add('content-card');
     if (divColumn.querySelector('.new-card-plus')) {
         const newCard = divColumn.querySelector('.new-card-plus');
         divEvents.insertBefore(divCard, newCard);
@@ -199,13 +206,17 @@ function addCard(card) {
     }
     divCard.classList.add('card');
     const cardId = card.card_id;
+    //Allow Move cards
+    divCard.draggable = true;
+    dragAndDrop(divCard, 'Y');
+
     //Search all the properties
     fetchJson('/getProperties', 'POST', { card: cardId })
         .then(data => {
             if (data.success != false) {
                 //Create a div for the properties
                 const propertiesDiv = document.createElement('div');
-                divCard.appendChild(propertiesDiv);
+                contentCard.appendChild(propertiesDiv);
                 propertiesDiv.classList.add('properties');
 
 
@@ -233,7 +244,7 @@ function addCard(card) {
             }
             const cardName = document.createElement('span');
             cardName.textContent = card.name;
-            divCard.appendChild(cardName);
+            contentCard.appendChild(cardName);
         })
         .catch(error => {
             console.error("Error fetching cards properties: ", error);
@@ -263,9 +274,22 @@ function showOptionsColumns(options, index) {
 //Function to allow moving components
 //Move columns
 function dragAndDrop(component, position) {
+
+    //Allow to move cards between columns
+    var className = component.className;
+    if (className == 'column') {
+        component.addEventListener('dragover', (event) => {
+            event.preventDefault(); // Permitir soltar las tarjetas en esta columna
+        });
+    }
     component.addEventListener('dragstart', (event) => {
         dragging = component;
         event.dataTransfer.effectAllowed = 'move';
+        //In case the browser take the column instead of the column-header
+        if (dragging.className == 'column'){
+            dragging = dragging.querySelector('.column-header');
+            console.log("changed:",dragging);
+        }
     })
     component.addEventListener('dragover', (event) => {
         event.preventDefault();
@@ -274,42 +298,133 @@ function dragAndDrop(component, position) {
     component.addEventListener('drop', (event) => {
         event.preventDefault();
         if (dragging && dragging !== component) {
+            if (dragging.className == 'column-header' && component.className == 'column'){
+                component = component.querySelector('.column-header');
+                console.log("changed:",dragging);
+            }
+            console.log("dragging",dragging);
+            console.log("component",component);
             const rect = component.getBoundingClientRect();
             let isAfter;
             if (position.toLowerCase() === 'x') {
                 isAfter = event.clientX > rect.left + rect.width / 2;
             }
             else if (position.toLowerCase() === 'y') {
-                isAfter = event.clientX > rect.left + rect.width / 2;
+                isAfter = event.clientY > rect.top + rect.height / 2;
+
             }
             else {
                 console.error("Add a valid position for dragAndDrop")
             }
-            if (isAfter) {
-                component.after(dragging);
-                const className = component.className;
-                const components = document.querySelectorAll(`.${className}`);
-                const componentsArray = Array.from(components);
-                const index = componentsArray.indexOf(component) + 1;
-                console.log(component.id);
-                if (className == 'column'){
-                    const columnId = component.id;
-                    fetchJson('/updateOrder','POST',columnId)
-                        .then(data => {
+            const componentClassName = component.className;
+            const draggingClassName = dragging.className;
+            var draggingId = dragging.id;
 
-                        })
-                        .catch(error => {
-                            console.error("Error Updating the order: ", error);
-                        })
+            if (isAfter) {
+                if (componentClassName == 'column-header' && draggingClassName == 'column-header') {
+                    dragging = dragging.parentNode;
+                    draggingId = dragging.id;
+                    component = component.parentNode;
+                    const components = document.querySelectorAll(`.${component.className}`);
+                    const componentsArray = Array.from(components);
+                    var oldOrder = componentsArray.indexOf(dragging);
+                    var newOrder = componentsArray.indexOf(component);
+                    console.log(componentsArray);
+                    component.after(dragging);
+                    if (newOrder > oldOrder) {
+                        fetchJson('/updateColumnOrderIncrease', 'POST', { columnId: draggingId, newOrder: newOrder })
+                            .catch(error => {
+                                console.error("Error Updating the order: ", error);
+                            })
+                    }
+                    else if (newOrder < oldOrder) {
+                        newOrder = newOrder + 1;
+                        fetchJson('/updateColumnOrderDecrease', 'POST', { columnId: draggingId, newOrder: newOrder })
+                            .catch(error => {
+                                console.error("Error Updating the order: ", error);
+                            })
+                    }
                 }
+                else if (componentClassName == 'card' && draggingClassName == 'card') {
+                    const newColumnId = component.parentNode.parentNode.id;
+                    const oldColumnId = dragging.parentNode.parentNode.id;
+                    const componentsDiv = component.parentNode;
+                    const components = componentsDiv.querySelectorAll(`.${dragging.className}`);
+                    const componentsArray = Array.from(components);
+                    var oldOrder = componentsArray.indexOf(dragging);
+                    var newOrder = componentsArray.indexOf(component);
+                    component.after(dragging);
+                    if (newOrder > oldOrder) {
+                        newOrder = newOrder + 1;
+                        console.log(newOrder);
+                        fetchJson('/updateCardOrderIncrease', 'POST', { oldColumnId:oldColumnId, newColumnId: newColumnId, cardId: draggingId, newOrder: newOrder })
+                            .catch(error => {
+                                console.error("Error Updating the order: ", error);
+                            })
+                    }
+                    else if (newOrder < oldOrder) {
+                        newOrder = newOrder + 1;
+                        console.log(newOrder);
+                        fetchJson('/updateCardOrderDecrease', 'POST', { oldColumnId:oldColumnId, newColumnId: newColumnId, cardId: draggingId, newOrder: newOrder })
+                            .catch(error => {
+                                console.error("Error Updating the order: ", error);
+                            })
+                    }
+                }
+
             }
             else {
-                component.before(dragging);
-                const className = component.className;
-                const components = document.querySelectorAll(`.${className}`);
-                const componentsArray = Array.from(components);
-                const index = componentsArray.indexOf(component) - 1;
-                console.log(index);
+                if (componentClassName == 'column-header' && draggingClassName == 'column-header') {
+                    dragging = dragging.parentNode;
+                    draggingId = dragging.id;
+                    component = component.parentNode;
+                    const components = document.querySelectorAll(`.${component.className}`);
+                    const componentsArray = Array.from(components);
+                    var oldOrder = componentsArray.indexOf(dragging);
+                    var newOrder = componentsArray.indexOf(component);
+                    console.log(componentsArray);
+                    component.before(dragging);
+                    if (newOrder > oldOrder) {
+                        //Will be before not after
+                        newOrder = newOrder - 1;
+                        fetchJson('/updateColumnOrderIncrease', 'POST', { columnId: draggingId, newOrder: newOrder })
+                            .catch(error => {
+                                console.error("Error Updating the order: ", error);
+                            })
+                    }
+                    else if (newOrder < oldOrder) {
+                        newOrder = newOrder - 1;
+                        fetchJson('/updateColumnOrderDecrease', 'POST', { columnId: draggingId, newOrder: newOrder })
+                            .catch(error => {
+                                console.error("Error Updating the order: ", error);
+                            })
+                    }
+                }
+                else if (draggingClassName == 'card') {
+                    const newColumnId = component.parentNode.parentNode.id;
+                    const oldColumnId = dragging.parentNode.parentNode.id;
+                    const componentsDiv = component.parentNode;
+                    const components = componentsDiv.querySelectorAll(`.${dragging.className}`);
+                    const componentsArray = Array.from(components);
+                    var oldOrder = componentsArray.indexOf(dragging);
+                    var newOrder = componentsArray.indexOf(component);
+                    console.log(componentsArray);
+                    component.before(dragging);
+                    if (newOrder > oldOrder) {
+                        console.log(newOrder);
+                        fetchJson('/updateCardOrderIncrease', 'POST', { oldColumnId:oldColumnId, newColumnId: newColumnId, cardId: draggingId, newOrder: newOrder })
+                            .catch(error => {
+                                console.error("Error Updating the order: ", error);
+                            })
+                    }
+                    else if (newOrder < oldOrder) {
+                        console.log(newOrder);
+                        fetchJson('/updateCardOrderDecrease', 'POST', { oldColumnId:oldColumnId, newColumnId: newColumnId, cardId: draggingId, newOrder: newOrder })
+                            .catch(error => {
+                                console.error("Error Updating the order: ", error);
+                            })
+                    }
+                }
             }
         }
     })
@@ -344,7 +459,6 @@ fetchJson('/getColumns', 'POST', { board: boardId })
             const newColumnName = 'New Column';
             fetchJson('/insertColumn', 'POST', { newColumnName: newColumnName, boardId: boardId })
                 .then(data => {
-                    event
                     const column_id = data.columnId;
                     const name = data.columnName;
                     const column = { column_id, name }

@@ -51,92 +51,110 @@ header {
     gap: 30px;
     align-items: center;
 }
-    /*Image size for search and options*/
-    .options-button {
-        width: 40px;
-        height: 40px;
-        border-radius: 20px;
-        padding: 5px;
-    }
 
-    /*Image size for go back*/
-    #back {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 20px;
-    }
+/*Image size for search and options*/
+.options-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    padding: 5px;
+}
 
-    /*Padding and border for the div to search*/
-    #search {
-        padding: 5px 10px;
-        border-radius: 20px;
-    }
-    /*Confiture the mouse hover for search and options icon*/
-    .options-button:hover {
-        cursor: pointer;
-        background-color: rgba(0, 0, 0, 0.05);
-    }
-    #back:hover {
-        cursor: pointer;
-        background-color: rgba(0, 0, 0, 0.05);
-    }
-        /*Remove brders and define size on input search*/
-        #search-input {
-            font-size: 16px;
-            border: none;
-        }
-    
-        /*Remove brders on focus on input search*/
-        #search-input:focus {
-            outline: none;
-        }
-        /*when click on the search*/
-        .search-focus {
-            background-color: white;
-            width: auto;
-            display: flex;
-        }
-        /*Options for the board*/
-        #options-general {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-            min-width: 160px;
-            padding: 0px;
-        }
-        .delete-option{
-            transition: background-color 0.5s, box-shadow 0.5s;
-            margin: 0px;
-            padding:10px;
-            border-bottom-left-radius:10px;
-            border-bottom-right-radius:10px;
-        }
-        .edit-option{
-            transition: background-color 0.5s, box-shadow 0.5s;
-            margin: 0px;
-            padding:10px;
-            border-top-left-radius:10px;
-            border-top-right-radius:10px;
-        }
-        .options:hover {
-            background-color:  #e0e0e0;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-        }
-    /*Input when trying to change the text*/
-    .input-change{
-        background-color: transparent;
-        border: none;
-        width: 100%;
-    }
-    .input-change:focus{
-        box-shadow: none;
-        outline: none;
-        border: none;
-    }
+/*Image size for go back*/
+#back {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+}
+
+/*Padding and border for the div to search*/
+#search {
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+/*Confiture the mouse hover for search and options icon*/
+.options-button:hover {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+#back:hover {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/*Remove brders and define size on input search*/
+#search-input {
+    font-size: 16px;
+    border: none;
+}
+
+/*Remove brders on focus on input search*/
+#search-input:focus {
+    outline: none;
+}
+
+/*when click on the search*/
+.search-focus {
+    background-color: white;
+    width: auto;
+    display: flex;
+}
+
+/*Options for the board*/
+#options-general {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    min-width: 160px;
+    padding: 0px;
+}
+
+.delete-option {
+    transition: background-color 0.5s, box-shadow 0.5s;
+    margin: 0px;
+    padding: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.edit-option {
+    transition: background-color 0.5s, box-shadow 0.5s;
+    margin: 0px;
+    padding: 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.options:hover {
+    background-color: #e0e0e0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+/*Input when trying to change the text*/
+.input-change {
+    background-color: transparent;
+    border: none;
+    width: 100%;
+}
+
+.input-change:focus {
+    box-shadow: none;
+    outline: none;
+    border: none;
+}
+
+/*When component is dragable change cursor and opacity*/
+[draggable="true"] {
+    cursor: grab;
+    opacity: 0.9;
+    transition: all 0.2s ease;
+  }
 
 .half-bar {
     grid-area: bar;
@@ -148,8 +166,7 @@ header {
 /*All the components that could be clicked*/
 .components-click:hover {
     cursor: pointer;
-    transform: translate(10px, -10px);
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+    filter: brightness(90%);
     transition: all 0.3s ease;
 }
 
@@ -305,6 +322,7 @@ header {
 
 /*The layout of the elements will be changed when the width is less than 1325px. So that each container occupies one row*/
 @media (max-width: 1325px) {
+
     /*Display the bar centered*/
     .options-bar {
         background-color: #D9D9D9;

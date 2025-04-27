@@ -72,8 +72,29 @@ export function addBoards(username, openBoards) {
                         fetchJson('/insertBoard', 'POST', { newBoardName: newName, username: username })
                             .then(data => {
                                 //Call the openComponent to allow go to page of board and save the id of the table
+                                const boardId = data.boardId;
+                                //Insert columns as example (To Do, Doing, Done)
                                 localStorage.setItem('boardId', data.boardId);
-                                window.location.href = "./board.html"; // Redirect to selected page
+                                fetchJson('/insertColumn', 'POST', { newColumnName: "To Do", boardId: boardId })
+                                    .then(data => {
+                                        fetchJson('/insertColumn', 'POST', { newColumnName: "Doing", boardId: boardId })
+                                        .then(data => {
+                                            fetchJson('/insertColumn', 'POST', { newColumnName: "Done", boardId: boardId })
+                                            .then(data => {
+                                                window.location.href = "./board.html"; // Redirect to selected page
+                                            })
+                                            .catch(error => {
+                                                console.error("Error inserting example columns: ", error);
+                                            });
+                                        })
+                                        .catch(error => {
+                                            console.error("Error inserting example columns: ", error);
+                                        });
+                                    })
+                                    .catch(error => {
+                                        console.error("Error inserting example columns: ", error);
+                                    });
+                                
                             })
                             .catch(error => {
                                 console.error("Error Inserting a Board: ", error);

@@ -38,6 +38,9 @@
     justify-content: center;
 
 }
+.half-calendar:hover {
+    background-color: #444444;
+}
 
 .half-task {
     grid-area: halftask;
@@ -62,6 +65,12 @@
 #half-board th {
     font-weight: normal;
     text-decoration: underline;
+    min-width: 100px;
+    max-width: 200px;
+    white-space: nowrap;
+    /* allows line breaks */
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #half-board table {
@@ -140,12 +149,6 @@
         background: #DBCCB7;
         padding: 20px;
         border-radius: 20px;
-    }
-
-    /*Tables of the boards font style and bordercolor*/
-    #half-board th {
-        font-weight: normal;
-        text-decoration: underline;
     }
 
     #half-board table {

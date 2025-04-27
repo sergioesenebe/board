@@ -349,7 +349,7 @@ app.post('/getUpcomingEvent', (req, res) => {
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Username not found' });
+      return res.status(200).json({ success: false, message: 'No Upcoming events' });
     }
   });
 });
@@ -454,7 +454,7 @@ app.post('/updateBoardName', (req, res) => {
     }
   });
 });
-//Updates Columns
+//Update Column Name
 app.post('/updateColumnName', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the usernames and passwords from the body
@@ -489,6 +489,203 @@ app.post('/updateColumnName', (req, res) => {
   });
 
 });
+//Update Column Order when move from left to right
+app.post('/updateColumnOrderIncrease', (req, res) => {
+  console.log('Body of the application:', req.body);
+  // Takes the usernames and passwords from the body
+  const { columnId, newOrder } = req.body;
+
+  if (!columnId || isNaN(newOrder)) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+
+  // SELECT to show month events for a user
+  db.query('UPDATE `columns` AS c  JOIN ( SELECT `order`,`board_id` FROM `columns` WHERE column_id = ? LIMIT 1 ) AS subquery ON c.`board_id` = subquery.`board_id` AND c.`order` <= ? AND c.`order` >= subquery.`order` SET c.`order` = c.`order` - 1; ', [columnId, newOrder], (err, results) => {
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the moved' });
+    }
+    db.query('UPDATE `columns` SET `order`=? WHERE `column_id`=?;', [newOrder, columnId], (err, results) => {
+      console.log('Resultado de la segunda consulta:', results);
+      if (err) {
+        console.error('Error in the query:', err);
+        return res.status(500).json({ success: false, message: 'Error in the dragging' });
+      }
+    })
+
+    // If there is more than one note will return true
+    if (results.affectedRows > 0) {
+      return res.status(200).json(results);
+    } else {
+      return res.status(200).json({ success: false, message: 'Column not found' });
+    }
+  });
+
+});
+//Update Column Order when move from right to left
+app.post('/updateColumnOrderDecrease', (req, res) => {
+  console.log('Body of the application:', req.body);
+
+  // Get values from the request body
+  const { columnId, newOrder } = req.body;
+
+  // Validate that the necessary data is provided
+  if (!columnId || isNaN(newOrder)) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+
+  // Update the order of columns by incrementing the order of columns after the selected one
+  db.query('UPDATE `columns` AS c JOIN (SELECT `order`, `board_id` FROM `columns` WHERE column_id = ? LIMIT 1) AS subquery ON c.`board_id` = subquery.`board_id` AND c.`order` <= subquery.`order` AND c.`order` >= ?  SET c.`order` = c.`order` + 1;', [columnId, newOrder], (err, results) => {
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the move' });
+    }
+
+    // Now update the order of the selected column
+    db.query('UPDATE `columns` SET `order` = ? WHERE `column_id` = ?;', [newOrder, columnId], (err, results) => {
+      if (err) {
+        console.error('Error in the query:', err);
+        return res.status(500).json({ success: false, message: 'Error in the dragging' });
+      }
+
+      // Check if the update was successful
+      if (results.affectedRows > 0) {
+        return res.status(200).json({ success: true, message: 'Column order updated successfully', data: results });
+      } else {
+        return res.status(404).json({ success: false, message: 'Column not found' });
+      }
+    });
+  });
+});
+//Update Card Order when move from left to right
+app.post('/updateCardOrderIncrease', (req, res) => {
+  console.log('Body of the application:', req.body);
+  // Takes the usernames and passwords from the body
+  const { oldColumnId, newColumnId, cardId, newOrder } = req.body;
+
+  if (!oldColumnId || !newColumnId || !cardId || isNaN(newOrder)) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+  //Just update card position in the column
+  if (oldColumnId === newColumnId) {
+    // Update cards order in column
+    db.query('UPDATE `cards` AS c  JOIN ( SELECT `order`,`column_id` FROM `cards` WHERE card_id = ? LIMIT 1 ) AS subquery ON c.`column_id` = subquery.`column_id` AND c.`order` <= ? AND c.`order` >= subquery.`order` SET c.`order` = c.`order` - 1; ', [cardId, newOrder], (err, results) => {
+      if (err) {
+        console.error('Error in the query:', err);
+        return res.status(500).json({ success: false, message: 'Error in the moved' });
+      }
+      db.query('UPDATE `cards` SET `order`=? WHERE `card_id`=?;', [newOrder, cardId], (err, results) => {
+        console.log('Resultado de la segunda consulta:', results);
+        if (err) {
+          console.error('Error in the query:', err);
+          return res.status(500).json({ success: false, message: 'Error in the dragging' });
+        }
+      })
+
+      // If there is more than one note will return true
+      if (results.affectedRows > 0) {
+        return res.status(200).json(results);
+      } else {
+        return res.status(200).json({ success: false, message: 'Column not found' });
+      }
+    });
+  }
+  //Update card to other column and position
+  else {
+    // Update cards order in column
+    db.query('UPDATE `cards` AS c  JOIN ( SELECT `order`, `column_id` FROM `cards` WHERE card_id = ? LIMIT 1 ) AS subquery ON c.`column_id` = subquery.`column_id` AND c.`order` >= subquery.`order` SET c.`order` = c.`order` - 1;', [cardId], (err, results) => {
+      if (err) {
+        console.error('Error in the query:', err);
+        return res.status(500).json({ success: false, message: 'Error in the moved 1' });
+      }
+      //Update cards in future column
+      db.query('UPDATE `cards` SET `order`=`order` + 1 WHERE `order` >= ? AND column_id = ?; ', [newOrder, newColumnId], (err, results) => {
+        if (err) {
+          console.error('Error in the query:', err);
+          return res.status(500).json({ success: false, message: 'Error in the moved 2' });
+        }
+        db.query('UPDATE `cards` SET `order`=?, column_id = ? WHERE `card_id`=?;', [newOrder, newColumnId, cardId], (err, results) => {
+          console.log('Resultado de la segunda consulta:', results);
+          if (err) {
+            console.error('Error in the query:', err);
+            return res.status(500).json({ success: false, message: 'Error in the dragging' });
+          }
+        })
+      })
+      // If there is more than one note will return true
+      if (results.affectedRows > 0) {
+        return res.status(200).json(results);
+      } else {
+        return res.status(200).json({ success: false, message: 'Column not found' });
+      }
+    });
+  }
+});
+//Update Card Order when move from right to left
+app.post('/updateCardOrderDecrease', (req, res) => {
+  console.log('Body of the application:', req.body);
+
+  // Get values from the request body
+  const { oldColumnId, newColumnId, cardId, newOrder } = req.body;
+  // Validate that the necessary data is provided
+  if (!oldColumnId || !newColumnId || !cardId || isNaN(newOrder)) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+  if (oldColumnId === newColumnId) {
+    // Update the order of columns by incrementing the order of columns after the selected one
+    db.query('UPDATE `cards` AS c JOIN (SELECT `order`, `column_id` FROM `cards` WHERE card_id = ? LIMIT 1) AS subquery ON c.`column_id` = subquery.`column_id` AND c.`order` <= subquery.`order` AND c.`order` >= ?  SET c.`order` = c.`order` + 1;', [cardId, newOrder], (err, results) => {
+      if (err) {
+        console.error('Error in the query:', err);
+        return res.status(500).json({ success: false, message: 'Error in the move' });
+      }
+
+      // Now update the order of the selected column
+      db.query('UPDATE `cards` SET `order` = ? WHERE `card_id` = ?;', [newOrder, cardId], (err, results) => {
+        if (err) {
+          console.error('Error in the query:', err);
+          return res.status(500).json({ success: false, message: 'Error in the dragging' });
+        }
+
+        // Check if the update was successful
+        if (results.affectedRows > 0) {
+          return res.status(200).json({ success: true, message: 'Column order updated successfully', data: results });
+        } else {
+          return res.status(404).json({ success: false, message: 'Column not found' });
+        }
+      });
+    });
+  }
+  else {
+    // Update cards order in column
+    db.query('UPDATE `cards` AS c  JOIN ( SELECT `order`, `column_id` FROM `cards` WHERE card_id = ? LIMIT 1 ) AS subquery ON c.`column_id` = subquery.`column_id` AND c.`order` >= subquery.`order` SET c.`order` = c.`order` + 1;', [cardId], (err, results) => {
+      if (err) {
+        console.error('Error in the query:', err);
+        return res.status(500).json({ success: false, message: 'Error in the moved 1' });
+      }
+      //Update cards in future column
+      db.query('UPDATE `cards` SET `order`=`order` + 1 WHERE `order` >= ? AND column_id = ?; ', [newOrder, newColumnId], (err, results) => {
+        if (err) {
+          console.error('Error in the query:', err);
+          return res.status(500).json({ success: false, message: 'Error in the moved 2' });
+        }
+        db.query('UPDATE `cards` SET `order`=?, column_id = ? WHERE `card_id`=?;', [newOrder, newColumnId, cardId], (err, results) => {
+          console.log('Resultado de la segunda consulta:', results);
+          if (err) {
+            console.error('Error in the query:', err);
+            return res.status(500).json({ success: false, message: 'Error in the dragging' });
+          }
+        })
+      })
+      // If there is more than one note will return true
+      if (results.affectedRows > 0) {
+        return res.status(200).json(results);
+      } else {
+        return res.status(200).json({ success: false, message: 'Column not found' });
+      }
+    });
+  }
+});
+
 //Insert Board
 app.post('/insertBoard', (req, res) => {
   console.log('Body of the application:', req.body);
@@ -534,7 +731,7 @@ app.post('/insertColumn', (req, res) => {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to show month events for a user
+  // Insert a new column
   db.query('INSERT INTO `columns`(`column_id`, `name`, `board_id`) VALUES (?,?,?);', [newColumnId, newColumnName, boardId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
@@ -630,8 +827,24 @@ app.post('/deleteColumn', (req, res) => {
   if (!columnId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
+  //Move the columns to the left after the column
+  db.query('UPDATE `columns` c JOIN (SELECT `order` FROM columns WHERE column_id = ? LIMIT 1) subquery ON c.`order` > subquery.`order` SET c.`order` = c.`order` - 1;', [columnId], (err, results) => {
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the Database' });
+    }
 
-  // SELECT to show month events for a user
+  });
+  //Update last_updated board
+  db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [columnId], (err, results) => {
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the update time query' });
+    }
+
+  });
+
+  // DELETE column
   db.query('DELETE FROM `columns` WHERE column_id=?', [columnId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
@@ -646,6 +859,7 @@ app.post('/deleteColumn', (req, res) => {
     }
   });
 });
+
 
 /*Open port*/
 app.listen(port, '0.0.0.0', () => {
