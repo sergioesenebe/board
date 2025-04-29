@@ -61,7 +61,7 @@ header {
 }
 
 /*Image size for go back*/
-#back {
+.back {
     width: 40px;
     height: 40px;
     display: flex;
@@ -82,7 +82,7 @@ header {
     background-color: rgba(0, 0, 0, 0.05);
 }
 
-#back:hover {
+.back:hover {
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0.05);
 }

@@ -20,7 +20,11 @@ var search = 'hidden'
 var optionsColumnOpen = 'hidden';
 var textEditing = '';
 var columnIndex = 0;
+var cardIndex = 0;
 var dragging = null;
+var editCardOpen = 'hidden';
+var propColor;
+var cardOpen = 'none';
 
 //Get boardId from the other page
 const boardId = localStorage.getItem('boardId')
@@ -35,7 +39,7 @@ let boardName;
 
 
 //Declare colors for properties
-const propertyColors = ["lightblue", "lightgoldenrodyellow", "lightgray", "lightgreen", "lightpink",
+const propertyColors = ["lightblue", "lightgoldenrodyellow", "lightgreen", "lightpink",
     "lightsalmon", "lightseagreen", "lightskyblue", "lightslategray", "lightsteelblue", "lightyellow", "lightcyan"];
 
 
@@ -76,15 +80,6 @@ function addColumn(column, index) {
     options.classList.add('options-column', 'hidden');
     //Options edit and delete
     const editOption = document.createElement('p');
-    //Edit a text when click in text
-    /*const textToInput = columnHead;
-    textToInput.addEventListener('click', (event) => {
-        search = hideSearch(search);
-        hideColumnOptions();
-        optionsBoard = hideOptions(optionsBoard);
-        textEditing = addInputToChange(columnHead.id, textEditing);
-        event.stopPropagation(); //prevent document.addEventListener
-    })*/
     //Columns could be move to order them
     columnHeader.draggable = true;
     dragAndDrop(columnHeader, 'X');
@@ -92,14 +87,14 @@ function addColumn(column, index) {
     editOption.addEventListener('click', (event) => {
         if (columnHead.id != textEditing) {
             search = hideSearch(search);
-            hideColumnOptions();
-            optionsBoard = hideOptions(optionsBoard); search = hideSearch(search);
+            hideEditCards();
             hideColumnOptions();
             optionsBoard = hideOptions(optionsBoard);
             textEditing = addInputToChange(columnHead.id, textEditing);
             const optionsDiv = editOption.parentNode;
             optionsDiv.classList.add('hidden')
             event.stopPropagation(); //prevent document.addEventListener
+            columnHead.parentNode.draggable = false; //Don't allow move the component
         }
 
     })
@@ -107,8 +102,9 @@ function addColumn(column, index) {
     //When the button delete is clicked, delete the column
     deleteOption.addEventListener('click', (event) => {
         search = hideSearch(search);
+        hideEditCards();
         hideColumnOptions();
-        optionsBoard = hideOptions(optionsBoard); search = hideSearch(search);
+        optionsBoard = hideOptions(optionsBoard);
         const optionsDiv = editOption.parentNode;
         optionsDiv.classList.add('hidden')
         const columnDiv = document.getElementById(columnId);
@@ -149,22 +145,22 @@ function addCards(columnId) {
             const columnOptions = document.createElement('div');
             divEvents.classList.add('cards');
             if (data.success != false) {
-                data.forEach(card => {
+                data.forEach((card, index) => {
                     //Add card
-                    addCard(card, divColumn);
+                    addCard(card, index);
                 })
             }
             //Show a plus at the end of the cards
             const plusEvent = document.createElement('div');
             divEvents.appendChild(plusEvent);
-            const plusEventContent = document.createElement('div');
-            plusEventContent.classList.add('content-card');
-            plusEvent.appendChild(plusEventContent);
+            const plusEventPadding = document.createElement('div');
+            plusEventPadding.classList.add('padding-card');
+            plusEvent.appendChild(plusEventPadding);
             plusEvent.classList.add('card', "new-card-plus");
             const plusImage = document.createElement('img');
-            plusEventContent.appendChild(plusImage);
+            plusEventPadding.appendChild(plusImage);
             plusImage.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1743961025/Icons/Black/plus_black.png";
-            dragAndDrop(plusEvent, 'X');
+            dragAndDrop(plusEvent, 'Y');
             //When clicking in plus a new card will be added
             plusEvent.addEventListener('click', () => {
                 const newCardName = 'New Card';
@@ -175,7 +171,8 @@ function addCards(columnId) {
                         const column_id = data.columnId;
                         const card = { card_id, name, column_id };
                         const divColumn = document.getElementById(columnId);
-                        addCard(card);
+                        cardIndex++
+                        addCard(card, cardIndex);
                     })
                     .catch(error => {
                         console.error("Error inserting the card: ", error);
@@ -189,14 +186,22 @@ function addCards(columnId) {
 
 }
 //Function to add card in a column
-function addCard(card) {
+function addCard(card, index) {
     const divColumn = document.getElementById(card.column_id);
     const divCard = document.createElement('div');
     const divEvents = divColumn.querySelector('.cards');
     divCard.id = card.card_id;
+    const paddingCard = document.createElement('div');
     const contentCard = document.createElement('div');
-    divCard.appendChild(contentCard);
+    divCard.appendChild(paddingCard);
+    paddingCard.appendChild(contentCard);
+    paddingCard.classList.add('padding-card');
     contentCard.classList.add('content-card');
+    //Prevent listener in the div edit-card
+    const editCard = document.getElementById('edit-card');
+    editCard.addEventListener('click', event => {
+        event.stopPropagation(); //prevent document.addEventListener
+    })
     if (divColumn.querySelector('.new-card-plus')) {
         const newCard = divColumn.querySelector('.new-card-plus');
         divEvents.insertBefore(divCard, newCard);
@@ -221,25 +226,12 @@ function addCard(card) {
 
 
                 data.forEach(property => {
-                    const propertyName = property.name;
+                    const propertyName = property.prop_type_name;
                     const propertyDiv = document.createElement('div');
                     propertiesDiv.appendChild(propertyDiv);
                     propertyDiv.textContent = propertyName;
                     propertyDiv.classList.add('property');
-                    const propColor = propertyColor.find(a => a.property === propertyName);
-                    if (property.name.toLowerCase() === "high" || property.name.toLowerCase() === "important") {
-                        propertyDiv.style.backgroundColor = "lightcoral";
-                    }
-                    else if (propColor) {
-                        propertyDiv.style.backgroundColor = propColor.color;
-
-                    }
-                    else {
-                        const color = propertyColors[colorIndex];
-                        propertyColor.push({ property: propertyName, color: color });
-                        propertyDiv.style.backgroundColor = color;
-                        colorIndex++;
-                    }
+                    addPropertyColor(propertyName, propertyDiv);
                 })
             }
             const cardName = document.createElement('span');
@@ -249,6 +241,116 @@ function addCard(card) {
         .catch(error => {
             console.error("Error fetching cards properties: ", error);
         });
+    //Add pen
+    const cardPen = document.createElement('img');
+    cardPen.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1745768239/Icons/Black/pen_black.png";
+    cardPen.id = `pen-icon-${card.column_id}-${index}`;
+    cardPen.classList.add('pen-button');
+    paddingCard.appendChild(cardPen);
+    cardPen.classList.add('card-pen-icon', 'options-button');
+    cardIndex = index;
+    
+    //When click in pen
+    cardPen.addEventListener('click', event => {
+        
+        const editCard = document.getElementById('edit-card');
+        editCardOpen = 'display';
+        editCard.classList.remove('hidden');
+        search = hideSearch(search);
+        hideColumnOptions();
+        optionsBoard = hideOptions(optionsBoard);
+        const cardId = card.card_id;
+        //Save which card is open
+        cardOpen = cardId;
+        const editCardName = document.getElementById("card-edit-name");
+        editCardName.textContent = card.name;
+        fetchJson('/getPropertiesAndTypes', 'POST', { cardId: cardId, boardId: boardId })
+            .then(data => {
+                if (document.getElementById('table-edit-card')) {
+                    document.getElementById('table-edit-card').remove();
+                }
+
+                const tableProperties = document.createElement('table');
+                tableProperties.id = "table-edit-card";
+                const lineEditCard = document.getElementById('line-edit-card');
+                editCard.insertBefore(tableProperties, lineEditCard);
+                if (data.success != false) {
+                    data.forEach(property => {
+                        const propertyName = property.property_name;
+                        const propTypeName = property.prop_type_name;
+                        const row = document.createElement('tr');
+                        const propertyTd = document.createElement('td');
+                        propertyTd.style.paddingRight = "20px";
+                        const typeTd = document.createElement('td');
+                        typeTd.classList.add('property-edit-card');
+                        typeTd.classList.add('components-click');
+                        tableProperties.appendChild(row);
+                        row.appendChild(propertyTd);
+                        row.appendChild(typeTd);
+                        propertyTd.textContent = propertyName;
+                        if (propTypeName !== null) {
+                            typeTd.textContent = propTypeName;
+                            addPropertyColor(propTypeName, typeTd);
+                        }
+                        else {
+                            typeTd.textContent = "Not Defined";
+                            typeTd.style.backgroundColor = "#D9D9D9";
+                        }
+
+                    })
+                }
+                else {
+                    const withoutProp = document.createElement('span');
+                    withoutProp.textContent = "You don't have properties yet";
+                    editCard.insertBefore(withoutProp, tableProperties);
+                }
+                //Options to add more properties
+                const rowAddProperty = document.createElement('tr');
+                const columnAddProperty = document.createElement('td');
+                rowAddProperty.appendChild(columnAddProperty);
+                tableProperties.appendChild(rowAddProperty);
+                columnAddProperty.innerHTML = "<button font-size='16px' id='add-property'>Add Property</button>";
+                //Show Event
+                const rowEvent = document.createElement('tr');
+                const eventTd = document.createElement('td');
+                const timeTd = document.createElement('td');
+                tableProperties.appendChild(rowEvent);
+                rowEvent.appendChild(eventTd);
+                rowEvent.appendChild(timeTd);
+                eventTd.textContent = 'Event';
+                fetchJson('/getEventFromCard', 'POST', { cardId: cardId })
+                    .then(data => {
+                        if (data.length > 0) {
+                            const eventDate = new Date(data[0]?.start_date);
+                            const timeEvent = `${eventDate.getHours().toString().padStart(2, '0')}:${eventDate.getMinutes().toString().padStart(2, '0')}`;
+                            const dayEvent = `${eventDate.getFullYear()}-${(eventDate.getMonth() + 1).toString().padStart(2, '0')}-${eventDate.getDate().toString().padStart(2, '0')}`;
+                            timeTd.innerHTML = `<input id='input-card-event-time' type='time' min=${timeEvent} value=${timeEvent}></input><input id='input-card-event-day' type='date' value=${dayEvent} min=${dayEvent}></input>`;
+                            const openEvent = document.createElement('td');
+                            rowEvent.appendChild(openEvent);
+                            openEvent.innerHTML = "<button id='open-evente'>Open</a>";
+                        }
+                        else {
+                            rowEvent.style = "color: gray";
+                            //Add input to create the event with the starting date
+                            const now = new Date();
+                            const timeNow = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+                            const dayNow = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+                            timeTd.innerHTML = `<input style="color:gray" id='input-card-event-time' type='time' min=${timeNow} value=${timeNow}></input><input style="color:gray" id='input-card-event-day' type='date' value=${dayNow} min=${dayNow}></input>`;
+                            const createEvent = document.createElement('td');
+                            rowEvent.appendChild(createEvent);
+                            createEvent.innerHTML = "<button id='create-evente'>Create</a>";
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error showing the event: ", error);
+                    })
+            })
+            .catch(errror => {
+                console.error("Error showing the properties: ", error);
+            })
+        event.stopPropagation(); //prevent document.addEventListener
+
+    })
 
 }
 
@@ -258,6 +360,7 @@ function showOptionsColumns(options, index) {
         const icon = document.getElementById(options);
         icon.addEventListener('click', (event) => {
             search = hideSearch(search);
+            hideEditCards();
             optionsBoard = hideOptions(optionsBoard);
             if (optionsColumnOpen != index) {
                 hideColumnOptions();
@@ -269,12 +372,12 @@ function showOptionsColumns(options, index) {
 
         });
     }
-
 }
+
 //Function to allow moving components
 //Move columns
 function dragAndDrop(component, position) {
-
+    optionsBoard = hideOptions(optionsBoard);
     //Allow to move cards between columns
     var className = component.className;
     if (className == 'column') {
@@ -283,12 +386,16 @@ function dragAndDrop(component, position) {
         });
     }
     component.addEventListener('dragstart', (event) => {
+        //Close anything open
+        search = hideSearch(search);
+        hideEditCards();
+        hideColumnOptions();
+
         dragging = component;
         event.dataTransfer.effectAllowed = 'move';
         //In case the browser take the column instead of the column-header
-        if (dragging.className == 'column'){
+        if (dragging.className == 'column') {
             dragging = dragging.querySelector('.column-header');
-            console.log("changed:",dragging);
         }
     })
     component.addEventListener('dragover', (event) => {
@@ -298,12 +405,12 @@ function dragAndDrop(component, position) {
     component.addEventListener('drop', (event) => {
         event.preventDefault();
         if (dragging && dragging !== component) {
-            if (dragging.className == 'column-header' && component.className == 'column'){
+            if (dragging.className == 'column-header' && component.className == 'column') {
                 component = component.querySelector('.column-header');
-                console.log("changed:",dragging);
             }
-            console.log("dragging",dragging);
-            console.log("component",component);
+            else if (dragging.className == 'column' && component.className == 'column') {
+                dragging = dragging.querySelector('.column-header');
+            }
             const rect = component.getBoundingClientRect();
             let isAfter;
             if (position.toLowerCase() === 'x') {
@@ -329,7 +436,6 @@ function dragAndDrop(component, position) {
                     const componentsArray = Array.from(components);
                     var oldOrder = componentsArray.indexOf(dragging);
                     var newOrder = componentsArray.indexOf(component);
-                    console.log(componentsArray);
                     component.after(dragging);
                     if (newOrder > oldOrder) {
                         fetchJson('/updateColumnOrderIncrease', 'POST', { columnId: draggingId, newOrder: newOrder })
@@ -356,22 +462,19 @@ function dragAndDrop(component, position) {
                     component.after(dragging);
                     if (newOrder > oldOrder) {
                         newOrder = newOrder + 1;
-                        console.log(newOrder);
-                        fetchJson('/updateCardOrderIncrease', 'POST', { oldColumnId:oldColumnId, newColumnId: newColumnId, cardId: draggingId, newOrder: newOrder })
+                        fetchJson('/updateCardOrderIncrease', 'POST', { oldColumnId: oldColumnId, newColumnId: newColumnId, cardId: draggingId, newOrder: newOrder })
                             .catch(error => {
                                 console.error("Error Updating the order: ", error);
                             })
                     }
                     else if (newOrder < oldOrder) {
                         newOrder = newOrder + 1;
-                        console.log(newOrder);
-                        fetchJson('/updateCardOrderDecrease', 'POST', { oldColumnId:oldColumnId, newColumnId: newColumnId, cardId: draggingId, newOrder: newOrder })
+                        fetchJson('/updateCardOrderDecrease', 'POST', { oldColumnId: oldColumnId, newColumnId: newColumnId, cardId: draggingId, newOrder: newOrder })
                             .catch(error => {
                                 console.error("Error Updating the order: ", error);
                             })
                     }
                 }
-
             }
             else {
                 if (componentClassName == 'column-header' && draggingClassName == 'column-header') {
@@ -382,7 +485,6 @@ function dragAndDrop(component, position) {
                     const componentsArray = Array.from(components);
                     var oldOrder = componentsArray.indexOf(dragging);
                     var newOrder = componentsArray.indexOf(component);
-                    console.log(componentsArray);
                     component.before(dragging);
                     if (newOrder > oldOrder) {
                         //Will be before not after
@@ -393,7 +495,6 @@ function dragAndDrop(component, position) {
                             })
                     }
                     else if (newOrder < oldOrder) {
-                        newOrder = newOrder - 1;
                         fetchJson('/updateColumnOrderDecrease', 'POST', { columnId: draggingId, newOrder: newOrder })
                             .catch(error => {
                                 console.error("Error Updating the order: ", error);
@@ -408,18 +509,15 @@ function dragAndDrop(component, position) {
                     const componentsArray = Array.from(components);
                     var oldOrder = componentsArray.indexOf(dragging);
                     var newOrder = componentsArray.indexOf(component);
-                    console.log(componentsArray);
                     component.before(dragging);
                     if (newOrder > oldOrder) {
-                        console.log(newOrder);
-                        fetchJson('/updateCardOrderIncrease', 'POST', { oldColumnId:oldColumnId, newColumnId: newColumnId, cardId: draggingId, newOrder: newOrder })
+                        fetchJson('/updateCardOrderIncrease', 'POST', { oldColumnId: oldColumnId, newColumnId: newColumnId, cardId: draggingId, newOrder: newOrder })
                             .catch(error => {
                                 console.error("Error Updating the order: ", error);
                             })
                     }
                     else if (newOrder < oldOrder) {
-                        console.log(newOrder);
-                        fetchJson('/updateCardOrderDecrease', 'POST', { oldColumnId:oldColumnId, newColumnId: newColumnId, cardId: draggingId, newOrder: newOrder })
+                        fetchJson('/updateCardOrderDecrease', 'POST', { oldColumnId: oldColumnId, newColumnId: newColumnId, cardId: draggingId, newOrder: newOrder })
                             .catch(error => {
                                 console.error("Error Updating the order: ", error);
                             })
@@ -430,6 +528,38 @@ function dragAndDrop(component, position) {
     })
 
 }
+//Function to hide EditCards
+function hideEditCards() {
+    if (editCardOpen != 'hidden') {
+        const editCard = document.getElementById('edit-card');
+        editCard.classList.add('hidden');
+        editCardOpen = 'hidden';
+        const tableEditCard = document.getElementById('table-edit-card');
+        tableEditCard.remove();
+        cardOpen='none';
+    }
+}
+//Function to add color to properties
+function addPropertyColor(propertyName, propertyDiv) {
+    propColor = propertyColor.find(a => a.property === propertyName);
+    if (propertyName.toLowerCase() === "high" || propertyName.toLowerCase() === "important") {
+        propertyDiv.style.backgroundColor = "lightcoral";
+    }
+    else if (propColor) {
+        propertyDiv.style.backgroundColor = propColor.color;
+
+    }
+    else {
+        if (propertyColors.length >= colorIndex) {
+            const color = propertyColors[colorIndex];
+            propertyColor.push({ property: propertyName, color: color });
+            propertyDiv.style.backgroundColor = color;
+        }
+        else { colorIndex = 0; }
+        colorIndex++;
+    }
+}
+
 
 //Show all columns of the board
 fetchJson('/getColumns', 'POST', { board: boardId })
@@ -487,6 +617,7 @@ searchDiv.addEventListener('click', (event) => {
     search = 'display';
     optionsBoard = hideOptions(optionsBoard);
     hideColumnOptions();
+    hideEditCards();
     event.stopPropagation(); //prevent document.addEventListener
 });
 /*When click options for boards will show*/
@@ -498,6 +629,7 @@ optionsGeneralIcon.addEventListener('click', (event) => {
         optionsBoard = 'display';
         hideColumnOptions();
         search = hideSearch(search);
+        hideEditCards();
         event.stopPropagation(); //prevent document.addEventListener
     }
     else {
@@ -508,6 +640,7 @@ optionsGeneralIcon.addEventListener('click', (event) => {
 /*When click in other place hide again*/
 document.addEventListener('click', () => {
     search = hideSearch(search);
+    hideEditCards();
     hideColumnOptions();
     optionsBoard = hideOptions(optionsBoard);
     if (textEditing.startsWith('board-title')) {
@@ -530,7 +663,9 @@ showSearch("column", "card");
 const textToInput = document.getElementById('board-title');
 textToInput.addEventListener('click', (event) => {
     search = hideSearch(search);
+    hideEditCards();
     hideColumnOptions();
+    search = hideSearch(search);
     optionsBoard = hideOptions(optionsBoard);
     textEditing = addInputToChange('board-title', textEditing);
     event.stopPropagation(); //prevent document.addEventListener
@@ -542,8 +677,7 @@ const boardTitle = 'board-title';
 editGeneral.addEventListener('click', (event) => {
     if (boardTitle != textEditing) {
         search = hideSearch(search);
-        hideColumnOptions();
-        optionsBoard = hideOptions(optionsBoard); search = hideSearch(search);
+        hideEditCards();
         hideColumnOptions();
         optionsBoard = hideOptions(optionsBoard);
         textEditing = addInputToChange(boardTitle, textEditing);
@@ -556,6 +690,7 @@ editGeneral.addEventListener('click', (event) => {
 const deleteGeneral = document.getElementById('delete-general');
 deleteGeneral.addEventListener('click', (event) => {
     search = hideSearch(search);
+    hideEditCards();
     hideColumnOptions();
     optionsBoard = hideOptions(optionsBoard);
 
@@ -574,7 +709,7 @@ deleteGeneral.addEventListener('click', (event) => {
 
 
 //When changing the name of a text and click on enter save and return to text
-const inputToDelete = document.getElementById(`inputChange-${textEditing}`);
+const inputToDelete = document.getElementById(`input-change-${textEditing}`);
 document.addEventListener('keydown', (event) => {
     if (event.key === "Enter") {
         if (textEditing.startsWith('board-title')) {
@@ -592,8 +727,31 @@ document.addEventListener('keydown', (event) => {
     if (event.key === "Escape") {
         const textToReturn = document.getElementById(textEditing);
         textToReturn.classList.remove('hidden');
-        const inputToDelete = document.getElementById(`inputChange-${textEditing}`);
+        const inputToDelete = document.getElementById(`input-change-${textEditing}`);
         inputToDelete.remove();
         textEditing = '';
+    }
+});
+//When back in Edit Card, close it
+const editCardBack = document.getElementById('edit-card-back');
+editCardBack.addEventListener('click', (event) => {
+    hideEditCards();
+});
+//When click in the trash in Edit Card, delete the card
+const deleteCard = document.getElementById('delete-card');
+deleteCard.addEventListener('click', (event) => {
+    const cardName = document.getElementById('card-edit-name').textContent;
+    alert(`Are you sure that you want to delete the card ${cardName}?`);
+    if(cardOpen != 'none'){
+        const cardToDelete = document.getElementById(cardOpen);
+        fetchJson('/deleteCard', 'POST', { cardId:cardOpen, boardId:boardId })
+            .then(data => {
+                hideEditCards();
+                cardToDelete.remove();
+            })
+            .catch(error => {
+                console.error("Error deleting the card:",error);
+            })
+        
     }
 });

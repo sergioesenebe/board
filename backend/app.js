@@ -288,7 +288,32 @@ app.post('/getProperties', (req, res) => {
   }
 
   // SELECT to show properties of a card
-  db.query('SELECT PT.prop_type_id, PT.name FROM `card_prop_types` CPT,  prop_types PT WHERE CPT.prop_type_id=PT.prop_type_id AND CPT.card_id = ?', [card], (err, results) => {
+  db.query('SELECT PT.prop_type_id, PT.name AS prop_type_name, P.name AS property_name FROM `card_prop_types` CPT, prop_types PT, properties P WHERE CPT.prop_type_id=PT.prop_type_id AND PT.property_id=P.property_id AND CPT.card_id = ?;', [card], (err, results) => {
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the Database' });
+    }
+
+    // If the username doesn't exist will return true
+    if (results.length > 0) {
+      return res.status(200).json(results);
+    } else {
+      return res.status(200).json({ success: false, message: 'Card not found' });
+    }
+  });
+});
+//Query to show all properties and selected card
+app.post('/getPropertiesAndTypes', (req, res) => {
+  console.log('Body of the application:', req.body);
+  // Takes the usernames and passwords from the body
+  const { cardId, boardId } = req.body;
+
+  if (!cardId || !boardId) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+
+  // SELECT to show properties of a card
+  db.query('SELECT P.name AS property_name, COALESCE(MAX(CASE WHEN CPT.card_id IS NOT NULL THEN PT.name ELSE NULL END), NULL) AS prop_type_name FROM properties P LEFT JOIN prop_types PT ON P.property_id=PT.property_id LEFT JOIN card_prop_types CPT ON PT.prop_type_id=CPT.prop_type_id AND card_id=? WHERE P.board_id=? GROUP BY P.name; ', [cardId, boardId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
@@ -511,6 +536,12 @@ app.post('/updateColumnOrderIncrease', (req, res) => {
         console.error('Error in the query:', err);
         return res.status(500).json({ success: false, message: 'Error in the dragging' });
       }
+      db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [columnId], (err, results) => {
+        if (err) {
+          console.error('Error in the query:', err);
+          return res.status(500).json({ success: false, message: 'Error in the update time query' });
+        }
+      });
     })
 
     // If there is more than one note will return true
@@ -547,6 +578,12 @@ app.post('/updateColumnOrderDecrease', (req, res) => {
         console.error('Error in the query:', err);
         return res.status(500).json({ success: false, message: 'Error in the dragging' });
       }
+      db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [columnId], (err, results) => {
+        if (err) {
+          console.error('Error in the query:', err);
+          return res.status(500).json({ success: false, message: 'Error in the update time query' });
+        }
+      });
 
       // Check if the update was successful
       if (results.affectedRows > 0) {
@@ -580,6 +617,12 @@ app.post('/updateCardOrderIncrease', (req, res) => {
           console.error('Error in the query:', err);
           return res.status(500).json({ success: false, message: 'Error in the dragging' });
         }
+        db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [newColumnId], (err, results) => {
+          if (err) {
+            console.error('Error in the query:', err);
+            return res.status(500).json({ success: false, message: 'Error in the update time query' });
+          }
+        });
       })
 
       // If there is more than one note will return true
@@ -610,6 +653,13 @@ app.post('/updateCardOrderIncrease', (req, res) => {
             console.error('Error in the query:', err);
             return res.status(500).json({ success: false, message: 'Error in the dragging' });
           }
+          db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [newColumnId], (err, results) => {
+            if (err) {
+              console.error('Error in the query:', err);
+              return res.status(500).json({ success: false, message: 'Error in the update time query' });
+            }
+          });
+
         })
       })
       // If there is more than one note will return true
@@ -645,6 +695,13 @@ app.post('/updateCardOrderDecrease', (req, res) => {
           console.error('Error in the query:', err);
           return res.status(500).json({ success: false, message: 'Error in the dragging' });
         }
+        db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [newColumnId], (err, results) => {
+          if (err) {
+            console.error('Error in the query:', err);
+            return res.status(500).json({ success: false, message: 'Error in the update time query' });
+          }
+        });
+
 
         // Check if the update was successful
         if (results.affectedRows > 0) {
@@ -674,6 +731,13 @@ app.post('/updateCardOrderDecrease', (req, res) => {
             console.error('Error in the query:', err);
             return res.status(500).json({ success: false, message: 'Error in the dragging' });
           }
+          db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [newColumnId], (err, results) => {
+            if (err) {
+              console.error('Error in the query:', err);
+              return res.status(500).json({ success: false, message: 'Error in the update time query' });
+            }
+          });
+
         })
       })
       // If there is more than one note will return true
@@ -815,6 +879,7 @@ app.post('/deleteBoard', (req, res) => {
       return res.status(200).json({ success: false, message: 'Column not found' });
     }
   });
+
 });
 
 //Remove Column
@@ -822,8 +887,6 @@ app.post('/deleteColumn', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the usernames and passwords from the body
   const { columnId } = req.body;
-
-
   if (!columnId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -833,32 +896,92 @@ app.post('/deleteColumn', (req, res) => {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-
+    // Delete column
+    db.query('DELETE FROM `columns` WHERE column_id=?; ', [columnId], (err, results) => {
+      if (err) {
+        console.error('Error in the query:', err);
+        return res.status(500).json({ success: false, message: 'Error in the Database' });
+      }
+      //Update last_updated board
+      db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [columnId], (err, results) => {
+        if (err) {
+          console.error('Error in the query:', err);
+          return res.status(500).json({ success: false, message: 'Error in the update time query' });
+        }
+      });
+    });
+    // If there is more than one note will return true
+    if (results.affectedRows > 0) {
+      return res.status(200).json(results);
+    } else {
+      return res.status(200).json({ success: false, message: 'Board not found' });
+    }
   });
-  //Update last_updated board
-  db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [columnId], (err, results) => {
+});
+//Remove Card
+app.post('/deleteCard', (req, res) => {
+  console.log('Body of the application:', req.body);
+  // Takes the usernames and passwords from the body
+  const { cardId, boardId } = req.body;
+
+
+  if (!cardId || !boardId) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+  //Move the columns to the left after the column
+  db.query('UPDATE `cards` c JOIN (SELECT `order`, `column_id` FROM cards WHERE card_id = ? LIMIT 1) subquery ON c.`order` > subquery.`order` AND c.column_id = subquery.`column_id` SET c.`order` = c.`order` - 1;', [cardId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
-      return res.status(500).json({ success: false, message: 'Error in the update time query' });
+      return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-
+    // Delete column
+    db.query('DELETE FROM `cards` WHERE card_id=?; ', [cardId], (err, results) => {
+      if (err) {
+        console.error('Error in the query:', err);
+        return res.status(500).json({ success: false, message: 'Error in the Database' });
+      }
+      //Update last_updated board
+      db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?;', [boardId], (err, results) => {
+        if (err) {
+          console.error('Error in the query:', err);
+          return res.status(500).json({ success: false, message: 'Error in the update time query' });
+        }
+      });
+    });
+    // If there is more than one note will return true
+    if (results.affectedRows > 0) {
+      return res.status(200).json(results);
+    } else {
+      return res.status(200).json({ success: false, message: 'Card not found' });
+    }
   });
+});
+//Get event from cards
+app.post('/getEventFromCard', (req, res) => {
+  console.log('Body of the application:', req.body);
+  // Takes the usernames and passwords from the body
+  const { cardId } = req.body;
 
-  // DELETE column
-  db.query('DELETE FROM `columns` WHERE column_id=?', [columnId], (err, results) => {
+  if (!cardId) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+
+  // SELECT to verify if the user and password are correct
+  db.query('SELECT E.start_date, E.end_date, E.event_id, E.name FROM `cards` C, `events` E WHERE C.card_id = E.card_id AND C.card_id= ? LIMIT 1;', [cardId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
 
-    // If there is more than one note will return true
-    if (results.affectedRows > 0) {
-      return res.status(200).json({ results });
+    // If the event doesn't exist will return true
+    if (results.length > 0) {
+      return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Column not found' });
+      return res.status(200).json({ success: false, message: 'Event not found' });
     }
   });
 });
+
 
 
 /*Open port*/

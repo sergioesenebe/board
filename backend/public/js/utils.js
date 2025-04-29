@@ -372,7 +372,7 @@ export function addInputToChange(id, textEditing) {
     inputChange.style.letterSpacing = styles.letterSpacing;
     inputChange.style.textAlign = styles.textAlign;
     inputChange.classList.add('input-change');
-    inputChange.id = `inputChange-${id}`;
+    inputChange.id = `input-change-${id}`;
     //Focus when click to avoid click twice
     inputChange.focus();
     //prevent document.addEventListener for Input when change
@@ -386,7 +386,7 @@ export function returnToText(textEditing, change) {
     if (textEditing != '') {
         const textToReturn = document.getElementById(textEditing);
         textToReturn.classList.remove('hidden');
-        const inputToDelete = document.getElementById(`inputChange-${textEditing}`);
+        const inputToDelete = document.getElementById(`input-change-${textEditing}`);
         const newName = inputToDelete.value;
 
         if (textEditing === 'board-title') {
@@ -401,7 +401,6 @@ export function returnToText(textEditing, change) {
         }
         else if (textEditing.startsWith('column-title-')) {
             fetchJson('/updateColumnName', 'POST', { newName: newName, column: change })
-
                 .then(() => {
                     textToReturn.textContent = newName;
                 })
@@ -409,6 +408,7 @@ export function returnToText(textEditing, change) {
                     console.error("Error Updating the board name: ", error);
                 })
         }
+        inputToDelete.parentNode.draggable = true; //Allow move the component again
         inputToDelete.remove();
         return '';
     }

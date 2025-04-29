@@ -12,10 +12,11 @@
     grid-template-areas:
         "bar header header header"
         "bar board board board";
-        gap: 20px;
-        margin-left: 5%;
-        margin-right: 5%;
+    gap: 20px;
+    margin-left: 5%;
+    margin-right: 5%;
 }
+
 /*Cut if the titles are to longs*/
 .column h2 {
     width: 250px;
@@ -57,8 +58,8 @@ header {
     padding: 0px;
     margin-bottom: 20px;
     border: 1px solid #e0e0e0;
-    margin-left:15px;
-    margin-right:15px;
+    margin-left: 15px;
+    margin-right: 15px;
 }
 
 /*Class for the title of the column and the options*/
@@ -78,11 +79,20 @@ header {
     height: 30px;
 }
 
+#content {
+    grid-area: board;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    /*Enables horizontal scrolling*/
+    overflow-x: auto;
+    gap: 50px;
+
+}
+
 /*A container for the boards, configuring the size*/
 #board {
-    grid-area: board;
-
-    box-sizing: border-box;
     width: 100%;
     height: 100%;
     display: flex;
@@ -98,12 +108,33 @@ header {
 
 }
 
+/*Edit the card when pen is clicked*/
+#edit-card {
+    background-color: white;
+    border-radius: 20px;
+    width: 50%;
+    padding-top: 20px;
+    padding-left: 60px;
+    padding-right: 60px;
+    overflow-x: auto;
+}
+/*Div to group the back and title together*/
+#edit-card-back-title{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+#edit-card-back-title img{
+    width: 30px;
+    height: 30px;
+}
 /*Column with all the events*/
 .column {
     height: 100%;
     display: flex;
     flex-direction: column;
-  user-select: none;
+    user-select: none;
+    display: flex;
 }
 
 /*The plus column*/
@@ -131,14 +162,17 @@ header {
     padding: 0;
 
 }
+
 /*When the mouse is on the plus for columns*/
 #new-column-plus:hover {
     cursor: pointer;
 }
+
 /*When the mouse is on the plus for cards*/
 .new-card-plus:hover {
     cursor: pointer;
 }
+
 /**/
 .cards {
     /* adapt to the container */
@@ -157,26 +191,96 @@ header {
 /*Events*/
 .card {
     padding: 10px 0px;
+
 }
+
 /*Content Card*/
 /*Events*/
-.content-card {
+.padding-card {
     height: fit-content;
     background-color: white;
     border-radius: 20px;
-    padding: 20px;
+    display: flex;
+    justify-content: space-between;
 }
 
+.card-pen-icon {
+    width: 30px;
+    height: 30px;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+/*Events*/
+.content-card {
+    padding: 20px;
+    padding-right: 0px;
+}
+
+/*Name of the card and trash*/
+#header-edit-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center
+}
+
+/*Input for the card when edditing*/
+#card-content-textarea {
+    border: none;
+    width: 100%;
+    resize: none;
+}
+
+#card-content-textarea:focus {
+    border: none;
+    outline: none;
+}
+
+#table-edit-card {
+    border-spacing: 0 10px;
+}
+
+.property-edit-card {
+    border-radius: 20px;
+    padding: 0 10px;
+}
+
+#addCategory-edit-card:hover {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+}
+/*Input to create an event*/
+#table-edit-card input{
+    border: none;
+}
+#table-edit-card input:focus{
+    border: none;
+    outline: none;
+}
+/*Button for the input*/
+#table-edit-card button{
+    border: none;
+    border-radius:10px;
+    background-color: #EDE7DC;
+    padding: 5px;
+}
+#table-edit-card button:hover{
+    border: none;
+    outline: none;
+    background-color: #D6CFC1;
+    cursor: pointer;
+}
 /*The plus event*/
-.card img {
+.new-card-plus img {
     height: 20px;
     width: auto;
     /*align in the center*/
     margin: auto;
-    display: block;
-    position: relative;
     margin-bottom: 0;
     padding: 0;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 /*Properties*/
