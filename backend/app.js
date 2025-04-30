@@ -981,6 +981,40 @@ app.post('/getEventFromCard', (req, res) => {
     }
   });
 });
+//Insert an event
+app.post('/insertEventUser', (req, res) => {
+  console.log('Body of the application:', req.body);
+  // Takes the usernames and passwords from the body
+  const { username, eventName, startDate, endDate, cardId, boardId } = req.body;
+  if (!username || !eventName || !startDate || !endDate || !cardId) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+  //Generate the cevent_id with UUID v4
+  const { v4: uuidv4 } = require('uuid');
+  const eventId = uuidv4();
+  // SELECT to show month events for a user
+  db.query('INSERT INTO `events`(`event_id`, `name`, `start_date`, `end_date`, `card_id`, `user_id`) VALUES (?,?,?,?,?,?);', [eventId, eventName, startDate, endDate, cardId, username], (err, results) => {
+    console.log('Resultado de la segunda consulta:', results);
+
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the Database' });
+    }
+    db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?', [boardId], (err, results) => {
+      if (err) {
+        console.error('Error in the query:', err);
+        return res.status(500).json({ success: false, message: 'Error inserting the event' });
+      }
+
+    });
+    // If there is more than one note will return true
+    if (results.affectedRows > 0) {
+      return res.status(200).json({eventId: eventId});
+    } else {
+      return res.status(200).json({ success: false, message: 'Column not found' });
+    }
+  });
+});
 
 
 

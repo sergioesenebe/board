@@ -13,7 +13,6 @@ import { addInputToChange } from './utils.js';
 //Import function returnToText
 import { returnToText } from './utils.js';
 
-
 //Declare to know if search or options are open or hidden, by default will be hidden
 var optionsBoard = 'hidden';
 var search = 'hidden'
@@ -27,7 +26,9 @@ var propColor;
 var cardOpen = 'none';
 
 //Get boardId from the other page
-const boardId = localStorage.getItem('boardId')
+const boardId = localStorage.getItem('boardId');
+//Get username from the other page
+const username = localStorage.getItem('username');
 //Put the name of the board as a title
 let boardName;
 (async () => {
@@ -200,6 +201,7 @@ function addCard(card, index) {
     //Prevent listener in the div edit-card
     const editCard = document.getElementById('edit-card');
     editCard.addEventListener('click', event => {
+        textEditing = returnToText(textEditing, 'card-edit-name');
         event.stopPropagation(); //prevent document.addEventListener
     })
     if (divColumn.querySelector('.new-card-plus')) {
@@ -249,10 +251,12 @@ function addCard(card, index) {
     paddingCard.appendChild(cardPen);
     cardPen.classList.add('card-pen-icon', 'options-button');
     cardIndex = index;
-    
+
     //When click in pen
     cardPen.addEventListener('click', event => {
-        
+        if(textEditing === 'card-edit-name'){
+            textEditing = returnToText(textEditing, 'card-edit-name');
+        }
         const editCard = document.getElementById('edit-card');
         editCardOpen = 'display';
         editCard.classList.remove('hidden');
@@ -327,6 +331,7 @@ function addCard(card, index) {
                             timeTd.innerHTML = `<input id='input-card-event-time' type='time' min=${timeEvent} value=${timeEvent}></input><input id='input-card-event-day' type='date' value=${dayEvent} min=${dayEvent}></input>`;
                             const openEvent = document.createElement('td');
                             rowEvent.appendChild(openEvent);
+                            localStorage.setItem('eventId', data[0]?.event_id);
                             openEvent.innerHTML = "<button id='open-evente'>Open</a>";
                         }
                         else {
@@ -336,9 +341,37 @@ function addCard(card, index) {
                             const timeNow = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
                             const dayNow = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
                             timeTd.innerHTML = `<input style="color:gray" id='input-card-event-time' type='time' min=${timeNow} value=${timeNow}></input><input style="color:gray" id='input-card-event-day' type='date' value=${dayNow} min=${dayNow}></input>`;
-                            const createEvent = document.createElement('td');
-                            rowEvent.appendChild(createEvent);
-                            createEvent.innerHTML = "<button id='create-evente'>Create</a>";
+                            const createEventBtn = document.createElement('td');
+                            rowEvent.appendChild(createEventBtn);
+                            createEventBtn.innerHTML = "<button id='create-event'>Create</a>";
+
+                            //Call function to create the event if button is clicked
+                            createEventBtn.addEventListener('click', (event) => {
+                                //Get value of input
+                                const timeEvent = document.getElementById('input-card-event-time').value;
+                                const dayEvent = document.getElementById('input-card-event-day').value;
+                                const startDate = `${dayEvent} ${timeEvent}:00`;
+                                //Add 1 hour for the endTime
+                                var endDate = new Date(startDate);
+                                endDate.setHours(endDate.getHours() + 1);
+                                const pad = (n) => n.toString().padStart(2, '0');
+                                const endDay = `${endDate.getFullYear()}-${pad(endDate.getMonth() + 1)}-${pad(endDate.getDate())}`;
+                                const endTime = `${pad(endDate.getHours())}:${pad(endDate.getMinutes())}:${pad(endDate.getSeconds())}`;
+                                endDate = `${endDay} ${endTime}`;
+                                const eventName = card.name;
+                                fetchJson('/insertEventUser', 'POST', { username, eventName, startDate, endDate, cardId, boardId })
+                                    .then(data => {
+                                        //Show the event
+                                        timeTd.innerHTML = `<input style="color:black" id='input-card-event-time' type='time' min=${timeEvent} value=${timeEvent}></input><input id='input-card-event-day' type='date' value=${dayEvent} min=${dayEvent}></input>`;
+                                        createEventBtn.remove();
+                                        const openEvent = document.createElement('td');
+                                        rowEvent.appendChild(openEvent);
+                                        localStorage.setItem('eventId', data[0]?.event_id);
+                                        openEvent.innerHTML = "<button id='open-evente'>Open</a>";
+                                        rowEvent.style = "color: black";
+                                    })
+
+                            })
                         }
                     })
                     .catch(error => {
@@ -348,8 +381,12 @@ function addCard(card, index) {
             .catch(errror => {
                 console.error("Error showing the properties: ", error);
             })
+        //Edit the text when click in text
+        editCardName.addEventListener('click', (event) => {
+            textEditing = addInputToChange('card-edit-name', textEditing);
+            event.stopPropagation(); //prevent document.addEventListener
+        })
         event.stopPropagation(); //prevent document.addEventListener
-
     })
 
 }
@@ -536,7 +573,7 @@ function hideEditCards() {
         editCardOpen = 'hidden';
         const tableEditCard = document.getElementById('table-edit-card');
         tableEditCard.remove();
-        cardOpen='none';
+        cardOpen = 'none';
     }
 }
 //Function to add color to properties
@@ -650,6 +687,9 @@ document.addEventListener('click', () => {
         const columnId = textEditing.replace('column-title-', '');
         textEditing = returnToText(textEditing, columnId);
     }
+    else if(textEditing === 'card-edit-name'){
+        textEditing = returnToText(textEditing, 'card-edit-name');
+    }
 });
 //Delete the input value when the page refresh
 document.addEventListener('DOMContentLoaded', () => {
@@ -719,7 +759,10 @@ document.addEventListener('keydown', (event) => {
             const columnId = textEditing.replace('column-title-', '')
             textEditing = returnToText(textEditing, columnId);
         }
-
+        else if(textEditing === 'card-edit-name'){
+            textEditing = returnToText(textEditing, 'card-edit-name');
+        }
+    
     }
 });
 //When changing the name of a text and click on esc will cancel
@@ -742,16 +785,17 @@ const deleteCard = document.getElementById('delete-card');
 deleteCard.addEventListener('click', (event) => {
     const cardName = document.getElementById('card-edit-name').textContent;
     alert(`Are you sure that you want to delete the card ${cardName}?`);
-    if(cardOpen != 'none'){
+    if (cardOpen != 'none') {
         const cardToDelete = document.getElementById(cardOpen);
-        fetchJson('/deleteCard', 'POST', { cardId:cardOpen, boardId:boardId })
+        fetchJson('/deleteCard', 'POST', { cardId: cardOpen, boardId: boardId })
             .then(data => {
                 hideEditCards();
                 cardToDelete.remove();
             })
             .catch(error => {
-                console.error("Error deleting the card:",error);
+                console.error("Error deleting the card:", error);
             })
-        
+
     }
 });
+
