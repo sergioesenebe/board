@@ -1,3 +1,5 @@
+// --- Imported functions ---
+
 //Import function fetchJson
 import { fetchJson } from './utils.js';
 //Import function getBoardById
@@ -13,6 +15,8 @@ import { addInputToChange } from './utils.js';
 //Import function returnToText
 import { returnToText } from './utils.js';
 
+// --- State Initialization ---
+
 //Declare to know if search or options are open or hidden, by default will be hidden
 var optionsBoard = 'hidden';
 var search = 'hidden'
@@ -25,7 +29,6 @@ var editCardOpen = 'hidden';
 var propColor;
 var cardOpen = 'none';
 var editOptionOpen = 'hidden';
-
 //Get boardId from the other page
 const boardId = localStorage.getItem('boardId');
 //Get username from the other page
@@ -38,15 +41,534 @@ let boardName;
     const title = document.getElementById('board-title');
     title.textContent = boardName;
 })();
-
-
 //Declare colors for properties
 const propertyColors = ["lightblue", "lightgoldenrodyellow", "lightgreen", "lightpink", "lightsalmon", "lightseagreen", "lightskyblue",
     "lightsteelblue", "lightyellow", "lightcyan", "aquamarine", "lavender", "palegreen", "paleturquoise", "peachpuff",
     "mistyrose", "wheat", "cornsilk"];
 
+//-- Usable Functions
 
+//Close anything open
+function hideAll(){
+    search = hideSearch(search);
+    hideEditCards();
+    hideColumnOptions();
+    optionsBoard = hideOptions(optionsBoard);
+    hideEditOptions();
+}
 
+//--- Function for Event listeners ---
+//Function to allow moving components
+function dragAndDrop(component, position) {
+    //Allow to move cards between columns
+    var className = component.className;
+    if (className == 'column') {
+        component.addEventListener('dragover', (event) => {
+            event.preventDefault(); // Permitir soltar las tarjetas en esta columna
+        });
+    }
+    component.addEventListener('dragstart', (event) => {
+        hideAll();
+        dragging = component;
+        event.dataTransfer.effectAllowed = 'move';
+        //In case the browser take the column instead of the column-header
+        if (dragging.className == 'column') {
+            dragging = dragging.querySelector('.column-header');
+        }
+    })
+    component.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "move";
+    })
+    component.addEventListener('drop', (event) => {
+        event.preventDefault();
+        if (dragging && dragging !== component) {
+            if (dragging.className == 'column-header' && component.className == 'column') {
+                component = component.querySelector('.column-header');
+            }
+            else if (dragging.className == 'column' && component.className == 'column') {
+                dragging = dragging.querySelector('.column-header');
+            }
+            const rect = component.getBoundingClientRect();
+            let isAfter;
+            if (position.toLowerCase() === 'x') {
+                isAfter = event.clientX > rect.left + rect.width / 2;
+            }
+            else if (position.toLowerCase() === 'y') {
+                isAfter = event.clientY > rect.top + rect.height / 2;
+
+            }
+            else {
+                console.error("Add a valid position for dragAndDrop")
+            }
+            const componentClassName = component.className;
+            const draggingClassName = dragging.className;
+            var draggingId = dragging.id;
+            if (isAfter) {
+                if (componentClassName == 'column-header' && draggingClassName == 'column-header') {
+                    dragging = dragging.parentNode;
+                    draggingId = dragging.id;
+                    component = component.parentNode;
+                    const components = document.querySelectorAll(`.${component.className}`);
+                    const componentsArray = Array.from(components);
+                    var oldOrder = componentsArray.indexOf(dragging);
+                    var newOrder = componentsArray.indexOf(component);
+                    component.after(dragging);
+                    if (newOrder > oldOrder) {
+                        fetchJson('/updateColumnOrderIncrease', 'POST', { columnId: draggingId, newOrder: newOrder })
+                            .catch(error => {
+                                console.error("Error Updating the order: ", error);
+                            })
+                    }
+                    else if (newOrder < oldOrder) {
+                        newOrder = newOrder + 1;
+                        fetchJson('/updateColumnOrderDecrease', 'POST', { columnId: draggingId, newOrder: newOrder })
+                            .catch(error => {
+                                console.error("Error Updating the order: ", error);
+                            })
+                    }
+                }
+                else if (componentClassName == 'card' && draggingClassName == 'card') {
+                    const newColumnId = component.parentNode.parentNode.id;
+                    const oldColumnId = dragging.parentNode.parentNode.id;
+                    const componentsDiv = component.parentNode;
+                    const components = componentsDiv.querySelectorAll(`.${dragging.className}`);
+                    const componentsArray = Array.from(components);
+                    var oldOrder = componentsArray.indexOf(dragging);
+                    var newOrder = componentsArray.indexOf(component);
+                    component.after(dragging);
+                    if (newOrder > oldOrder) {
+                        newOrder = newOrder + 1;
+                        fetchJson('/updateCardOrderIncrease', 'POST', { oldColumnId: oldColumnId, newColumnId: newColumnId, cardId: draggingId, newOrder: newOrder })
+                            .catch(error => {
+                                console.error("Error Updating the order: ", error);
+                            })
+                    }
+                    else if (newOrder < oldOrder) {
+                        newOrder = newOrder + 1;
+                        fetchJson('/updateCardOrderDecrease', 'POST', { oldColumnId: oldColumnId, newColumnId: newColumnId, cardId: draggingId, newOrder: newOrder })
+                            .catch(error => {
+                                console.error("Error Updating the order: ", error);
+                            })
+                    }
+                }
+            }
+            else {
+                if (componentClassName == 'column-header' && draggingClassName == 'column-header') {
+                    dragging = dragging.parentNode;
+                    draggingId = dragging.id;
+                    component = component.parentNode;
+                    const components = document.querySelectorAll(`.${component.className}`);
+                    const componentsArray = Array.from(components);
+                    var oldOrder = componentsArray.indexOf(dragging);
+                    var newOrder = componentsArray.indexOf(component);
+                    component.before(dragging);
+                    if (newOrder > oldOrder) {
+                        //Will be before not after
+                        newOrder = newOrder - 1;
+                        fetchJson('/updateColumnOrderIncrease', 'POST', { columnId: draggingId, newOrder: newOrder })
+                            .catch(error => {
+                                console.error("Error Updating the order: ", error);
+                            })
+                    }
+                    else if (newOrder < oldOrder) {
+                        fetchJson('/updateColumnOrderDecrease', 'POST', { columnId: draggingId, newOrder: newOrder })
+                            .catch(error => {
+                                console.error("Error Updating the order: ", error);
+                            })
+                    }
+                }
+                else if (draggingClassName == 'card') {
+                    const newColumnId = component.parentNode.parentNode.id;
+                    const oldColumnId = dragging.parentNode.parentNode.id;
+                    const componentsDiv = component.parentNode;
+                    const components = componentsDiv.querySelectorAll(`.${dragging.className}`);
+                    const componentsArray = Array.from(components);
+                    var oldOrder = componentsArray.indexOf(dragging);
+                    var newOrder = componentsArray.indexOf(component);
+                    component.before(dragging);
+                    if (newOrder > oldOrder) {
+                        fetchJson('/updateCardOrderIncrease', 'POST', { oldColumnId: oldColumnId, newColumnId: newColumnId, cardId: draggingId, newOrder: newOrder })
+                            .catch(error => {
+                                console.error("Error Updating the order: ", error);
+                            })
+                    }
+                    else if (newOrder < oldOrder) {
+                        fetchJson('/updateCardOrderDecrease', 'POST', { oldColumnId: oldColumnId, newColumnId: newColumnId, cardId: draggingId, newOrder: newOrder })
+                            .catch(error => {
+                                console.error("Error Updating the order: ", error);
+                            })
+                    }
+                }
+            }
+        }
+    })
+}
+//Function to get the click in the property
+//Edit property when editting cards
+function rowClickEvent(row, property, defined, cardId) {
+    row.addEventListener('click', () => {
+        const propertyId = property.property_id;
+        editOptionOpen = propertyId;
+        document.getElementById('table-edit-card').classList.add('hidden');
+        document.getElementById('line-edit-card').classList.add('hidden');
+        document.getElementById('card-content-textarea').classList.add('hidden');
+        document.getElementById('edit-card-back').classList.add('hidden');
+        document.getElementById('delete-card').classList.add('hidden');
+        document.getElementById('pen-card').classList.add('hidden');
+        const editPropertyBack = document.createElement('img');
+        editPropertyBack.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1745322144/Icons/Black/back_black.png";
+        editPropertyBack.id = 'edit-property-back';
+        editPropertyBack.classList.add('back');
+        const editCardTitle = document.getElementById('edit-card-back-title');
+        editCardTitle.insertBefore(editPropertyBack, document.getElementById('card-edit-name'));
+        const editPropertyTitle = document.createElement('div');
+        editPropertyTitle.id = 'edit-property-title';
+        const propertyTd = row.querySelector('td');
+        const propertyName = propertyTd.textContent;
+        editPropertyTitle.innerHTML = `<h3 id='property-name'>${propertyName}</h3><div style="display:flex"><img id="pen-property" width="30px" height="30px" src="https://res.cloudinary.com/drmjf3gno/image/upload/v1746096410/Icons/Gray/pen_gray.png"
+    class="options-button"><img id="delete-property" width="30px" height="30px" src="https://res.cloudinary.com/drmjf3gno/image/upload/v1745771754/Icons/Other/trash_red.png"
+    class="options-button"></div>`;
+        editPropertyTitle.style = "justify-content: space-between; display: flex; align-items: center";
+        const editCard = document.getElementById('edit-card');
+        editCard.appendChild(editPropertyTitle);
+        const propertyTypesDiv = document.createElement('div');
+        propertyTypesDiv.id = 'property-types-div';
+        editCard.appendChild(propertyTypesDiv);
+        //When click in the text it could be edited
+        const propertyTitle = document.getElementById('property-name');
+        propertyTitle.addEventListener('click', (event) => {
+            textEditing = addInputToChange('property-name', textEditing);
+            event.stopPropagation();
+        })
+        //Also when click in the pen
+        const penProperty = document.getElementById('pen-property');
+        penProperty.addEventListener('click', (event) => {
+            if (textEditing === '') {
+                textEditing = addInputToChange('property-name', textEditing);
+            }
+            event.stopPropagation();
+        })
+        //Delete when click in the trash
+        const trashProperty = document.getElementById('delete-property');
+        trashProperty.addEventListener('click', (event) => {
+            fetchJson('/deleteProperty', 'POST', { propertyId, boardId })
+                .then(data => {
+                    const propertyTypes = document.querySelectorAll('.type-div');
+                    propertyTypes.forEach(type => {
+                        var typeDeleted = type.id;
+                        typeDeleted = typeDeleted.replace("prop-type-", "");
+                        const propertiesGroup = document.querySelectorAll('.properties');
+                        propertiesGroup.forEach(properties => {
+                            properties = properties.querySelectorAll('.property');
+                            properties.forEach(property => {
+                                const afterPT = property.id.split("PT:")[1];
+                                if (afterPT === typeDeleted) {
+                                    property.remove();
+                                }
+                            })
+                        })
+                        row.remove();
+                    });
+                    hideEditOptions();
+                })
+                .catch(error => {
+                    console.error("Error deleting the properperty: ", error);
+                })
+            event.stopPropagation();
+        })
+        //Get all the property types from a property
+        fetchJson('/getPropTypes', 'POST', { propertyId })
+            .then(data => {
+                if (data.length > 0) {
+                    data.forEach(type => {
+                        const typeDiv = document.createElement('div');
+                        const typeName = type.prop_type_name;
+                        const typeAndOptions = document.createElement('div');
+                        typeDiv.textContent = typeName;
+                        addPropertyColor(typeName, typeDiv);
+                        const typeOpt = document.createElement('div');
+                        typeOpt.style.display = "flex";
+                        typeAndOptions.style.display = "flex";
+                        typeAndOptions.style.alignItems = "center";
+                        typeAndOptions.id = 'type-and-options';
+                        typeOpt.innerHTML = `<img src="https://res.cloudinary.com/drmjf3gno/image/upload/v1746096410/Icons/Gray/pen_gray.png"
+                        width="25px" height="25px" class="pen-prop-type options-button">`;
+                        const trash = document.createElement('img');
+                        trash.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1745771754/Icons/Other/trash_red.png"
+                        trash.style.width = "25px";
+                        trash.style.height = "25px";
+                        trash.classList.add('delete-prop-type', 'options-button');
+                        typeOpt.appendChild(trash);
+                        propertyTypesDiv.appendChild(typeAndOptions);
+                        typeAndOptions.appendChild(typeDiv);
+                        typeAndOptions.appendChild(typeOpt);
+                        typeDiv.classList.add('components-click');
+                        typeDiv.classList.add('type-div');
+                        typeDiv.id = `prop-type-${type.prop_type_id}`;
+                        //When clicked on type, will change the type of the property
+                        typeDiv.addEventListener('click', () => {
+                            selectPropType(cardId, property, type, defined, row, typeDiv)
+                                .then(result => {
+                                    property = result;
+                                });
+                        })
+                        //When clicked on pen will be able to change the text
+                        const penPropType = document.querySelectorAll('.pen-prop-type');
+                        editPropType(penPropType);
+                        //When click in trash delete it
+                        deletePropType(trash);
+                    })
+                }
+                const typeDivNotDefined = document.createElement('div');
+                typeDivNotDefined.classList.add('property');
+                typeDivNotDefined.textContent = 'Not Defined';
+                typeDivNotDefined.id = 'type-not-defined';
+                typeDivNotDefined.style.backgroundColor = 'rgb(217, 217, 217)';
+                propertyTypesDiv.appendChild(typeDivNotDefined);
+                typeDivNotDefined.classList.add('components-click');
+                const addTypeBtn = document.createElement('button');
+                addTypeBtn.classList.add('components-click');
+                addTypeBtn.textContent = "Add Option";
+                addTypeBtn.style.backgroundColor = '#D6CFC1';
+                addTypeBtn.id = "add-option";
+                //When click in not defined there will not be a type for the property
+                typeDivNotDefined.addEventListener('click', () => {
+                    if (defined != 'notDefined') {
+                        fetchJson('/deletePropTypeCard', 'POST', { propTypeId: defined, cardId, boardId })
+                            .then(data => {
+                                const propertyDiv = document.getElementById(`C:${cardId}-PT:${defined}`);
+                                propertyDiv.remove();
+                                propertyDiv.style.backgroundColor = 'rgb(217, 217, 217)';
+                                const typeTd = row.querySelector(".property-edit-card");
+                                typeTd.textContent = 'Not Defined';
+                                typeTd.style.backgroundColor = 'rgb(217, 217, 217)';
+                                defined = 'notDefined';
+                                property.prop_type_id = null;
+                                property.prop_type_name = null;
+                                hideEditOptions();
+                            })
+                    }
+                    else {
+                        hideEditOptions();
+                    }
+                })
+                addTypeBtn.addEventListener('click', () => {
+                    const newPropTypeName = 'New Option';
+                    fetchJson('insertPropType', 'POST', { newPropTypeName, propertyId, boardId })
+                        .then(data => {
+                            const typeDiv = document.createElement('div');
+                            const typeName = data.prop_type_name;
+                            const typeAndOptions = document.createElement('div');
+                            typeDiv.textContent = newPropTypeName;
+                            addPropertyColor(typeName, typeDiv);
+                            const typeOpt = document.createElement('div');
+                            typeOpt.style.display = "flex";
+                            typeAndOptions.style.display = "flex";
+                            typeAndOptions.style.alignItems = "center";
+                            typeAndOptions.id = 'type-and-options';
+                            typeOpt.innerHTML = `<img src="https://res.cloudinary.com/drmjf3gno/image/upload/v1746096410/Icons/Gray/pen_gray.png"
+    width="25px" height="25px" class="pen-prop-type options-button">`;
+                            const trash = document.createElement('img');
+                            trash.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1745771754/Icons/Other/trash_red.png"
+                            trash.style.width = "25px";
+                            trash.style.height = "25px";
+                            trash.classList.add('delete-prop-type', 'options-button');
+                            typeOpt.appendChild(trash);
+                            typeAndOptions.appendChild(typeDiv);
+                            propertyTypesDiv.insertBefore(typeAndOptions, typeDivNotDefined);
+                            typeAndOptions.appendChild(typeOpt);
+                            typeDiv.classList.add('components-click');
+                            typeDiv.classList.add('type-div');
+                            typeDiv.id = `prop-type-${data.prop_type_id}`;
+                            const type = data;
+                            //When clicked on type, will change the type of the property
+                            typeDiv.addEventListener('click', () => {
+                                selectPropType(cardId, property, type, defined, row, typeDiv)
+                                    .then(result => {
+                                        property = result;
+                                    });
+                            })
+                            //When clicked on pen will be able to change the text
+                            const penPropType = document.querySelectorAll('.pen-prop-type');
+                            editPropType(penPropType);
+                            //When click in trash delete it
+                            deletePropType(trash);
+                        })
+                        .catch(error => {
+
+                        })
+                })
+                propertyTypesDiv.appendChild(addTypeBtn);
+            })
+        //When editing properties and go back, show card again
+        editPropertyBack.addEventListener('click', () => {
+            if (textEditing === 'property-name') {
+                textEditing = returnToText(textEditing, editOptionOpen, boardId);
+            }
+            else if (textEditing.startsWith('prop-type')) {
+                const propType = textEditing.replace('prop-type-', '');
+                textEditing = returnToText(textEditing, propType, boardId, propertyColor);
+            }
+            hideEditOptions();
+        })
+    })
+    return defined;
+}
+
+//--- Showing Elements ---
+
+//Function select Option when clicked
+async function selectPropType(cardId, property, type, defined, row, typeDiv) {
+    const propTypeId = type.prop_type_id;
+    const typeName = typeDiv.textContent;
+    if (defined === 'notDefined') {
+        try {
+            await fetchJson('/insertCardPropertyType', 'POST', { propTypeId, cardId, boardId })
+                .then(data => {
+                    const cardDiv = document.getElementById(cardId);
+                    const cardPaddingDiv = cardDiv.querySelector('.padding-card').querySelector('.content-card')
+                    var propertiesDiv;
+                    if (!cardPaddingDiv.querySelector('.properties')) {
+                        const cardContent = cardPaddingDiv.querySelector('.content-card');
+                        propertiesDiv = document.createElement('div');
+                        cardPaddingDiv.insertBefore(propertiesDiv, cardPaddingDiv.firstChild);
+                        propertiesDiv.classList.add('properties');
+                    }
+                    else {
+                        propertiesDiv = cardPaddingDiv.querySelector('.properties');
+                    }
+
+                    const propertyDiv = document.createElement('div');
+                    propertiesDiv.appendChild(propertyDiv);
+                    propertyDiv.classList.add('property');
+                    propertyDiv.id = `C:${cardId}-PT:${propTypeId}`;
+                    propertyDiv.textContent = typeName;
+                    propertyDiv.style.backgroundColor = typeDiv.style.backgroundColor;
+                    property.prop_type_name = typeName;
+                    property.prop_type_id = propTypeId;
+                })
+        }
+        catch (error) {
+            console.error("Error Inserting the type: ", error);
+        }
+    }
+    else {
+        try {
+            await fetchJson('/updateCardPropertyType', 'POST', { oldPropTypeId: defined, propTypeId, cardId, boardId })
+                .then(data => {
+                    const propertyDiv = document.getElementById(`C:${cardId}-PT:${property.prop_type_id}`);
+                    propertyDiv.id = `C:${cardId}-PT:${propTypeId}`;
+                    propertyDiv.textContent = typeName;
+                    propertyDiv.style.backgroundColor = typeDiv.style.backgroundColor;
+                    property.prop_type_name = typeName;
+                    property.prop_type_id = propTypeId;
+                })
+        }
+        catch (error) {
+            console.error("Error Inserting the type: ", error);
+        }
+
+    }
+    hideEditOptions();
+    const typeTd = row.querySelector(".property-edit-card");
+    typeTd.textContent = typeName;
+    typeTd.style.backgroundColor = typeDiv.style.backgroundColor;
+    return property;
+}
+//Function to edit Prop Type when click in the pen
+function editPropType(penPropType) {
+    penPropType.forEach(pen => {
+        pen.addEventListener('click', (event) => {
+            if (textEditing === '') {
+                const typeDiv = pen.parentNode.parentNode.querySelector('.type-div');
+                textEditing = addInputToChange(typeDiv.id, textEditing);
+            }
+            event.stopPropagation(); //prevent document.addEventListener
+        })
+    })
+}
+//Function to delete proptype when click in the trash
+function deletePropType(trash) {
+    trash.addEventListener('click', (event) => {
+        const typeDiv = trash.parentNode.parentNode.querySelector('.type-div');
+        const propTypeId = typeDiv.id.replace("prop-type-", "");
+        if (confirm(`Are you sure that you want to delete the Option "${typeDiv.textContent}"?`)) {
+            fetchJson('/deletePropType', 'POST', { propTypeId, boardId })
+                .then(data => {
+                    typeDiv.parentNode.remove();
+                    const propertiesGroup = document.querySelectorAll('.properties');
+                    if (propertiesGroup.length > 0) {
+                        propertiesGroup.forEach(properties => {
+                            properties = properties.querySelectorAll('.property');
+                            properties.forEach(property => {
+                                const afterPT = property.id.split("PT:")[1];
+                                if (afterPT === propTypeId) {
+                                    property.remove();
+                                }
+                            })
+
+                        });
+                    }
+                    const propertiesToEdit = document.querySelectorAll('.property-edit-card');
+                    propertiesToEdit.forEach(property => {
+                        const afterPT = property.id.split("PT:")[1];
+                        if (afterPT === propTypeId) {
+                            property.textContent = 'Not Defined';
+                            property.style.backgroundColor = "rgb(217, 217, 217)";
+                        }
+                    })
+                })
+                .catch(error => {
+                    console.error("Error deleting the property type: ", error);
+                })
+        }
+    })
+}
+
+//Function to show options for columns when click
+function showOptionsColumns(options, index) {
+    if (document.getElementById(options)) {
+        const icon = document.getElementById(options);
+        icon.addEventListener('click', (event) => {
+            search = hideSearch(search);
+            hideEditCards();
+            hideEditOptions();
+            optionsBoard = hideOptions(optionsBoard);
+            if (optionsColumnOpen != index) {
+                hideColumnOptions();
+                const optionsColumnDiv = document.getElementById(`options-column-${index}`);
+                optionsColumnDiv.classList.remove('hidden');
+                optionsColumnOpen = index;
+                event.stopPropagation(); //prevent document.addEventListener
+            }
+
+        });
+    }
+}
+//Function to add color to properties
+function addPropertyColor(propertyName, propertyDiv) {
+    propColor = propertyColor.find(a => a.property === propertyName);
+    if (propertyName.toLowerCase() === "high" || propertyName.toLowerCase() === "important") {
+        propertyDiv.style.backgroundColor = "lightcoral";
+    }
+    else if (propColor) {
+        propertyDiv.style.backgroundColor = propColor.color;
+
+    }
+    else {
+        if (colorIndex >= propertyColors.length) {
+            colorIndex = 0;
+        }
+        const color = propertyColors[colorIndex];
+        propertyColor.push({ property: propertyName, color: color });
+        propertyDiv.style.backgroundColor = color;
+
+        colorIndex++;
+    }
+}
+
+//--- Hide Functions ---
 
 //Function to hide Column Options if its open
 function hideColumnOptions() {
@@ -56,6 +578,45 @@ function hideColumnOptions() {
         optionsColumnOpen = 'hidden';
     }
 }
+//Function to hide EditCards
+function hideEditCards() {
+    if (editCardOpen != 'hidden') {
+        const editCard = document.getElementById('edit-card');
+        editCard.classList.add('hidden');
+        editCardOpen = 'hidden';
+        const tableEditCard = document.getElementById('table-edit-card');
+        tableEditCard.remove();
+        cardOpen = 'none';
+        document.getElementById('card-content-textarea').remove();
+        if (textEditing === 'card-edit-name') {
+            document.getElementById('input-change-card-edit-name').remove();
+            document.getElementById('card-edit-name').classList.remove('hidden');
+            textEditing = '';
+        }
+    }
+}
+//Function hide editOptions
+function hideEditOptions() {
+    if (editOptionOpen != 'hidden') {
+        if (document.getElementById('table-edit-card')) {
+            document.getElementById('table-edit-card').classList.remove('hidden');
+            document.getElementById('card-content-textarea').classList.remove('hidden');
+        }
+        document.getElementById('line-edit-card').classList.remove('hidden');
+
+        document.getElementById('edit-card-back').classList.remove('hidden');
+        document.getElementById('delete-card').classList.remove('hidden');
+        document.getElementById('pen-card').classList.remove('hidden');
+        document.getElementById('edit-property-back').remove();
+        document.getElementById('edit-property-title').remove();
+        document.getElementById('property-types-div').remove();
+        editOptionOpen = 'hidden';
+    }
+}
+
+
+//-- Board function ---
+
 //Function to add a column
 function addColumn(column, index) {
     const columnId = column.column_id;
@@ -222,8 +783,6 @@ function addCard(card, index) {
                 const propertiesDiv = document.createElement('div');
                 contentCard.appendChild(propertiesDiv);
                 propertiesDiv.classList.add('properties');
-
-
                 data.forEach(property => {
                     const propertyName = property.prop_type_name;
                     const propertyDiv = document.createElement('div');
@@ -235,7 +794,6 @@ function addCard(card, index) {
 
                 })
             }
-
             cardName.textContent = card.name;
             contentCard.appendChild(cardName);
         })
@@ -499,8 +1057,10 @@ function addCard(card, index) {
 
         event.stopPropagation(); //prevent document.addEventListener
     })
-
 }
+
+//--- Events ---
+
 //Function to update event            
 function updateEventUser(eventId) {
     //Get value of input
@@ -516,565 +1076,10 @@ function updateEventUser(eventId) {
     endDate = `${endDay} ${endTime}`;
     fetchJson('/updateEventDate', 'POST', { startDate, endDate, eventId, boardId })
 }
-//Function to show options for columns when click
-function showOptionsColumns(options, index) {
-    if (document.getElementById(options)) {
-        const icon = document.getElementById(options);
-        icon.addEventListener('click', (event) => {
-            search = hideSearch(search);
-            hideEditCards();
-            hideEditOptions();
-            optionsBoard = hideOptions(optionsBoard);
-            if (optionsColumnOpen != index) {
-                hideColumnOptions();
-                const optionsColumnDiv = document.getElementById(`options-column-${index}`);
-                optionsColumnDiv.classList.remove('hidden');
-                optionsColumnOpen = index;
-                event.stopPropagation(); //prevent document.addEventListener
-            }
 
-        });
-    }
-}
 
-//Function to allow moving components
-//Move columns
-function dragAndDrop(component, position) {
+//--- Create DOM ---
 
-    //Allow to move cards between columns
-    var className = component.className;
-    if (className == 'column') {
-        component.addEventListener('dragover', (event) => {
-            event.preventDefault(); // Permitir soltar las tarjetas en esta columna
-        });
-    }
-    component.addEventListener('dragstart', (event) => {
-        //Close anything open
-        search = hideSearch(search);
-        hideEditCards();
-        hideColumnOptions();
-        optionsBoard = hideOptions(optionsBoard);
-        hideEditOptions();
-        dragging = component;
-        event.dataTransfer.effectAllowed = 'move';
-        //In case the browser take the column instead of the column-header
-        if (dragging.className == 'column') {
-            dragging = dragging.querySelector('.column-header');
-        }
-    })
-    component.addEventListener('dragover', (event) => {
-        event.preventDefault();
-        event.dataTransfer.dropEffect = "move";
-    })
-    component.addEventListener('drop', (event) => {
-        event.preventDefault();
-        if (dragging && dragging !== component) {
-            if (dragging.className == 'column-header' && component.className == 'column') {
-                component = component.querySelector('.column-header');
-            }
-            else if (dragging.className == 'column' && component.className == 'column') {
-                dragging = dragging.querySelector('.column-header');
-            }
-            const rect = component.getBoundingClientRect();
-            let isAfter;
-            if (position.toLowerCase() === 'x') {
-                isAfter = event.clientX > rect.left + rect.width / 2;
-            }
-            else if (position.toLowerCase() === 'y') {
-                isAfter = event.clientY > rect.top + rect.height / 2;
-
-            }
-            else {
-                console.error("Add a valid position for dragAndDrop")
-            }
-            const componentClassName = component.className;
-            const draggingClassName = dragging.className;
-            var draggingId = dragging.id;
-
-            if (isAfter) {
-                if (componentClassName == 'column-header' && draggingClassName == 'column-header') {
-                    dragging = dragging.parentNode;
-                    draggingId = dragging.id;
-                    component = component.parentNode;
-                    const components = document.querySelectorAll(`.${component.className}`);
-                    const componentsArray = Array.from(components);
-                    var oldOrder = componentsArray.indexOf(dragging);
-                    var newOrder = componentsArray.indexOf(component);
-                    component.after(dragging);
-                    if (newOrder > oldOrder) {
-                        fetchJson('/updateColumnOrderIncrease', 'POST', { columnId: draggingId, newOrder: newOrder })
-                            .catch(error => {
-                                console.error("Error Updating the order: ", error);
-                            })
-                    }
-                    else if (newOrder < oldOrder) {
-                        newOrder = newOrder + 1;
-                        fetchJson('/updateColumnOrderDecrease', 'POST', { columnId: draggingId, newOrder: newOrder })
-                            .catch(error => {
-                                console.error("Error Updating the order: ", error);
-                            })
-                    }
-                }
-                else if (componentClassName == 'card' && draggingClassName == 'card') {
-                    const newColumnId = component.parentNode.parentNode.id;
-                    const oldColumnId = dragging.parentNode.parentNode.id;
-                    const componentsDiv = component.parentNode;
-                    const components = componentsDiv.querySelectorAll(`.${dragging.className}`);
-                    const componentsArray = Array.from(components);
-                    var oldOrder = componentsArray.indexOf(dragging);
-                    var newOrder = componentsArray.indexOf(component);
-                    component.after(dragging);
-                    if (newOrder > oldOrder) {
-                        newOrder = newOrder + 1;
-                        fetchJson('/updateCardOrderIncrease', 'POST', { oldColumnId: oldColumnId, newColumnId: newColumnId, cardId: draggingId, newOrder: newOrder })
-                            .catch(error => {
-                                console.error("Error Updating the order: ", error);
-                            })
-                    }
-                    else if (newOrder < oldOrder) {
-                        newOrder = newOrder + 1;
-                        fetchJson('/updateCardOrderDecrease', 'POST', { oldColumnId: oldColumnId, newColumnId: newColumnId, cardId: draggingId, newOrder: newOrder })
-                            .catch(error => {
-                                console.error("Error Updating the order: ", error);
-                            })
-                    }
-                }
-            }
-            else {
-                if (componentClassName == 'column-header' && draggingClassName == 'column-header') {
-                    dragging = dragging.parentNode;
-                    draggingId = dragging.id;
-                    component = component.parentNode;
-                    const components = document.querySelectorAll(`.${component.className}`);
-                    const componentsArray = Array.from(components);
-                    var oldOrder = componentsArray.indexOf(dragging);
-                    var newOrder = componentsArray.indexOf(component);
-                    component.before(dragging);
-                    if (newOrder > oldOrder) {
-                        //Will be before not after
-                        newOrder = newOrder - 1;
-                        fetchJson('/updateColumnOrderIncrease', 'POST', { columnId: draggingId, newOrder: newOrder })
-                            .catch(error => {
-                                console.error("Error Updating the order: ", error);
-                            })
-                    }
-                    else if (newOrder < oldOrder) {
-                        fetchJson('/updateColumnOrderDecrease', 'POST', { columnId: draggingId, newOrder: newOrder })
-                            .catch(error => {
-                                console.error("Error Updating the order: ", error);
-                            })
-                    }
-                }
-                else if (draggingClassName == 'card') {
-                    const newColumnId = component.parentNode.parentNode.id;
-                    const oldColumnId = dragging.parentNode.parentNode.id;
-                    const componentsDiv = component.parentNode;
-                    const components = componentsDiv.querySelectorAll(`.${dragging.className}`);
-                    const componentsArray = Array.from(components);
-                    var oldOrder = componentsArray.indexOf(dragging);
-                    var newOrder = componentsArray.indexOf(component);
-                    component.before(dragging);
-                    if (newOrder > oldOrder) {
-                        fetchJson('/updateCardOrderIncrease', 'POST', { oldColumnId: oldColumnId, newColumnId: newColumnId, cardId: draggingId, newOrder: newOrder })
-                            .catch(error => {
-                                console.error("Error Updating the order: ", error);
-                            })
-                    }
-                    else if (newOrder < oldOrder) {
-                        fetchJson('/updateCardOrderDecrease', 'POST', { oldColumnId: oldColumnId, newColumnId: newColumnId, cardId: draggingId, newOrder: newOrder })
-                            .catch(error => {
-                                console.error("Error Updating the order: ", error);
-                            })
-                    }
-                }
-            }
-        }
-    })
-
-}
-//Function to hide EditCards
-function hideEditCards() {
-    if (editCardOpen != 'hidden') {
-        const editCard = document.getElementById('edit-card');
-        editCard.classList.add('hidden');
-        editCardOpen = 'hidden';
-        const tableEditCard = document.getElementById('table-edit-card');
-        tableEditCard.remove();
-        cardOpen = 'none';
-        document.getElementById('card-content-textarea').remove();
-        if (textEditing === 'card-edit-name') {
-            document.getElementById('input-change-card-edit-name').remove();
-            document.getElementById('card-edit-name').classList.remove('hidden');
-            textEditing = '';
-        }
-    }
-}
-//Function hide editOptions
-function hideEditOptions() {
-    if (editOptionOpen != 'hidden') {
-        if (document.getElementById('table-edit-card')) {
-            document.getElementById('table-edit-card').classList.remove('hidden');
-            document.getElementById('card-content-textarea').classList.remove('hidden');
-        }
-        document.getElementById('line-edit-card').classList.remove('hidden');
-
-        document.getElementById('edit-card-back').classList.remove('hidden');
-        document.getElementById('delete-card').classList.remove('hidden');
-        document.getElementById('pen-card').classList.remove('hidden');
-        document.getElementById('edit-property-back').remove();
-        document.getElementById('edit-property-title').remove();
-        document.getElementById('property-types-div').remove();
-        editOptionOpen = 'hidden';
-    }
-}
-//Function to add color to properties
-function addPropertyColor(propertyName, propertyDiv) {
-    propColor = propertyColor.find(a => a.property === propertyName);
-    if (propertyName.toLowerCase() === "high" || propertyName.toLowerCase() === "important") {
-        propertyDiv.style.backgroundColor = "lightcoral";
-    }
-    else if (propColor) {
-        propertyDiv.style.backgroundColor = propColor.color;
-
-    }
-    else {
-        if (colorIndex >= propertyColors.length) {
-            colorIndex = 0;
-        }
-        const color = propertyColors[colorIndex];
-        propertyColor.push({ property: propertyName, color: color });
-        propertyDiv.style.backgroundColor = color;
-
-        colorIndex++;
-    }
-}
-//Function to get the click in the property
-//Edit property when editting cards
-function rowClickEvent(row, property, defined, cardId) {
-    row.addEventListener('click', () => {
-        const propertyId = property.property_id;
-        editOptionOpen = propertyId;
-        document.getElementById('table-edit-card').classList.add('hidden');
-        document.getElementById('line-edit-card').classList.add('hidden');
-        document.getElementById('card-content-textarea').classList.add('hidden');
-        document.getElementById('edit-card-back').classList.add('hidden');
-        document.getElementById('delete-card').classList.add('hidden');
-        document.getElementById('pen-card').classList.add('hidden');
-        const editPropertyBack = document.createElement('img');
-        editPropertyBack.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1745322144/Icons/Black/back_black.png";
-        editPropertyBack.id = 'edit-property-back';
-        editPropertyBack.classList.add('back');
-        const editCardTitle = document.getElementById('edit-card-back-title');
-        editCardTitle.insertBefore(editPropertyBack, document.getElementById('card-edit-name'));
-        const editPropertyTitle = document.createElement('div');
-        editPropertyTitle.id = 'edit-property-title';
-        const propertyTd = row.querySelector('td');
-        const propertyName = propertyTd.textContent;
-        editPropertyTitle.innerHTML = `<h3 id='property-name'>${propertyName}</h3><div style="display:flex"><img id="pen-property" width="30px" height="30px" src="https://res.cloudinary.com/drmjf3gno/image/upload/v1746096410/Icons/Gray/pen_gray.png"
-    class="options-button"><img id="delete-property" width="30px" height="30px" src="https://res.cloudinary.com/drmjf3gno/image/upload/v1745771754/Icons/Other/trash_red.png"
-    class="options-button"></div>`;
-        editPropertyTitle.style = "justify-content: space-between; display: flex; align-items: center";
-        const editCard = document.getElementById('edit-card');
-        editCard.appendChild(editPropertyTitle);
-        const propertyTypesDiv = document.createElement('div');
-        propertyTypesDiv.id = 'property-types-div';
-        editCard.appendChild(propertyTypesDiv);
-        //When click in the text it could be edited
-        const propertyTitle = document.getElementById('property-name');
-        propertyTitle.addEventListener('click', (event) => {
-            textEditing = addInputToChange('property-name', textEditing);
-            event.stopPropagation();
-        })
-        //Also when click in the pen
-        const penProperty = document.getElementById('pen-property');
-        penProperty.addEventListener('click', (event) => {
-            if (textEditing === '') {
-                textEditing = addInputToChange('property-name', textEditing);
-            }
-            event.stopPropagation();
-        })
-        //Delete when click in the trash
-        const trashProperty = document.getElementById('delete-property');
-        trashProperty.addEventListener('click', (event) => {
-            fetchJson('/deleteProperty', 'POST', { propertyId, boardId })
-                .then(data => {
-                    const propertyTypes = document.querySelectorAll('.type-div');
-                    console.log("Types: ",propertyTypes);
-                    propertyTypes.forEach(type => {
-                        var typeDeleted = type.id;
-                        console.log("deleted1: ", typeDeleted);
-                        typeDeleted = typeDeleted.replace("prop-type-", "");
-                        const propertiesGroup = document.querySelectorAll('.properties');
-                        console.log("Properties: ", propertiesGroup);
-                        propertiesGroup.forEach(properties => {
-                            properties = properties.querySelectorAll('.property');
-                            properties.forEach(property => {
-                                console.log("Property: ",property);
-                                console.log("deleted: ",typeDeleted);
-                                const afterPT = property.id.split("PT:")[1];
-                                if (afterPT === typeDeleted) {
-                                    property.remove();
-                                }
-                            })
-                        })
-                        row.remove();
-                    });
-                    hideEditOptions();
-                })
-                .catch(error => {
-                    console.error("Error deleting the properperty: ", error);
-                })
-            event.stopPropagation();
-        })
-        //Get all the property types from a property
-        fetchJson('/getPropTypes', 'POST', { propertyId })
-            .then(data => {
-                if (data.length > 0) {
-                    data.forEach(type => {
-                        const typeDiv = document.createElement('div');
-                        const typeName = type.prop_type_name;
-                        const typeAndOptions = document.createElement('div');
-                        typeDiv.textContent = typeName;
-                        addPropertyColor(typeName, typeDiv);
-                        const typeOpt = document.createElement('div');
-                        typeOpt.style.display = "flex";
-                        typeAndOptions.style.display = "flex";
-                        typeAndOptions.style.alignItems = "center";
-                        typeAndOptions.id = 'type-and-options';
-                        typeOpt.innerHTML = `<img src="https://res.cloudinary.com/drmjf3gno/image/upload/v1746096410/Icons/Gray/pen_gray.png"
-                        width="25px" height="25px" class="pen-prop-type options-button">`;
-                        const trash = document.createElement('img');
-                        trash.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1745771754/Icons/Other/trash_red.png"
-                        trash.style.width = "25px";
-                        trash.style.height = "25px";
-                        trash.classList.add('delete-prop-type', 'options-button');
-                        typeOpt.appendChild(trash);
-                        propertyTypesDiv.appendChild(typeAndOptions);
-                        typeAndOptions.appendChild(typeDiv);
-                        typeAndOptions.appendChild(typeOpt);
-                        typeDiv.classList.add('components-click');
-                        typeDiv.classList.add('type-div');
-                        typeDiv.id = `prop-type-${type.prop_type_id}`;
-                        console.log("defined2", defined)
-                        //When clicked on type, will change the type of the property
-                        typeDiv.addEventListener('click', () => {
-                            selectPropType(cardId, property, type, defined, row, typeDiv)
-                                .then(result => {
-                                    property = result;
-                                    console.log('property con valor real:', property);
-                                });
-                        })
-                        //When clicked on pen will be able to change the text
-                        const penPropType = document.querySelectorAll('.pen-prop-type');
-                        editPropType(penPropType);
-                        //When click in trash delete it
-                        deletePropType(trash);
-                    })
-                }
-                const typeDivNotDefined = document.createElement('div');
-                typeDivNotDefined.classList.add('property');
-                typeDivNotDefined.textContent = 'Not Defined';
-                typeDivNotDefined.id = 'type-not-defined';
-                typeDivNotDefined.style.backgroundColor = 'rgb(217, 217, 217)';
-                propertyTypesDiv.appendChild(typeDivNotDefined);
-                typeDivNotDefined.classList.add('components-click');
-                const addTypeBtn = document.createElement('button');
-                addTypeBtn.classList.add('components-click');
-                addTypeBtn.textContent = "Add Option";
-                addTypeBtn.style.backgroundColor = '#D6CFC1';
-                addTypeBtn.id = "add-option";
-                //When click in not defined there will not be a type for the property
-                typeDivNotDefined.addEventListener('click', () => {
-                    if (defined != 'notDefined') {
-                        fetchJson('/deletePropTypeCard', 'POST', { propTypeId: defined, cardId, boardId })
-                            .then(data => {
-                                const propertyDiv = document.getElementById(`C:${cardId}-PT:${defined}`);
-                                propertyDiv.remove();
-                                propertyDiv.style.backgroundColor = 'rgb(217, 217, 217)';
-                                const typeTd = row.querySelector(".property-edit-card");
-                                typeTd.textContent = 'Not Defined';
-                                typeTd.style.backgroundColor = 'rgb(217, 217, 217)';
-                                defined = 'notDefined';
-                                property.prop_type_id = null;
-                                property.prop_type_name = null;
-                                hideEditOptions();
-                            })
-                    }
-                    else {
-                        hideEditOptions();
-                    }
-                })
-                addTypeBtn.addEventListener('click', () => {
-                    const newPropTypeName = 'New Option';
-                    fetchJson('insertPropType', 'POST', { newPropTypeName, propertyId, boardId })
-                        .then(data => {
-                            const typeDiv = document.createElement('div');
-                            const typeName = data.prop_type_name;
-                            const typeAndOptions = document.createElement('div');
-                            typeDiv.textContent = newPropTypeName;
-                            addPropertyColor(typeName, typeDiv);
-                            const typeOpt = document.createElement('div');
-                            typeOpt.style.display = "flex";
-                            typeAndOptions.style.display = "flex";
-                            typeAndOptions.style.alignItems = "center";
-                            typeAndOptions.id = 'type-and-options';
-                            typeOpt.innerHTML = `<img src="https://res.cloudinary.com/drmjf3gno/image/upload/v1746096410/Icons/Gray/pen_gray.png"
-    width="25px" height="25px" class="pen-prop-type options-button">`;
-                            const trash = document.createElement('img');
-                            trash.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1745771754/Icons/Other/trash_red.png"
-                            trash.style.width = "25px";
-                            trash.style.height = "25px";
-                            trash.classList.add('delete-prop-type', 'options-button');
-                            typeOpt.appendChild(trash);
-                            typeAndOptions.appendChild(typeDiv);
-                            propertyTypesDiv.insertBefore(typeAndOptions, typeDivNotDefined);
-                            typeAndOptions.appendChild(typeOpt);
-                            typeDiv.classList.add('components-click');
-                            typeDiv.classList.add('type-div');
-                            typeDiv.id = `prop-type-${data.prop_type_id}`;
-                            const type = data;
-                            //When clicked on type, will change the type of the property
-                            typeDiv.addEventListener('click', () => {
-                                selectPropType(cardId, property, type, defined, row, typeDiv)
-                                    .then(result => {
-                                        property = result;
-                                        console.log('property con valor real:', property);
-                                    });
-                            })
-                            //When clicked on pen will be able to change the text
-                            const penPropType = document.querySelectorAll('.pen-prop-type');
-                            editPropType(penPropType);
-                            //When click in trash delete it
-                            deletePropType(trash);
-                        })
-                        .catch(error => {
-
-                        })
-                })
-                propertyTypesDiv.appendChild(addTypeBtn);
-            })
-        //When editing properties and go back, show card again
-        editPropertyBack.addEventListener('click', () => {
-            if (textEditing === 'property-name') {
-                textEditing = returnToText(textEditing, editOptionOpen, boardId);
-            }
-            else if (textEditing.startsWith('prop-type')) {
-                const propType = textEditing.replace('prop-type-', '');
-                textEditing = returnToText(textEditing, propType, boardId, propertyColor);
-            }
-            hideEditOptions();
-        })
-    })
-    return defined;
-}
-//Function select Option when clicked
-async function selectPropType(cardId, property, type, defined, row, typeDiv) {
-    const propTypeId = type.prop_type_id;
-    const typeName = typeDiv.textContent;
-    if (defined === 'notDefined') {
-        try {
-            await fetchJson('/insertCardPropertyType', 'POST', { propTypeId, cardId, boardId })
-                .then(data => {
-                    const cardDiv = document.getElementById(cardId);
-                    const cardPaddingDiv = cardDiv.querySelector('.padding-card').querySelector('.content-card')
-                    var propertiesDiv;
-                    if (!cardPaddingDiv.querySelector('.properties')) {
-                        const cardContent = cardPaddingDiv.querySelector('.content-card');
-                        propertiesDiv = document.createElement('div');
-                        cardPaddingDiv.insertBefore(propertiesDiv, cardPaddingDiv.firstChild);
-                        propertiesDiv.classList.add('properties');
-                    }
-                    else {
-                        propertiesDiv = cardPaddingDiv.querySelector('.properties');
-                    }
-
-                    const propertyDiv = document.createElement('div');
-                    propertiesDiv.appendChild(propertyDiv);
-                    propertyDiv.classList.add('property');
-                    propertyDiv.id = `C:${cardId}-PT:${propTypeId}`;
-                    propertyDiv.textContent = typeName;
-                    propertyDiv.style.backgroundColor = typeDiv.style.backgroundColor;
-                    property.prop_type_name = typeName;
-                    property.prop_type_id = propTypeId;
-                })
-        }
-        catch (error) {
-            console.error("Error Inserting the type: ", error);
-        }
-    }
-    else {
-        try {
-            await fetchJson('/updateCardPropertyType', 'POST', { oldPropTypeId: defined, propTypeId, cardId, boardId })
-                .then(data => {
-                    console.log("id:", property);
-                    const propertyDiv = document.getElementById(`C:${cardId}-PT:${property.prop_type_id}`);
-                    propertyDiv.id = `C:${cardId}-PT:${propTypeId}`;
-                    propertyDiv.textContent = typeName;
-                    propertyDiv.style.backgroundColor = typeDiv.style.backgroundColor;
-                    property.prop_type_name = typeName;
-                    property.prop_type_id = propTypeId;
-                })
-        }
-        catch (error) {
-            console.error("Error Inserting the type: ", error);
-        }
-
-    }
-    hideEditOptions();
-    const typeTd = row.querySelector(".property-edit-card");
-    typeTd.textContent = typeName;
-    typeTd.style.backgroundColor = typeDiv.style.backgroundColor;
-    return property;
-}
-//Function to edit Prop Type when click in the pen
-function editPropType(penPropType) {
-    penPropType.forEach(pen => {
-        pen.addEventListener('click', (event) => {
-            if (textEditing === '') {
-                const typeDiv = pen.parentNode.parentNode.querySelector('.type-div');
-                textEditing = addInputToChange(typeDiv.id, textEditing);
-            }
-            event.stopPropagation(); //prevent document.addEventListener
-        })
-    })
-}
-//Function to delete proptype when click in the trash
-function deletePropType(trash) {
-    trash.addEventListener('click', (event) => {
-        const typeDiv = trash.parentNode.parentNode.querySelector('.type-div');
-        const propTypeId = typeDiv.id.replace("prop-type-", "");
-        if (confirm(`Are you sure that you want to delete the Option "${typeDiv.textContent}"?`)) {
-            fetchJson('/deletePropType', 'POST', { propTypeId, boardId })
-                .then(data => {
-                    typeDiv.parentNode.remove();
-                    const propertiesGroup = document.querySelectorAll('.properties');
-                    if (propertiesGroup.length > 0) {
-                        propertiesGroup.forEach(properties => {
-                            properties = properties.querySelectorAll('.property');
-                            properties.forEach(property => {
-                                const afterPT = property.id.split("PT:")[1];
-                                if (afterPT === propTypeId) {
-                                    property.remove();
-                                }
-                            })
-
-                        });
-                    }
-                    const propertiesToEdit = document.querySelectorAll('.property-edit-card');
-                    propertiesToEdit.forEach(property => {
-                        const afterPT = property.id.split("PT:")[1];
-                        if (afterPT === propTypeId) {
-                            property.textContent = 'Not Defined';
-                            property.style.backgroundColor = "rgb(217, 217, 217)";
-                        }
-                    })
-                })
-                .catch(error => {
-                    console.error("Error deleting the property type: ", error);
-                })
-        }
-    })
-}
 //Show all columns of the board
 fetchJson('/getColumns', 'POST', { board: boardId })
     .then(data => {
@@ -1121,6 +1126,12 @@ fetchJson('/getColumns', 'POST', { board: boardId })
 //Definition of relationship between properties and colors
 let colorIndex = 0;
 let propertyColor = [];
+//Search cards
+showSearch("column", "card");
+
+
+//--- Event Listeners ---
+
 /*When click search will be a input*/
 const searchDiv = document.getElementById('search');
 searchDiv.addEventListener('click', (event) => {
@@ -1183,8 +1194,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search-input');
     searchInput.value = null;
 })
-//Search cards
-showSearch("column", "card");
 
 //Edit a text when click in text
 const textToInput = document.getElementById('board-title');

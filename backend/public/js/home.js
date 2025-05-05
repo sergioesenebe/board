@@ -102,7 +102,7 @@ function getLastUsedBoardLastColumn(username) {
                     .then(() => {
                         const percentage = document.getElementById('percentage');
                         let percentageValue = 0;
-                        if(total!=0){
+                        if (total != 0) {
                             percentageValue = taskNumber / total * 100;
                         }
                         percentage.textContent = percentageValue.toFixed(2) + '%';
