@@ -78,23 +78,23 @@ export function addBoards(username, openBoards) {
                                 fetchJson('/insertColumn', 'POST', { newColumnName: "To Do", boardId: boardId })
                                     .then(data => {
                                         fetchJson('/insertColumn', 'POST', { newColumnName: "Doing", boardId: boardId })
-                                        .then(data => {
-                                            fetchJson('/insertColumn', 'POST', { newColumnName: "Done", boardId: boardId })
                                             .then(data => {
-                                                window.location.href = "./board.html"; // Redirect to selected page
+                                                fetchJson('/insertColumn', 'POST', { newColumnName: "Done", boardId: boardId })
+                                                    .then(data => {
+                                                        window.location.href = "./board.html"; // Redirect to selected page
+                                                    })
+                                                    .catch(error => {
+                                                        console.error("Error inserting example columns: ", error);
+                                                    });
                                             })
                                             .catch(error => {
                                                 console.error("Error inserting example columns: ", error);
                                             });
-                                        })
-                                        .catch(error => {
-                                            console.error("Error inserting example columns: ", error);
-                                        });
                                     })
                                     .catch(error => {
                                         console.error("Error inserting example columns: ", error);
                                     });
-                                
+
                             })
                             .catch(error => {
                                 console.error("Error Inserting a Board: ", error);
@@ -371,6 +371,12 @@ export function addInputToChange(id, textEditing) {
     inputChange.style.lineHeight = styles.lineHeight;
     inputChange.style.letterSpacing = styles.letterSpacing;
     inputChange.style.textAlign = styles.textAlign;
+    inputChange.style.backgroundColor = styles.backgroundColor;
+    inputChange.style.borderRadius = styles.borderRadius;
+    inputChange.style.margin = styles.margin;
+    if (id.startsWith('prop-type')) {
+        inputChange.style.width = styles.width;
+    }
     inputChange.classList.add('input-change');
     inputChange.id = `input-change-${id}`;
     //Focus when click to avoid click twice
@@ -382,7 +388,7 @@ export function addInputToChange(id, textEditing) {
     return id;
 }
 //Function to update, delete the input and return the text
-export function returnToText(textEditing, change) {
+export function returnToText(textEditing, change, boardId, propertyColor) {
     if (textEditing != '') {
         const textToReturn = document.getElementById(textEditing);
         textToReturn.classList.remove('hidden');
@@ -394,6 +400,7 @@ export function returnToText(textEditing, change) {
 
                 .then(() => {
                     textToReturn.textContent = newName;
+                    inputToDelete.remove();
                 })
                 .catch(error => {
                     console.error("Error Updating the board name: ", error);
@@ -402,14 +409,70 @@ export function returnToText(textEditing, change) {
         else if (textEditing.startsWith('column-title-')) {
             fetchJson('/updateColumnName', 'POST', { newName: newName, column: change })
                 .then(() => {
+                    inputToDelete.parentNode.draggable = true; //Allow move the component again
                     textToReturn.textContent = newName;
+                    inputToDelete.remove();
                 })
                 .catch(error => {
                     console.error("Error Updating the board name: ", error);
                 })
         }
-        inputToDelete.parentNode.draggable = true; //Allow move the component again
-        inputToDelete.remove();
+        else if (textEditing === 'card-edit-name') {
+            fetchJson('/updateCardName', 'POST', { newName: newName, cardId: change, boardId: boardId })
+                .then(() => {
+                    textToReturn.textContent = newName;
+                    document.getElementById(change).querySelector('span').textContent = newName;
+                    inputToDelete.remove();
+                })
+                .catch(error => {
+                    console.error("Error Updating the board name: ", error);
+                })
+        }
+        else if (textEditing === 'property-name') {
+            fetchJson('/updatePropertyName', 'POST', { newName: newName, propertyId: change, boardId: boardId })
+                .then(() => {
+                    textToReturn.textContent = newName;
+                    document.getElementById(change).textContent = newName;
+                    inputToDelete.remove();
+                })
+                .catch(error => {
+                    console.error("Error Updating the board name: ", error);
+                })
+        }
+        else if (textEditing.startsWith('prop-type')) {
+            fetchJson('/updatePropTypeName', 'POST', { newName: newName, propTypeId: change, boardId: boardId })
+                .then(() => {
+                    const prop = propertyColor.find(p => p.property === textToReturn.textContent);
+                    if (prop) {
+                        prop.property = newName;
+                    }
+                    textToReturn.textContent = newName;
+                    inputToDelete.remove();
+                    const propertiesGroup = document.querySelectorAll('.properties');
+                    if (propertiesGroup.length > 0) {
+                        propertiesGroup.forEach(properties => {
+                            properties = properties.querySelectorAll('.property');
+                            properties.forEach(property => {
+                                const afterPT = property.id.split("PT:")[1];
+                                if (afterPT === change) {
+                                    property.textContent = newName;
+                                }
+                            })
+
+                        });
+                    }
+                    const propertiesToEdit = document.querySelectorAll('.property-edit-card');
+                    propertiesToEdit.forEach(property => {
+                        const afterPT = property.id.split("PT:")[1];
+                        if (afterPT === change) {
+                            property.textContent = newName;
+                        }
+                    })
+                })
+                .catch(error => {
+                    console.error("Error Updating the Property Type: ", error);
+                })
+        }
         return '';
     }
     else {

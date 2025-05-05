@@ -259,17 +259,20 @@ header {
     outline: none;
 }
 /*Button for the input*/
-#table-edit-card button{
+#edit-card button{
     border: none;
     border-radius:10px;
     background-color: #EDE7DC;
     padding: 5px;
 }
-#table-edit-card button:hover{
+#edit-card button:hover{
     border: none;
     outline: none;
     background-color: #D6CFC1;
     cursor: pointer;
+}
+#edit-delete-card{
+    display: flex;
 }
 /*The plus event*/
 .new-card-plus img {
@@ -308,6 +311,13 @@ header {
     text-overflow: ellipsis;
     /* Show "..." */
 
+}
+/*Types of properties*/
+.components-click{
+    width: 50%;
+    border-radius: 20px;
+    padding: 0 5px;
+    margin: 5px 0;
 }
 
 /*The layout of the elements will be changed when the width is less than 1325px. So that each container occupies one row*/
