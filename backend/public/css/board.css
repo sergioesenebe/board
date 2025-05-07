@@ -312,6 +312,20 @@ header {
     /* Show "..." */
 
 }
+/*Type Option (trash and pen)*/
+.typeOpt{
+    display: flex;
+}
+/*Types Option aligned*/
+.type-and-options{
+    display: flex;
+    align-items: center;
+}
+/*Images for trash and pen in the property type*/
+.type-and-options img{
+    width: 25px;
+    height: 25px;
+}
 /*Types of properties*/
 .components-click{
     width: 50%;
