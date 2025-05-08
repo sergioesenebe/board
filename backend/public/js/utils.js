@@ -326,9 +326,9 @@ export function hideSearch(search) {
     const searchInput = document.getElementById('search-input');
     if (search === 'display' && searchInput.value == '') {
         const searchDiv = document.getElementById('search');
-        searchDiv.classList.remove('search-focus');
-        searchInput.classList.add('hidden');
-        searchInput.value = null;
+            hideElement(searchInput,200);
+            searchDiv.classList.remove('search-focus');
+            searchInput.value = null;
         return 'hidden';
     }
 }
@@ -336,7 +336,7 @@ export function hideSearch(search) {
 export function hideOptions(options) {
     if (options === 'display') {
         const optionsGeneralDiv = document.getElementById('options-general');
-        optionsGeneralDiv.classList.add('hidden');
+        hideElement(optionsGeneralDiv,200);
         return 'hidden';
     }
 }
@@ -348,7 +348,22 @@ export function hideColumnOptions(optionsColumnOpen) {
         return 'hidden';
     }
 }
-
+//Function to hideElement with transition
+export function hideElement(element,time) {
+    element.classList.add('fade-out');
+    setTimeout(() => {
+        element.style.display = 'none';
+    }, time)
+}
+//Function to show Element with transition
+export function showElement(element) {
+    element.style.display = ''
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            element.classList.remove('fade-out');
+        })
+    }, 50)
+}
 
 //Function to change input for the text
 export function addInputToChange(id, textEditing) {
@@ -374,6 +389,7 @@ export function addInputToChange(id, textEditing) {
     inputChange.style.backgroundColor = styles.backgroundColor;
     inputChange.style.borderRadius = styles.borderRadius;
     inputChange.style.margin = styles.margin;
+    inputChange.style.padding = styles.padding;
     if (id.startsWith('prop-type')) {
         inputChange.style.width = styles.width;
     }
@@ -391,16 +407,20 @@ export function addInputToChange(id, textEditing) {
 export function returnToText(textEditing, change, boardId, propertyColor) {
     if (textEditing != '') {
         const textToReturn = document.getElementById(textEditing);
-        textToReturn.classList.remove('hidden');
         const inputToDelete = document.getElementById(`input-change-${textEditing}`);
+        if(inputToDelete.value === ''){
+            console.log(inputToDelete);
+            alert('Oops! You forgot to type something.');
+            textToReturn.classList.remove('hidden');
+            inputToDelete.remove();
+            textEditing = '';
+        }
         const newName = inputToDelete.value;
-
         if (textEditing === 'board-title') {
             fetchJson('/updateBoardName', 'POST', { newName: newName, board: change })
-
                 .then(() => {
                     textToReturn.textContent = newName;
-                    inputToDelete.remove();
+                    removeAndReturn(inputToDelete, textToReturn);
                 })
                 .catch(error => {
                     console.error("Error Updating the board name: ", error);
@@ -411,7 +431,7 @@ export function returnToText(textEditing, change, boardId, propertyColor) {
                 .then(() => {
                     inputToDelete.parentNode.draggable = true; //Allow move the component again
                     textToReturn.textContent = newName;
-                    inputToDelete.remove();
+                    removeAndReturn(inputToDelete, textToReturn);
                 })
                 .catch(error => {
                     console.error("Error Updating the board name: ", error);
@@ -422,7 +442,7 @@ export function returnToText(textEditing, change, boardId, propertyColor) {
                 .then(() => {
                     textToReturn.textContent = newName;
                     document.getElementById(change).querySelector('span').textContent = newName;
-                    inputToDelete.remove();
+                    removeAndReturn(inputToDelete, textToReturn);
                 })
                 .catch(error => {
                     console.error("Error Updating the board name: ", error);
@@ -433,7 +453,7 @@ export function returnToText(textEditing, change, boardId, propertyColor) {
                 .then(() => {
                     textToReturn.textContent = newName;
                     document.getElementById(change).textContent = newName;
-                    inputToDelete.remove();
+                    removeAndReturn(inputToDelete, textToReturn);
                 })
                 .catch(error => {
                     console.error("Error Updating the board name: ", error);
@@ -447,7 +467,6 @@ export function returnToText(textEditing, change, boardId, propertyColor) {
                         prop.property = newName;
                     }
                     textToReturn.textContent = newName;
-                    inputToDelete.remove();
                     const propertiesGroup = document.querySelectorAll('.properties');
                     if (propertiesGroup.length > 0) {
                         propertiesGroup.forEach(properties => {
@@ -468,14 +487,23 @@ export function returnToText(textEditing, change, boardId, propertyColor) {
                             property.textContent = newName;
                         }
                     })
+                    removeAndReturn(inputToDelete, textToReturn);
                 })
                 .catch(error => {
                     console.error("Error Updating the Property Type: ", error);
                 })
         }
         return '';
+    
     }
     else {
         return '';
     }
+}
+//Function remove text editing
+function removeAndReturn(inputToDelete, textToReturn) {
+    inputToDelete.remove();
+    requestAnimationFrame(() => {
+        textToReturn.classList.remove('hidden');
+    });
 }

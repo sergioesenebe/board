@@ -11,7 +11,6 @@ body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    box-sizing: border-box;
 }
 
 /*Font of the whole page*/
@@ -72,6 +71,8 @@ header {
 #search {
     padding: 5px 10px;
     border-radius: 20px;
+    display: flex;
+    transition: background-color 0.4s ease;
 }
 
 /*Confiture the mouse hover for search and options icon*/
@@ -89,18 +90,20 @@ header {
 #search-input {
     font-size: 16px;
     border: none;
+    transition: opacity 0.4s;
+    background-color: transparent;
 }
 
 /*Remove brders on focus on input search*/
 #search-input:focus {
     outline: none;
 }
-
 /*when click on the search*/
 .search-focus {
     background-color: white;
     width: auto;
     display: flex;
+    transition:0.4s;
 }
 
 /*Options for the board*/
@@ -180,9 +183,20 @@ header {
 /*Bar for settings and user*/
 .profile-bar {
     background-color: #D9D9D9;
-    border: 1px solid #D9D9D9;
     border-radius: 50px;
+    border:none;
     width: fit-content;
+    padding: 0;
+    margin: 0;
+    /*Make it as bigger as the elements*/
+}
+.profile-bar img {
+    border-radius: 50px;
+    border:none;
+    padding: 0;
+    margin: 0;
+    display: block;
+
     /*Make it as bigger as the elements*/
 }
 
@@ -316,8 +330,17 @@ header {
 /*To hide elements*/
 .hidden {
     display: none;
+    opacity: 0;
+    pointer-events: none;
 }
-
+.fade {
+    opacity: 1;
+    transition: 0.5s;
+}
+.fade.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
 /*The layout of the elements will be changed when the width is less than 1325px. So that each container occupies one row*/
 @media (max-width: 1325px) {
 

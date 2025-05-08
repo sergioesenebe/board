@@ -48,6 +48,8 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width:100%;
+    flex-wrap: wrap;  
 }
 
 /*Options for the columns*/
@@ -104,15 +106,16 @@ header {
     padding-top: 20px;
     padding-left: 60px;
     padding-right: 60px;
-    flex-grow: 1;
-
+    transition: width 0.4s ease;
 }
-
+#board.contract {
+    width: 65%;
+}
 /*Edit the card when pen is clicked*/
 #edit-card {
     background-color: white;
     border-radius: 20px;
-    width: 50%;
+    width: 35%;
     padding-top: 20px;
     padding-left: 60px;
     padding-right: 60px;
@@ -186,12 +189,12 @@ header {
     margin-bottom: 20%;
     margin-left: 15px;
     margin-right: 15px;
+    transition: 1s ease;
+    
 }
-
 /*Events*/
 .card {
     padding: 10px 0px;
-
 }
 
 /*Content Card*/
@@ -264,6 +267,7 @@ header {
     border-radius:10px;
     background-color: #EDE7DC;
     padding: 5px;
+    margin: 5px 0;
 }
 #edit-card button:hover{
     border: none;
@@ -326,8 +330,8 @@ header {
     width: 25px;
     height: 25px;
 }
-/*Types of properties*/
-.components-click{
+
+.type-div{
     width: 50%;
     border-radius: 20px;
     padding: 0 5px;
