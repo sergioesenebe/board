@@ -1,11 +1,9 @@
-//Import function fetchJson
-import { addBoards } from './utils.js';
+//Import function addBoards, hideSearch, showElement
+import { addBoards, hideSearch, showElement } from './utils.js';
 //Import function showSearch
 import { showSearch } from './utils.js';
 //Get username from the other page
 const username = localStorage.getItem('username');
-//Import function hideSearch
-import { hideSearch } from './utils.js';
 
 
 //Declare to know if search or options are open or hidden, by default will be hidden
@@ -23,7 +21,7 @@ searchDiv.addEventListener('click', (event) => {
         const searchInput = document.getElementById('search-input');
         const searchDiv = document.getElementById('search');
         searchDiv.classList.add('search-focus');
-        searchInput.classList.remove('hidden');
+        showElement(searchInput,200);
         searchInput.focus();
         search = 'display';
         event.stopPropagation(); //prevent document.addEventListener
