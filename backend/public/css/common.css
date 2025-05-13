@@ -333,10 +333,12 @@ header {
     opacity: 0;
     pointer-events: none;
 }
+/*Element with opacity 1*/
 .fade {
     opacity: 1;
     transition: 0.5s;
 }
+/*Element dissapear with transition*/
 .fade.fade-out {
     opacity: 0;
     pointer-events: none;

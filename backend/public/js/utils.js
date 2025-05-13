@@ -1,3 +1,57 @@
+//--- Classes ---
+export class Board {
+    constructor({ boardId, name }) {
+        this.boardId = boardId;
+        this.name = name;
+    }
+}
+export class Column {
+    constructor({ columnId, boardId, name, order }) {
+        this.columnId = columnId;
+        this.boardId = boardId;
+        this.name = name;
+        this.order = order;
+    }
+}
+export class CalendarEvent {
+    constructor({ eventId, name, startDate, endDate, cardId }) {
+        this.eventId = eventId;
+        this.name = name;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.cardId = cardId;
+    }
+}
+export class Card {
+    constructor({ cardId, columnId, content, name, order }) {
+        this.cardId = cardId;
+        this.columnId = columnId;
+        this.content = content;
+        this.name = name;
+        this.order = order;
+    }
+}
+export class Property {
+    constructor({ propertyId, name, typeId }) {
+        this.propertyId = propertyId;
+        this.name = name;
+        this.typeId = typeId;
+    }
+}
+export class PropType {
+    constructor({ propTypeId, propertyId, name }) {
+        this.propTypeId = propTypeId;
+        this.propertyId = propertyId;
+        this.name = name;
+    }
+}
+export class Note {
+    constructor({ noteId, name, content }) {
+        this.noteId = noteId;
+        this.name = name;
+        this.content = content;
+    }
+}
 //Function to encrypt with SHA-256
 export async function hash(pass) {
     const encoder = new TextEncoder(); // Encodes the password as a byte array
@@ -26,7 +80,8 @@ export function addBoards(username, openBoards) {
     fetchJson('/getBoards', 'POST', { username })
         .then(data => {
             if (data.length > 0) {
-                data.forEach(board => {
+                data.forEach(b => {
+                    //Create elements to display
                     const divBoard = document.createElement('div');
                     const table = document.createElement('table');
                     const title = document.createElement('h3');
@@ -34,21 +89,25 @@ export function addBoards(username, openBoards) {
                     divBoards.appendChild(divBoard);
                     divBoard.appendChild(table);
                     table.appendChild(title);
-                    const boardId = board.board_id;
-                    divBoard.id = boardId;
+                    //Save the object
+                    const board = new Board({ boardId: b.board_id, name: b.name })
+                    //Update div id and text
+                    divBoard.id = board.boardId;
                     title.textContent = board.name;
+                    const boardId = board.boardId;
                     //if openBoards is true, will allow to open the components
                     if (openBoards) {
                         //Call the openComponent to allow go to page of board and save the id of the table
                         openComponent(boardId, "./board.html", "boardId");
                     }
-                    addColumns(board.board_id, table, openBoards);
+                    addColumns(boardId, table, openBoards);
                 });
             }
+            //If there aren't boards display a message
             else {
-                const noNotes = document.getElementById("no-boards")
-                if (noNotes) {
-                    noNotes.textContent = "You don't have boards";
+                const noBoards = document.getElementById("no-boards")
+                if (noBoards) {
+                    noBoards.textContent = "You don't have boards";
                 }
             }
 
@@ -107,19 +166,23 @@ export function addBoards(username, openBoards) {
             console.error("Error fetching board data: ", error);
         });
 }
-//Function to add columns for boards
-export function addColumns(board, table, addData) {
+//Function to display columns for boards
+export function addColumns(boardId, table, addData) {
     const tr = document.createElement('tr');
     table.appendChild(tr);
-    fetchJson('/getColumns', 'POST', { board })
+    fetchJson('/getColumns', 'POST', { boardId: boardId })
         .then(data => {
             if (data.success != false) {
-                data.forEach(column => {
+                data.forEach(c => {
+                    //Save the column info
+                    const column = new Column({ columnId: c.column_id, boardId: boardId, name: c.name, order: c.order });
+                    //Create the columns in the HTML
                     const columnName = document.createElement('th');
                     tr.appendChild(columnName);
                     columnName.textContent = column.name;
+                    //Display cards as lines
                     (async () => {
-                        await addCards(column.column_id, table, addData);
+                        await addCards(column.columnId, table, addData);
                     })();
                 })
             }
@@ -131,7 +194,7 @@ export function addColumns(board, table, addData) {
 }
 //Function to add cards for boards
 function addCards(column, table, addData) {
-    fetchJson('/getCards', 'POST', { column })
+    fetchJson('/getCards', 'POST', { columnId: column })
         .then(data => {
             var i = 0;
             if (data.success != false) {
@@ -168,10 +231,14 @@ export function addNotes(username) {
     fetchJson('/getNotes', 'POST', { username })
         .then(data => {
             if (data.length > 0) {
-                data.forEach(note => {
+                data.forEach(n => {
+                    //Create elements for the DOM
                     const homenote = document.createElement('div');
                     const title = document.createElement('h2');
                     const content = document.createElement('div');
+                    //Save a note object
+                    const note = new Note({ noteId: n.note_id, name: n.name, content: n.content });
+                    //Display note info 
                     title.textContent = note.name;
                     homenote.classList.add('home-note');
                     homenotes.appendChild(homenote);
@@ -246,14 +313,17 @@ export function addColorToEvents(username, month) {
     fetchJson('/addYellowToEvents', 'POST', { username, month })
         .then(data => {
             if (data.length > 0) {
-                data.forEach(event => {
-                    const eventDate = new Date(event.start_date);
+                data.forEach(e => {
+                    //Save the event
+                    const calEvent = new CalendarEvent({ eventId: e.event_id, name: e.name, startDate: e.start_date, endDate: e.endDate, cardId: e.card_id });
+                    //Create a date for the start event
+                    const eventDate = new Date(calEvent.startDate);
                     const eventDay = eventDate.getDate();
+                    //Add yellow color to the day
                     const eventTd = document.getElementById(`calendar-day-${eventDay}`);
                     eventTd.classList.add('yellow-day');
                 })
             }
-
             //Add red to today
             const today = new Date();//Function to add columns for boards
             const todayMonth = today.getMonth() + 1;
@@ -286,20 +356,25 @@ export function openComponent(componentId, page, saveItem) {
 //Get the input when writing and show just the elements that match.
 //If you want to search just for example the board don't add valuesClass, if you want to search the cards of a board add bouth parameters
 export function showSearch(tablesClass, valuesClass) {
+    //When there is an input on the search
     const input = document.getElementById('search-input');
     input.addEventListener('input', () => {
+        //Change it to lower case and save the tables div with the class
         const searchContent = input.value.toLowerCase();
         const tables = document.querySelectorAll(`.${tablesClass}`);
         if (valuesClass) {
             tables.forEach(table => {
+                //Save the values of the tables
                 const values = table.querySelectorAll(`.${valuesClass}`);
-
+                //Check for each value
                 values.forEach(value => {
+                    //Change the value to lower case
                     const valueContent = value.textContent.toLocaleLowerCase();
+                    //If the content includes this text show it
                     if (searchContent === '' || valueContent.includes(searchContent)) {
                         value.classList.remove('hidden');
                     }
-
+                    //If not, hide
                     else {
                         value.classList.add('hidden');
                     }
@@ -307,13 +382,16 @@ export function showSearch(tablesClass, valuesClass) {
                 })
             })
         }
+        //If there are not content inside the table, search it in the table
         else {
             tables.forEach(table => {
+                //Change table content to lower case
                 const tableContent = table.textContent.toLocaleLowerCase();
+                //If the table has this content show it
                 if (searchContent === '' || tableContent.includes(searchContent)) {
                     table.classList.remove('hidden');
                 }
-
+                //If not hide it
                 else {
                     table.classList.add('hidden');
                 }
@@ -323,25 +401,31 @@ export function showSearch(tablesClass, valuesClass) {
 }
 //Function to hide Search if its open
 export function hideSearch(search) {
+    //If its open and without nothing write it
     const searchInput = document.getElementById('search-input');
     if (search === 'display' && searchInput.value == '') {
+        //Hide the search with a transition
         const searchDiv = document.getElementById('search');
-            hideElement(searchInput,200);
-            searchDiv.classList.remove('search-focus');
-            searchInput.value = null;
+        hideElement(searchInput, 200);
+        //Remove white color and value
+        searchDiv.classList.remove('search-focus');
+        searchInput.value = null;
+        //Return that now the search is hidden
         return 'hidden';
     }
 }
 //Function to hide Options Board if its open
 export function hideOptions(options) {
+    //if its open hide with a transition and return hidden
     if (options === 'display') {
         const optionsGeneralDiv = document.getElementById('options-general');
-        hideElement(optionsGeneralDiv,200);
+        hideElement(optionsGeneralDiv, 200);
         return 'hidden';
     }
 }
 //Function to hide Column Options if its open
 export function hideColumnOptions(optionsColumnOpen) {
+    //if its open hide with a transition and return hidden
     if (optionsColumnOpen != 'hidden') {
         const optionsColumnDiv = document.getElementById(`options-column-${optionsColumnOpen}`);
         optionsColumnDiv.classList.add('hidden');
@@ -349,15 +433,21 @@ export function hideColumnOptions(optionsColumnOpen) {
     }
 }
 //Function to hideElement with transition
-export function hideElement(element,time) {
+export function hideElement(element, time) {
+    //Add the class fade-out to change the opacity to 0
     element.classList.add('fade-out');
-    setTimeout(() => {
-        element.style.display = 'none';
-    }, time)
+    //Wait the time specified to change the display
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            element.style.display = 'none';
+        }, time)
+    })
 }
 //Function to show Element with transition
 export function showElement(element) {
+    //Display the element
     element.style.display = ''
+    //Remov the fade-out (change the opacity to 1), waiting for the next render and 50ms
     requestAnimationFrame(() => {
         setTimeout(() => {
             element.classList.remove('fade-out');
@@ -367,18 +457,20 @@ export function showElement(element) {
 
 //Function to change input for the text
 export function addInputToChange(id, textEditing) {
+    //Element is not being edited
     if (id != textEditing) {
         returnToText(textEditing);
     }
+    //Hide the text
     const textToInput = document.getElementById(id);
     textToInput.classList.add('hidden');
+    //Display an input with same content
     const inputChange = document.createElement('input');
     inputChange.value = textToInput.textContent;
     const parent = textToInput.parentNode;
     parent.insertBefore(inputChange, textToInput);
-    //We put the same size and characteristics
+    //Put the same size and style
     const styles = window.getComputedStyle(textToInput);
-    // Copiar estilos visuales importantes
     inputChange.style.fontSize = styles.fontSize;
     inputChange.style.fontFamily = styles.fontFamily;
     inputChange.style.fontWeight = styles.fontWeight;
@@ -390,34 +482,40 @@ export function addInputToChange(id, textEditing) {
     inputChange.style.borderRadius = styles.borderRadius;
     inputChange.style.margin = styles.margin;
     inputChange.style.padding = styles.padding;
+    //For prop-types also copy the width
     if (id.startsWith('prop-type')) {
         inputChange.style.width = styles.width;
     }
+    //Add class and id
     inputChange.classList.add('input-change');
     inputChange.id = `input-change-${id}`;
-    //Focus when click to avoid click twice
+    //Focus when click, to avoid click twice
     inputChange.focus();
     //prevent document.addEventListener for Input when change
     inputChange.addEventListener('click', (event) => {
-        event.stopPropagation(); //prevent document.addEventListener
+        event.stopPropagation();
     })
     return id;
 }
 //Function to update, delete the input and return the text
 export function returnToText(textEditing, change, boardId, propertyColor) {
+    //If something is being edited
     if (textEditing != '') {
+        //Get the text and input
         const textToReturn = document.getElementById(textEditing);
         const inputToDelete = document.getElementById(`input-change-${textEditing}`);
-        if(inputToDelete.value === ''){
-            console.log(inputToDelete);
+        //If the input is empty show an alert
+        if (inputToDelete.value === '') {
             alert('Oops! You forgot to type something.');
             textToReturn.classList.remove('hidden');
             inputToDelete.remove();
             textEditing = '';
         }
+        //Get the new value
         const newName = inputToDelete.value;
+        //Change the name for any type (board, card, etc), then remove the input and update the text
         if (textEditing === 'board-title') {
-            fetchJson('/updateBoardName', 'POST', { newName: newName, board: change })
+            fetchJson('/updateBoardName', 'POST', { newName: newName, boardId: change })
                 .then(() => {
                     textToReturn.textContent = newName;
                     removeAndReturn(inputToDelete, textToReturn);
@@ -427,14 +525,14 @@ export function returnToText(textEditing, change, boardId, propertyColor) {
                 })
         }
         else if (textEditing.startsWith('column-title-')) {
-            fetchJson('/updateColumnName', 'POST', { newName: newName, column: change })
+            fetchJson('/updateColumnName', 'POST', { newName: newName, columnId: change })
                 .then(() => {
                     inputToDelete.parentNode.draggable = true; //Allow move the component again
                     textToReturn.textContent = newName;
                     removeAndReturn(inputToDelete, textToReturn);
                 })
                 .catch(error => {
-                    console.error("Error Updating the board name: ", error);
+                    console.error("Error Updating the name: ", error);
                 })
         }
         else if (textEditing === 'card-edit-name') {
@@ -494,7 +592,7 @@ export function returnToText(textEditing, change, boardId, propertyColor) {
                 })
         }
         return '';
-    
+
     }
     else {
         return '';
@@ -503,6 +601,7 @@ export function returnToText(textEditing, change, boardId, propertyColor) {
 //Function remove text editing
 function removeAndReturn(inputToDelete, textToReturn) {
     inputToDelete.remove();
+    //Wait until animation finish
     requestAnimationFrame(() => {
         textToReturn.classList.remove('hidden');
     });

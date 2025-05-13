@@ -23,13 +23,7 @@ app.use(express.static('public'));
 app.use(express.json());
 
 
-/*Example query*/
-app.get('/users', (req, res) => {
-  db.query('SELECT * FROM User', (err, results) => {
-    if (err) return res.status(500).send(err);
-    res.json(results);
-  });
-});
+
 /*Query for the login*/
 app.post('/login', (req, res) => {
   console.log('Body of the application:', req.body);
@@ -56,17 +50,17 @@ app.post('/login', (req, res) => {
   });
 });
 
-/*Query to check username for signup*/
+/*Query to check if username exists for signup*/
 app.post('/checkUsername', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the username from the body
   const { username } = req.body;
 
   if (!username) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to verify if the user and password are correct
+  // SELECT to verify if the user exists
   db.query('SELECT * FROM users WHERE user_id = ?', [username], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
@@ -81,7 +75,7 @@ app.post('/checkUsername', (req, res) => {
     }
   });
 });
-/*Query to check email for signup*/
+/*Query to check if email exists for signup*/
 app.post('/checkEmail', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the usernames and passwords from the body
@@ -91,14 +85,14 @@ app.post('/checkEmail', (req, res) => {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to verify if the user and password are correct
+  // SELECT to check if there are an email
   db.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
 
-    // If the username doesn't exist will return true
+    // If the email doesn't exist will return true
     if (results.length == 0) {
       return res.status(200).json({ success: true });
     } else {
@@ -110,7 +104,7 @@ app.post('/checkEmail', (req, res) => {
 /*Query to insert a new user for signup*/
 app.post('/insertUser', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the user info from the body
   const { first_name, second_name, username, email, password, avatar } = req.body;
   if (!first_name || !second_name || !username || !email || !password || !avatar) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
@@ -123,28 +117,33 @@ app.post('/insertUser', (req, res) => {
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
 
-    // If the username doesn't exist will return true
-    return res.status(200).json({ success: true });
+    // If the user is inserted will return true
+    if (results.affectedRows > 0) {
+      return res.status(200).json({ success:true });
+    } else {
+      return res.status(200).json({ success: false, message: 'Board not inserted' });
+    }
+
   });
 });
 /*Query to get user first name*/
 app.post('/getUserFirstName', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the username from the body
   const { username } = req.body;
 
   if (!username) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to verify if the user and password are correct
+  // SELECT to get the first name
   db.query('SELECT first_name FROM users WHERE user_id = ?', [username], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
 
-    // If the username doesn't exist will return true
+    // If the username exists will return the first name
     if (results.length > 0) {
       return res.status(200).json({ first_name: results[0].first_name });
     } else {
@@ -155,21 +154,21 @@ app.post('/getUserFirstName', (req, res) => {
 /*Query to get user avatar*/
 app.post('/getAvatar', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the username from the body
   const { username } = req.body;
 
   if (!username) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to show the image for user
+  // SELECT to show the image from user
   db.query('SELECT image_url FROM users WHERE user_id = ?', [username], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
 
-    // If the username doesn't exist will return true
+    // If the username exists and have an image will return the image
     if (results.length > 0) {
       return res.status(200).json({ image_url: results[0].image_url });
     } else {
@@ -179,22 +178,21 @@ app.post('/getAvatar', (req, res) => {
 });
 //Query to show the boards of a user
 app.post('/getBoards', (req, res) => {
-  console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the username from the body
   const { username } = req.body;
 
   if (!username) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to show the image for user
+  // SELECT to show the boards for user (order by last updated)
   db.query('SELECT board_id, name FROM boards WHERE user_id = ? ORDER BY last_updated DESC', [username], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
 
-    // If the username doesn't exist will return true
+    // If there are boards return them
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
@@ -205,21 +203,21 @@ app.post('/getBoards', (req, res) => {
 //Query to show the columns of a board
 app.post('/getColumns', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
-  const { board } = req.body;
+  // Takes the board from the body
+  const { boardId } = req.body;
 
-  if (!board) {
+  if (!boardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to show the image for user
-  db.query('SELECT column_id, name FROM `columns` WHERE board_id=? ORDER By `order`; ', [board], (err, results) => {
+  // SELECT to show the columns from a board
+  db.query('SELECT column_id, name, `order` FROM `columns` WHERE board_id=? ORDER By `order`; ', [boardId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
 
-    // If the username doesn't exist will return true
+    // If there are columns return them
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
@@ -231,20 +229,20 @@ app.post('/getColumns', (req, res) => {
 app.post('/getCardsNumber', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the usernames and passwords from the body
-  const { column } = req.body;
+  const { columnId } = req.body;
 
-  if (!column) {
+  if (!columnId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
   // SELECT to show the number of cards for a column
-  db.query('SELECT count(*) AS number FROM `cards` WHERE column_id=?', [column], (err, results) => {
+  db.query('SELECT count(*) AS number FROM `cards` WHERE column_id=?', [columnId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
 
-    // If the username doesn't exist will return true
+    // If there are cards return them
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
@@ -255,21 +253,21 @@ app.post('/getCardsNumber', (req, res) => {
 //Query to show cards of a column
 app.post('/getCards', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
-  const { column } = req.body;
+  // Takes the column id
+  const { columnId } = req.body;
 
-  if (!column) {
+  if (!columnId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
   // SELECT to show the number of cards for a column
-  db.query('SELECT * FROM `cards` WHERE column_id=? ORDER By `order`', [column], (err, results) => {
+  db.query('SELECT * FROM `cards` WHERE column_id=? ORDER By `order`', [columnId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
 
-    // If the username doesn't exist will return true
+    // If there are cards return them
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
@@ -280,21 +278,21 @@ app.post('/getCards', (req, res) => {
 //Query to show content of a card
 app.post('/getCardContent', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the card
   const { cardId } = req.body;
 
   if (!cardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to show the number of cards for a column
+  // SELECT to show content from card
   db.query('SELECT content FROM `cards` WHERE card_id=?', [cardId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
 
-    // If the username doesn't exist will return true
+    // If the card has content return it
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
@@ -302,24 +300,24 @@ app.post('/getCardContent', (req, res) => {
     }
   });
 });
-//Query to show cards of a column
-app.post('/getProperties', (req, res) => {
+//Query to show properties of a card
+app.post('/getCardPropTypes', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
-  const { card } = req.body;
+  // Takes the card id from the body
+  const { cardId } = req.body;
 
-  if (!card) {
+  if (!cardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
   // SELECT to show properties of a card
-  db.query('SELECT PT.prop_type_id, PT.name AS prop_type_name, P.name AS property_name, P.property_id FROM card_prop_types CPT, prop_types PT, properties P WHERE CPT.prop_type_id=PT.prop_type_id AND PT.property_id=P.property_id AND CPT.card_id = ?; ', [card], (err, results) => {
+  db.query('SELECT PT.prop_type_id, PT.name AS prop_type_name, P.name AS property_name, P.property_id FROM card_prop_types CPT, prop_types PT, properties P WHERE CPT.prop_type_id=PT.prop_type_id AND PT.property_id=P.property_id AND CPT.card_id = ?; ', [cardId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
 
-    // If the username doesn't exist will return true
+    // If there are properties return them
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
@@ -327,24 +325,24 @@ app.post('/getProperties', (req, res) => {
     }
   });
 });
-//Query to show all properties and selected card
+//Query to show all properties and selected type
 app.post('/getPropertiesAndTypes', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the card and board from the body
   const { cardId, boardId } = req.body;
 
   if (!cardId || !boardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to show properties of a card
+  // SELECT to show all properties of a board and card corresponding type
   db.query('SELECT P.name AS property_name, P.property_id AS property_id, COALESCE( MAX(CASE WHEN CPT.card_id IS NOT NULL THEN PT.name ELSE NULL END), NULL ) AS prop_type_name, COALESCE( MAX(CASE WHEN CPT.card_id IS NOT NULL THEN PT.prop_type_id ELSE NULL END), NULL ) AS prop_type_id FROM properties P LEFT JOIN prop_types PT ON P.property_id = PT.property_id LEFT JOIN card_prop_types CPT ON PT.prop_type_id = CPT.prop_type_id AND CPT.card_id = ? WHERE P.board_id = ? GROUP BY P.name, P.property_id; ', [cardId, boardId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
 
-    // If the username doesn't exist will return true
+    // If there are properties return them
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
@@ -352,10 +350,10 @@ app.post('/getPropertiesAndTypes', (req, res) => {
     }
   });
 });
-//Query to show all property Types and selected card
+//Query to show all property Types of a card
 app.post('/getPropTypes', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the property id from the body
   const { propertyId } = req.body;
 
   if (!propertyId) {
@@ -369,7 +367,7 @@ app.post('/getPropTypes', (req, res) => {
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
 
-    // If the username doesn't exist will return true
+    // If there are properties return them
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
@@ -382,7 +380,7 @@ app.post('/getPropTypes', (req, res) => {
 //Query to show the notes of a user
 app.post('/getNotes', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the username from the body
   const { username } = req.body;
 
   if (!username) {
@@ -396,7 +394,7 @@ app.post('/getNotes', (req, res) => {
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
 
-    // If there is more than one note will return true
+    // If there is more than one note will return them
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
@@ -407,21 +405,21 @@ app.post('/getNotes', (req, res) => {
 //Query to show first event
 app.post('/getUpcomingEvent', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the username from the body
   const { username } = req.body;
 
   if (!username) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to show first event
-  db.query('SELECT * FROM events E, calendars C WHERE E.end_date >= CURRENT_DATE AND C.user_id=? AND E.calendar_id = C.calendar_id ORDER BY E.end_date LIMIT 1;', [username], (err, results) => {
+  // SELECT to show next event (ORDER BY end date)
+  db.query('SELECT * FROM events WHERE end_date >= CURRENT_DATE AND user_id=? ORDER BY end_date LIMIT 1;', [username], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
 
-    // If there is more than one note will return true
+    // If there is more than one event will return it
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
@@ -433,21 +431,21 @@ app.post('/getUpcomingEvent', (req, res) => {
 //Query to show last used board last column
 app.post('/getLastUsedBoardLastColumn', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the username from the body
   const { username } = req.body;
 
   if (!username) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT last used board last column from a user
+  // SELECT last used board with columns order by ('order') from a user
   db.query('SELECT C.name, C.column_id, C.board_id FROM `columns` C, boards B WHERE B.board_id =(SELECT board_id FROM boards WHERE user_id=? ORDER BY last_updated DESC LIMIT 1) AND B.board_id = C.board_id ORDER BY `order` DESC;  ', [username], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
 
-    // If there is more than one note will return true
+    // If there is more than one column will return it
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
@@ -458,7 +456,7 @@ app.post('/getLastUsedBoardLastColumn', (req, res) => {
 //Query to get the board with the board_id
 app.post('/getBoardById', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the board id from the body
   const { boardId } = req.body;
 
   if (!boardId) {
@@ -483,7 +481,7 @@ app.post('/getBoardById', (req, res) => {
 //Query to show month events
 app.post('/addYellowToEvents', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the usernames and month from the body
   const { username, month } = req.body;
 
   if (!username || !month) {
@@ -491,13 +489,13 @@ app.post('/addYellowToEvents', (req, res) => {
   }
 
   // SELECT to show month events for a user
-  db.query('SELECT * FROM events E, calendars C WHERE MONTH(E.start_date) = ? AND C.user_id=? AND E.calendar_id = C.calendar_id;', [month, username], (err, results) => {
+  db.query('SELECT * FROM events WHERE MONTH(start_date) = ? AND user_id=?', [month, username], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
 
-    // If there is more than one note will return true
+    // If there is more than one event will return it
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
@@ -508,21 +506,21 @@ app.post('/addYellowToEvents', (req, res) => {
 //Update Board Name
 app.post('/updateBoardName', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
-  const { newName, board } = req.body;
+  // Takes the newName and board id from the body
+  const { newName, boardId } = req.body;
 
-  if (!newName || !board) {
+  if (!newName || !boardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to show month events for a user
-  db.query('UPDATE boards SET name = ?,last_updated = NOW() WHERE board_id = ?;', [newName, board], (err, results) => {
+  // Update the name of a board and the last_updated
+  db.query('UPDATE boards SET name = ?,last_updated = NOW() WHERE board_id = ?;', [newName, boardId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
 
-    // If there is more than one note will return true
+    // If there is a change return true
     if (results.affectedRows > 0) {
       return res.status(200).json(results);
     } else {
@@ -533,22 +531,23 @@ app.post('/updateBoardName', (req, res) => {
 //Update Column Name
 app.post('/updateColumnName', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
-  const { newName, column } = req.body;
+  // Takes the new name and column id from the body
+  const { newName, columnId } = req.body;
 
-  if (!newName || !column) {
+  if (!newName || !columnId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
   // SELECT to show month events for a user
-  db.query('UPDATE `columns` SET `name`=? WHERE `column_id`=?;', [newName, column], (err, results) => {
+  db.query('UPDATE `columns` SET `name`=? WHERE `column_id`=?;', [newName, columnId], (err, results) => {
     console.log('Resultado de la segunda consulta:', results);
 
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-    db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [column], (err, results) => {
+    //Update last updated board
+    db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [columnId], (err, results) => {
       if (err) {
         console.error('Error in the query:', err);
         return res.status(500).json({ success: false, message: 'Error in the update time query' });
@@ -556,7 +555,7 @@ app.post('/updateColumnName', (req, res) => {
 
     });
 
-    // If there is more than one note will return true
+    // If it's inserted return the results
     if (results.affectedRows > 0) {
       return res.status(200).json(results);
     } else {
@@ -568,14 +567,14 @@ app.post('/updateColumnName', (req, res) => {
 //Update Card Name
 app.post('/updateCardName', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the newname, card id and board id from the body
   const { newName, cardId, boardId } = req.body;
 
   if (!newName || !cardId || !boardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to show month events for a user
+  // update card name
   db.query('UPDATE `cards` SET `name`=? WHERE `card_id`=?;', [newName, cardId], (err, results) => {
     console.log('Resultado de la segunda consulta:', results);
 
@@ -583,6 +582,7 @@ app.post('/updateCardName', (req, res) => {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
+    //Update las updated board
     db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ? ', [boardId], (err, results) => {
       if (err) {
         console.error('Error in the query:', err);
@@ -591,7 +591,7 @@ app.post('/updateCardName', (req, res) => {
 
     });
 
-    // If there is more than one note will return true
+    // If there is a insertion return results
     if (results.affectedRows > 0) {
       return res.status(200).json(results);
     } else {
@@ -611,12 +611,13 @@ app.post('/updateColumnOrderIncrease', (req, res) => {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to show month events for a user
+  // Update the order of columns by decrementing the order of columns after the selected one
   db.query('UPDATE `columns` AS c  JOIN ( SELECT `order`,`board_id` FROM `columns` WHERE column_id = ? LIMIT 1 ) AS subquery ON c.`board_id` = subquery.`board_id` AND c.`order` <= ? AND c.`order` >= subquery.`order` SET c.`order` = c.`order` - 1; ', [columnId, newOrder], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the moved' });
     }
+    //Update column new order
     db.query('UPDATE `columns` SET `order`=? WHERE `column_id`=?;', [newOrder, columnId], (err, results) => {
       console.log('Resultado de la segunda consulta:', results);
       if (err) {
@@ -628,6 +629,14 @@ app.post('/updateColumnOrderIncrease', (req, res) => {
           console.error('Error in the query:', err);
           return res.status(500).json({ success: false, message: 'Error in the update time query' });
         }
+        //Update last updated board
+        db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [columnId], (err, results) => {
+          if (err) {
+            console.error('Error in the query:', err);
+            return res.status(500).json({ success: false, message: 'Error in the update time query' });
+          }
+    
+        });
       });
     })
 
@@ -665,6 +674,7 @@ app.post('/updateColumnOrderDecrease', (req, res) => {
         console.error('Error in the query:', err);
         return res.status(500).json({ success: false, message: 'Error in the dragging' });
       }
+      //Update last updated board
       db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [columnId], (err, results) => {
         if (err) {
           console.error('Error in the query:', err);
@@ -681,28 +691,29 @@ app.post('/updateColumnOrderDecrease', (req, res) => {
     });
   });
 });
-//Update Card Order when move from left to right
+//Update Card Order when move from bottom to top
 app.post('/updateCardOrderIncrease', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the board id, card id and new order from the body
   const { boardId, cardId, newOrder } = req.body;
 
   if (!boardId || !cardId || isNaN(newOrder)) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
-  //Just update card position in the column
-  // Update cards order in column
+  // Update the order of cards by decrementing the order of cards after the selected one
   db.query('UPDATE `cards` AS c  JOIN ( SELECT `order`,`column_id` FROM `cards` WHERE card_id = ? LIMIT 1 ) AS subquery ON c.`column_id` = subquery.`column_id` AND c.`order` <= ? AND c.`order` >= subquery.`order` SET c.`order` = c.`order` - 1; ', [cardId, newOrder], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the moved' });
     }
+    //Update card order
     db.query('UPDATE `cards` SET `order`=? WHERE `card_id`=?;', [newOrder, cardId], (err, results) => {
       console.log('Resultado de la segunda consulta:', results);
       if (err) {
         console.error('Error in the query:', err);
         return res.status(500).json({ success: false, message: 'Error in the dragging' });
       }
+      //Update last updated
       db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?', [boardId], (err, results) => {
         if (err) {
           console.error('Error in the query:', err);
@@ -715,7 +726,7 @@ app.post('/updateCardOrderIncrease', (req, res) => {
     if (results.affectedRows > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Column not found' });
+      return res.status(200).json({ success: false, message: 'Card not found' });
     }
   });
 });
@@ -726,10 +737,10 @@ app.post('/updateCardOrderDecrease', (req, res) => {
   // Get values from the request body
   const { boardId, cardId, newOrder } = req.body;
   // Validate that the necessary data is provided
-  if ( !boardId || !cardId || isNaN(newOrder)) {
+  if (!boardId || !cardId || isNaN(newOrder)) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
-  // Update the order of columns by incrementing the order of columns after the selected one
+  // Update the order of cards by incrementing the order of cards after the selected one
   db.query('UPDATE `cards` AS c JOIN (SELECT `order`, `column_id` FROM `cards` WHERE card_id = ? LIMIT 1) AS subquery ON c.`column_id` = subquery.`column_id` AND c.`order` <= subquery.`order` AND c.`order` >= ?  SET c.`order` = c.`order` + 1;', [cardId, newOrder], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
@@ -742,6 +753,7 @@ app.post('/updateCardOrderDecrease', (req, res) => {
         console.error('Error in the query:', err);
         return res.status(500).json({ success: false, message: 'Error in the dragging' });
       }
+      //Update last updated column
       db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?', [boardId], (err, results) => {
         if (err) {
           console.error('Error in the query:', err);
@@ -752,9 +764,9 @@ app.post('/updateCardOrderDecrease', (req, res) => {
 
       // Check if the update was successful
       if (results.affectedRows > 0) {
-        return res.status(200).json({ success: true, message: 'Column order updated successfully', data: results });
+        return res.status(200).json({ success: true, message: 'Card order updated successfully', data: results });
       } else {
-        return res.status(404).json({ success: false, message: 'Column not found' });
+        return res.status(404).json({ success: false, message: 'Card not found' });
       }
     });
   });
@@ -770,24 +782,26 @@ app.post('/updateCardDifferentColumn', (req, res) => {
   if (!oldColumnId || !newColumnId || !cardId || isNaN(newOrder)) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
-  // Update cards order in column
+  // Update cards order in column, dcecrement order in bigger order (wher it was)
   db.query('UPDATE `cards` AS c  JOIN ( SELECT `order`, `column_id` FROM `cards` WHERE card_id = ? LIMIT 1 ) AS subquery ON c.`column_id` = subquery.`column_id` AND c.`order` >= subquery.`order` SET c.`order` = c.`order` - 1;', [cardId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the moved 1' });
     }
-    //Update cards in future column
+    //Update cards in future column, increment order in bigger order (where it will be)
     db.query('UPDATE `cards` SET `order`=`order` + 1 WHERE `order` >= ? AND column_id = ?; ', [newOrder, newColumnId], (err, results) => {
       if (err) {
         console.error('Error in the query:', err);
         return res.status(500).json({ success: false, message: 'Error in the moved 2' });
       }
+      //Update card column and order
       db.query('UPDATE `cards` SET `order`=?, column_id = ? WHERE `card_id`=?;', [newOrder, newColumnId, cardId], (err, results) => {
         console.log('Resultado de la segunda consulta:', results);
         if (err) {
           console.error('Error in the query:', err);
           return res.status(500).json({ success: false, message: 'Error in the dragging' });
         }
+        //Update board last_updated
         db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [newColumnId], (err, results) => {
           if (err) {
             console.error('Error in the query:', err);
@@ -797,7 +811,7 @@ app.post('/updateCardDifferentColumn', (req, res) => {
 
       })
     })
-    // If there is more than one note will return true
+    // If there is cahange will return it
     if (results.affectedRows > 0) {
       return res.status(200).json(results);
     } else {
@@ -809,7 +823,7 @@ app.post('/updateCardDifferentColumn', (req, res) => {
 //Insert Board
 app.post('/insertBoard', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the usernames and newBoardName from the body
   const { newBoardName, username } = req.body;
 
   //Generate the column_id with UUID v4
@@ -821,13 +835,13 @@ app.post('/insertBoard', (req, res) => {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to show month events for a user
+  // INSERT new board with the id, user, name, and last_update (now)
   db.query('INSERT INTO `boards`(`board_id`, `user_id`, `name`, `last_updated`) VALUES (?,?,?,(SELECT NOW())); ', [newBoardId, username, newBoardName], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-    // If there is more than one note will return true
+    // If it is inserted correctly return the boardId
     if (results.affectedRows > 0) {
       return res.status(200).json({ boardId: newBoardId });
     } else {
@@ -839,7 +853,7 @@ app.post('/insertBoard', (req, res) => {
 //Insert Column
 app.post('/insertColumn', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the newColumnName and boardId from the body
   const { newColumnName, boardId } = req.body;
 
   //Generate the column_id with UUID v4
@@ -851,12 +865,13 @@ app.post('/insertColumn', (req, res) => {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // Insert a new column
+  // Insert a new column with the id, name and board ID
   db.query('INSERT INTO `columns`(`column_id`, `name`, `board_id`) VALUES (?,?,?);', [newColumnId, newColumnName, boardId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
+    //Update the last_updated board
     db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [newColumnId], (err, results) => {
       if (err) {
         console.error('Error in the query:', err);
@@ -864,8 +879,7 @@ app.post('/insertColumn', (req, res) => {
       }
 
     });
-
-    // If there is more than one note will return true
+    // If it is inserted will return the data
     if (results.affectedRows > 0) {
       return res.status(200).json({ columnId: newColumnId, columnName: newColumnName, boardId: boardId });
     } else {
@@ -876,10 +890,10 @@ app.post('/insertColumn', (req, res) => {
 //Insert Card
 app.post('/insertCard', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the newCardName and columnId from the body
   const { newCardName, columnId } = req.body;
 
-  //Generate the column_id with UUID v4
+  //Generate the card_id with UUID v4
   const { v4: uuidv4 } = require('uuid');
   const newCardId = uuidv4();
 
@@ -887,12 +901,13 @@ app.post('/insertCard', (req, res) => {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to show month events for a user
+  // Insert the card with the id, name and columnId
   db.query('INSERT INTO `cards`(`card_id`, `name`, `column_id`) VALUES (?,?,?);', [newCardId, newCardName, columnId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
+    //Update the board last_updated to now
     db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [columnId], (err, results) => {
       if (err) {
         console.error('Error in the query:', err);
@@ -901,7 +916,7 @@ app.post('/insertCard', (req, res) => {
 
     });
 
-    // If there is more than one note will return true
+    // If it is inserted return the data of the card
     if (results.affectedRows > 0) {
       return res.status(200).json({ cardId: newCardId, cardName: newCardName, columnId: columnId });
     } else {
@@ -912,10 +927,10 @@ app.post('/insertCard', (req, res) => {
 //Insert Property
 app.post('/insertProperty', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the newPropertyName and boardId from the body
   const { newPropertyName, boardId } = req.body;
 
-  //Generate the column_id with UUID v4
+  //Generate the property_id with UUID v4
   const { v4: uuidv4 } = require('uuid');
   const newPropertyId = uuidv4();
 
@@ -923,12 +938,13 @@ app.post('/insertProperty', (req, res) => {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to show month events for a user
+  // INSERT the property with the id, name and board Id
   db.query('INSERT INTO `properties`(`property_id`, `name`, `board_id`) VALUES (?,?,?);', [newPropertyId, newPropertyName, boardId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
+    //Update the last_updated board
     db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?', [boardId], (err, results) => {
       if (err) {
         console.error('Error in the query:', err);
@@ -937,7 +953,7 @@ app.post('/insertProperty', (req, res) => {
 
     });
 
-    // If there is more than one note will return true
+    // If it is inserted return the property data
     if (results.affectedRows > 0) {
       return res.status(200).json({ property_id: newPropertyId, property_name: newPropertyName, board_id: boardId });
     } else {
@@ -948,10 +964,10 @@ app.post('/insertProperty', (req, res) => {
 //Insert Property Type
 app.post('/insertPropType', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the newPropTypeName, propertyId and boardId from the body
   const { newPropTypeName, propertyId, boardId } = req.body;
 
-  //Generate the column_id with UUID v4
+  //Generate the prop_type_id with UUID v4
   const { v4: uuidv4 } = require('uuid');
   const newPropTypeId = uuidv4();
 
@@ -959,12 +975,13 @@ app.post('/insertPropType', (req, res) => {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to show month events for a user
+  // Insert new prop type with the id, name and property id
   db.query('INSERT INTO `prop_types`(`prop_type_id`, `name`, `property_id`) VALUES (?,?,?)', [newPropTypeId, newPropTypeName, propertyId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
+    //Update last_updated column
     db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?', [boardId], (err, results) => {
       if (err) {
         console.error('Error in the query:', err);
@@ -985,26 +1002,24 @@ app.post('/insertPropType', (req, res) => {
 //Remove Board
 app.post('/deleteBoard', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the username from the body
   const { boardId } = req.body;
-
-
   if (!boardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to show month events for a user
+  // Delete board with the id
   db.query('DELETE FROM `boards` WHERE board_id=?; ', [boardId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
 
-    // If there is more than one note will return true
+    // If it is deleted return the results
     if (results.affectedRows > 0) {
       return res.status(200).json({ results });
     } else {
-      return res.status(200).json({ success: false, message: 'Column not found' });
+      return res.status(200).json({ success: false, message: 'Board not deleted' });
     }
   });
 
@@ -1013,7 +1028,7 @@ app.post('/deleteBoard', (req, res) => {
 //Remove Column
 app.post('/deleteColumn', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the column id from the body
   const { columnId } = req.body;
   if (!columnId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
@@ -1024,7 +1039,7 @@ app.post('/deleteColumn', (req, res) => {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-    // Delete column
+    // Delete column with the id
     db.query('DELETE FROM `columns` WHERE column_id=?; ', [columnId], (err, results) => {
       if (err) {
         console.error('Error in the query:', err);
@@ -1038,31 +1053,29 @@ app.post('/deleteColumn', (req, res) => {
         }
       });
     });
-    // If there is more than one note will return true
+    // If it is deleted return the results
     if (results.affectedRows > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Board not found' });
+      return res.status(200).json({ success: false, message: 'Column not deleted' });
     }
   });
 });
 //Remove Card
 app.post('/deleteCard', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the cardId and boardId from the body
   const { cardId, boardId } = req.body;
-
-
   if (!cardId || !boardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
-  //Move the columns to the left after the column
+  //Move the cards to the bottom after the column
   db.query('UPDATE `cards` c JOIN (SELECT `order`, `column_id` FROM cards WHERE card_id = ? LIMIT 1) subquery ON c.`order` > subquery.`order` AND c.column_id = subquery.`column_id` SET c.`order` = c.`order` - 1;', [cardId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-    // Delete column
+    // Delete card with the id
     db.query('DELETE FROM `cards` WHERE card_id=?; ', [cardId], (err, results) => {
       if (err) {
         console.error('Error in the query:', err);
@@ -1076,24 +1089,24 @@ app.post('/deleteCard', (req, res) => {
         }
       });
     });
-    // If there is more than one note will return true
+    // If it is deleted return the results
     if (results.affectedRows > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Card not found' });
+      return res.status(200).json({ success: false, message: 'Card not deleted' });
     }
   });
 });
 //Remove Property
 app.post('/deleteProperty', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the propertyId and boardId from the body
   const { propertyId, boardId } = req.body;
 
   if (!propertyId || !boardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
-  // Delete property
+  // Delete property with the id
   db.query('DELETE FROM `properties` WHERE property_id=?; ', [propertyId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
@@ -1106,25 +1119,25 @@ app.post('/deleteProperty', (req, res) => {
         return res.status(500).json({ success: false, message: 'Error in the update time query' });
       }
     });
-    // If there is more than one note will return true
+    // If it is deleted will return the results
     if (results.affectedRows > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Card not found' });
+      return res.status(200).json({ success: false, message: 'Property not deleted' });
     }
   });
 
 });
-//Remove Property
+//Remove Property Type
 app.post('/deletePropType', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the propTypeId and boardId from the body
   const { propTypeId, boardId } = req.body;
 
   if (!propTypeId || !boardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
-  // Delete property Type
+  // Delete property Type with the id
   db.query('DELETE FROM `prop_types` WHERE prop_type_id = ?; ', [propTypeId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
@@ -1137,7 +1150,7 @@ app.post('/deletePropType', (req, res) => {
         return res.status(500).json({ success: false, message: 'Error in the update time query' });
       }
     });
-    // If there is more than one note will return true
+    // If it is deleted will return the results
     if (results.affectedRows > 0) {
       return res.status(200).json(results);
     } else {
@@ -1149,13 +1162,13 @@ app.post('/deletePropType', (req, res) => {
 //Remove Property Type for the card
 app.post('/deletePropTypeCard', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the propTypeId, cardId and boardId from the body
   const { propTypeId, cardId, boardId } = req.body;
 
   if (!propTypeId || !cardId || !boardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
-  // Delete property Type
+  // Delete property Type from the card with bouth ids
   db.query('DELETE FROM `card_prop_types` WHERE card_id=? AND prop_type_id=?; ', [cardId, propTypeId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
@@ -1171,7 +1184,7 @@ app.post('/deletePropTypeCard', (req, res) => {
       if (results.affectedRows > 0) {
         return res.status(200).json(results);
       } else {
-        return res.status(200).json({ success: false, message: 'Prop Type not found' });
+        return res.status(200).json({ success: false, message: 'Prop Type not deleted from the card' });
       }
     });
 
@@ -1181,21 +1194,21 @@ app.post('/deletePropTypeCard', (req, res) => {
 //Get event from cards
 app.post('/getEventFromCard', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the card id from the body
   const { cardId } = req.body;
 
   if (!cardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to verify if the user and password are correct
+  // SELECT the event for the card id
   db.query('SELECT E.start_date, E.end_date, E.event_id, E.name FROM `cards` C, `events` E WHERE C.card_id = E.card_id AND C.card_id= ? LIMIT 1;', [cardId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
 
-    // If the event doesn't exist will return true
+    // If the event doesn't exist will return false
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
@@ -1206,22 +1219,21 @@ app.post('/getEventFromCard', (req, res) => {
 //Insert an event
 app.post('/insertEventUser', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the username, eventName, startDate, endDate, cardId and boardId from the body
   const { username, eventName, startDate, endDate, cardId, boardId } = req.body;
   if (!username || !eventName || !startDate || !endDate || !cardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
-  //Generate the cevent_id with UUID v4
+  //Generate the event_id with UUID v4
   const { v4: uuidv4 } = require('uuid');
   const eventId = uuidv4();
-  // SELECT to show month events for a user
+  // Insert the event with id, name, start and end date, card id and user id
   db.query('INSERT INTO `events`(`event_id`, `name`, `start_date`, `end_date`, `card_id`, `user_id`) VALUES (?,?,?,?,?,?);', [eventId, eventName, startDate, endDate, cardId, username], (err, results) => {
-    console.log('Resultado de la segunda consulta:', results);
-
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
+    //Update last_updated
     db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?', [boardId], (err, results) => {
       if (err) {
         console.error('Error in the query:', err);
@@ -1229,29 +1241,30 @@ app.post('/insertEventUser', (req, res) => {
       }
 
     });
-    // If there is more than one note will return true
+    // If it is inserted will return the event id
     if (results.affectedRows > 0) {
       return res.status(200).json({ eventId: eventId });
     } else {
-      return res.status(200).json({ success: false, message: 'Column not found' });
+      return res.status(200).json({ success: false, message: 'Event not inserted' });
     }
   });
 });
 //update an event
 app.post('/updateEventDate', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the startDate, endDate, eventId and boardId from the body
   const { startDate, endDate, eventId, boardId } = req.body;
   if (!startDate || !endDate || !eventId, !boardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to show month events for a user
+  // Update start and end dat for the event id
   db.query('UPDATE `events` SET `start_date`=?,`end_date`=? WHERE event_id=?;', [startDate, endDate, eventId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
+    //Update last_updated board
     db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?', [boardId], (err, results) => {
       if (err) {
         console.error('Error in the query:', err);
@@ -1259,11 +1272,11 @@ app.post('/updateEventDate', (req, res) => {
       }
 
     });
-    // If there is more than one note will return true
+    // If it is updated will return the results
     if (results.affectedRows > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Column not found' });
+      return res.status(200).json({ success: false, message: 'Event not Updated' });
     }
   });
 });
@@ -1271,21 +1284,20 @@ app.post('/updateEventDate', (req, res) => {
 //Update Card Content
 app.post('/updateCardContent', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the cardId, content and boardId from the body
   const { cardId, content, boardId } = req.body;
 
   if (!cardId || !boardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to show month events for a user
+  // Update card content for the card id
   db.query('UPDATE `cards` SET `content`=? WHERE `card_id`=?;', [content, cardId], (err, results) => {
-    console.log('Resultado de la segunda consulta:', results);
-
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
+    //Update last_updated
     db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ? ', [boardId], (err, results) => {
       if (err) {
         console.error('Error in the query:', err);
@@ -1294,11 +1306,11 @@ app.post('/updateCardContent', (req, res) => {
 
     });
 
-    // If there is more than one note will return true
+    // If it is updated will return the results
     if (results.affectedRows > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Column not found' });
+      return res.status(200).json({ success: false, message: 'Card not Updated' });
     }
   });
 
@@ -1306,19 +1318,20 @@ app.post('/updateCardContent', (req, res) => {
 //Query to insert Property Type for a property of a card
 app.post('/insertCardPropertyType', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the propTypeId, cardId and boardId from the body
   const { propTypeId, cardId, boardId } = req.body;
 
   if (!propTypeId || !cardId || !boardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to show properties of a card
+  // insert the relation between the card id and the prop_type_id
   db.query('INSERT INTO `card_prop_types`(`card_id`, `prop_type_id`) VALUES (?,?)', [cardId, propTypeId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
+    //Update last_updated
     db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ? ', [boardId], (err, results) => {
       if (err) {
         console.error('Error in the query:', err);
@@ -1329,7 +1342,7 @@ app.post('/insertCardPropertyType', (req, res) => {
     if (results.affectedRows > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Property not updated' });
+      return res.status(200).json({ success: false, message: 'Property Type not updated' });
     }
   });
 });
@@ -1360,7 +1373,7 @@ app.post('/updateCardPropertyType', (req, res) => {
     if (results.affectedRows > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Property not updated' });
+      return res.status(200).json({ success: false, message: 'Property Type not updated' });
     }
   });
 });
@@ -1372,13 +1385,13 @@ app.post('/updatePropertyName', (req, res) => {
   if (!newName || !propertyId || !boardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
-
+  //Update property name with id
   db.query('UPDATE `properties` SET `name`=? WHERE property_id = ?', [newName, propertyId], (err, propResult) => {
     if (err) {
       console.error('Error updating property:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-
+    //Update lats_updated board
     db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?', [boardId], (err, boardResult) => {
       if (err) {
         console.error('Error updating board timestamp:', err);
@@ -1395,19 +1408,18 @@ app.post('/updatePropertyName', (req, res) => {
 });
 //Query to update Property Type Name
 app.post('/updatePropTypeName', (req, res) => {
-  console.log('Body of the application:', req.body);
   const { newName, propTypeId, boardId } = req.body;
 
   if (!newName || !propTypeId || !boardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
-
+  //Update prop_type name with the id
   db.query('UPDATE `prop_types` SET `name`=? WHERE prop_type_id =?', [newName, propTypeId], (err, propResult) => {
     if (err) {
       console.error('Error updating property:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-
+    //Update last updtade board
     db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?', [boardId], (err, boardResult) => {
       if (err) {
         console.error('Error updating board timestamp:', err);

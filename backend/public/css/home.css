@@ -18,48 +18,6 @@
     margin-left: 5%;
     margin-right: 5%;
 }
-/*Divs for all the components display (boards, calendar, notes, etc.)*/
-#half-board {
-    grid-area: halfboard;
-    background: #DBCCB7;
-    padding: 20px;
-    border-radius: 20px;
-}
-.half-calendar {
-    grid-area: halfcalendar;
-    background: black;
-    padding: 20px;
-    border-radius: 20px;
-    color: white;
-    /*We center the content*/
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-}
-.half-calendar:hover {
-    background-color: #444444;
-}
-
-.half-task {
-    grid-area: halftask;
-    background: #D9D9D9;
-    padding: 20px;
-    border-radius: 20px;
-}
-.half-event {
-    grid-area: halfevent;
-    background: #D9D9D9;
-    padding: 20px;
-    border-radius: 20px;
-}
-.half-notes {
-    grid-area: halfnotes;
-    background: #DBCCB7;
-    padding: 20px;
-    border-radius: 20px;
-}
 
 /*Tables of the boards font style and bordercolor*/
 #half-board th {
@@ -73,6 +31,7 @@
     text-overflow: ellipsis;
 }
 
+/*Table for the board info (space)*/
 #half-board table {
     border-spacing: 10px;
 }
@@ -109,61 +68,74 @@
     overflow: auto;
     /*Enables horizontal and vertical scrolling*/
 }
-    #half-board {
-        grid-area: halfboard;
-        background: #DBCCB7;
-        padding: 20px;
-        border-radius: 20px;
-    }
+/*Div for board, border and color*/
+#half-board {
+    grid-area: halfboard;
+    background: #DBCCB7;
+    padding: 20px;
+    border-radius: 20px;
+}
+/*Div for calendar, border and color, center with flex*/
+.half-calendar {
+    grid-area: halfcalendar;
+    background: black;
+    padding: 20px;
+    border-radius: 20px;
+    color: white;
+    /*We center the content*/
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
-    .half-calendar {
-        grid-area: halfcalendar;
-        background: black;
-        padding: 20px;
-        border-radius: 20px;
-        color: white;
-        /*We center the content*/
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+}
+/*Change color of the calendar when hover*/
+.half-calendar:hover {
+    background-color: #444444;
+}
+/*Red for a calentar day (Today)*/
+.red-day {
+    background-color: red;
+    border-radius: 100%;
+    height: 20px;
+    min-width: 20px;
+    width: auto;
+}
+/*task percentage div, border and color*/
+.half-task {
+    grid-area: halftask;
+    background: #D9D9D9;
+    padding: 20px;
+    border-radius: 20px;
+}
+/*Div for events, border and color*/
+.half-event {
+    grid-area: halfevent;
+    background: #D9D9D9;
+    padding: 20px;
+    border-radius: 20px;
+}
+/*Div for notes, border and color*/
+.half-notes {
+    grid-area: halfnotes;
+    background: #DBCCB7;
+    padding: 20px;
+    border-radius: 20px;
+}
+/*table with board info (space between)*/
+#half-board table {
+    border-spacing: 10px;
+}
 
-    }
+/*This will be a representation of the events like ellipses*/
+.home-lit-event {
+    border-radius: 20px;
+    background-color: white;
+    height: 5px;
 
-    .half-task {
-        grid-area: halftask;
-        background: #D9D9D9;
-        padding: 20px;
-        border-radius: 20px;
-    }
+}
 
-    .half-event {
-        grid-area: halfevent;
-        background: #D9D9D9;
-        padding: 20px;
-        border-radius: 20px;
-    }
 
-    .half-notes {
-        grid-area: halfnotes;
-        background: #DBCCB7;
-        padding: 20px;
-        border-radius: 20px;
-    }
-
-    #half-board table {
-        border-spacing: 10px;
-    }
-
-    /*This will be a representation of the events like ellipses*/
-    .home-lit-event {
-        border-radius: 20px;
-        background-color: white;
-        height: 5px;
-
-    }
-
-    
 
 /*Table for the calendar*/
 .half-calendar table {
@@ -205,7 +177,7 @@
     border: none;
     display: flex;
 }
-
+/*Line orange for the percentage, width in js*/
 #orange-line {
     height: 3px;
     background-color: orange;
@@ -231,6 +203,7 @@
     width: auto;
     color: black;
 }
+/*When it is smaller*/
 @media (max-width: 1325px) {
     .home-half-content {
         grid-template-columns: 1fr 1fr;

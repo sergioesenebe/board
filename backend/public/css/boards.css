@@ -42,7 +42,7 @@ header {
     font-weight: normal;
     text-decoration: underline;
 }
-
+/*Board info in table (space)*/
 #boards table {
     border-spacing: 10px;
 }
@@ -114,9 +114,11 @@ header {
         width: 90%;
         padding: 0;
     }
+    /*Change gap in the boards*/
     #boards{
         gap: 20px;
     }
+    /*Board will be with all the width and 30% of height as maximum*/
     .board {
         width: 100%;
         max-height: 30%;

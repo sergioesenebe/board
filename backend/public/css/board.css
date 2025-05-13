@@ -5,8 +5,7 @@
     display: grid;
     justify-content: center;
     /*Center the elements*/
-    /*Divide the page in 4 (one for the bar) and the other three to put two containers, 
-            one will occupy twice as much space. The header will occupy the three holes*/
+    /*Divide the page in 4 (one for the bar) will be the same as home (don't move the content)*/
     grid-template-columns: 10% 30% 30% 30%;
     grid-template-rows: 1.2fr 10fr;
     grid-template-areas:
@@ -39,17 +38,15 @@
     /* hide bigger than 3 lines */
     -webkit-line-clamp: 3;
     /* max 3 lines */
-
 }
-
 
 /*header will display the title on the left and the search and option on the right*/
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width:100%;
-    flex-wrap: wrap;  
+    width: 100%;
+    flex-wrap: wrap;
 }
 
 /*Options for the columns*/
@@ -75,12 +72,13 @@ header {
     padding-right: 15px;
 }
 
-/*Column options*/
+/*Column options size*/
 .column-header img {
     width: 30px;
     height: 30px;
 }
 
+/*Content will display the board and the edit card*/
 #content {
     grid-area: board;
     width: 100%;
@@ -106,12 +104,16 @@ header {
     padding-top: 20px;
     padding-left: 60px;
     padding-right: 60px;
+    /*Enable a transitions (when edit-card appear)*/
     transition: width 0.4s ease;
 }
+
+/*Contract the board to show more natural when edit-card appear*/
 #board.contract {
     width: 65%;
 }
-/*Edit the card when pen is clicked*/
+
+/*Edit the card when pen is clicked, padding, radius and size*/
 #edit-card {
     background-color: white;
     border-radius: 20px;
@@ -119,19 +121,24 @@ header {
     padding-top: 20px;
     padding-left: 60px;
     padding-right: 60px;
+    /*If it's bigger*/
     overflow-x: auto;
 }
+
 /*Div to group the back and title together*/
-#edit-card-back-title{
+#edit-card-back-title {
     display: flex;
     align-items: center;
     gap: 10px;
 }
-#edit-card-back-title img{
+
+/*Size for the img in title (back)*/
+#edit-card-back-title img {
     width: 30px;
     height: 30px;
 }
-/*Column with all the events*/
+
+/*Column with all the events, flex and all the height*/
 .column {
     height: 100%;
     display: flex;
@@ -176,7 +183,7 @@ header {
     cursor: pointer;
 }
 
-/**/
+/*Cards inside the columns, size, margin*/
 .cards {
     /* adapt to the container */
     width: 250px;
@@ -189,10 +196,9 @@ header {
     margin-bottom: 20%;
     margin-left: 15px;
     margin-right: 15px;
-    transition: 1s ease;
-    
 }
-/*Events*/
+
+/*card, padding to allow drag and drop*/
 .card {
     padding: 10px 0px;
 }
@@ -207,6 +213,7 @@ header {
     justify-content: space-between;
 }
 
+/*size and margin for the pen in the card (top right)*/
 .card-pen-icon {
     width: 30px;
     height: 30px;
@@ -214,7 +221,7 @@ header {
     margin-right: 10px;
 }
 
-/*Events*/
+/*cards content (properties and text)*/
 .content-card {
     padding: 20px;
     padding-right: 0px;
@@ -234,50 +241,51 @@ header {
     resize: none;
 }
 
+/*Editing the content will don't have border or similar*/
 #card-content-textarea:focus {
     border: none;
     outline: none;
 }
 
+/*Table with properties and prop types, sapace between them (horizontal)*/
 #table-edit-card {
     border-spacing: 0 10px;
 }
 
+/*ppadding for the properties in edit card and border (color set in js)*/
 .property-edit-card {
     border-radius: 20px;
     padding: 0 10px;
 }
 
-#addCategory-edit-card:hover {
-    cursor: pointer;
-    background-color: rgba(0, 0, 0, 0.05);
-    border-radius: 20px;
-}
-/*Input to create an event*/
-#table-edit-card input{
+/*Input to create an event, without border*/
+#table-edit-card input {
     border: none;
 }
-#table-edit-card input:focus{
+
+/*Don't change the border when focus*/
+#table-edit-card input:focus {
     border: none;
     outline: none;
 }
+
 /*Button for the input*/
-#edit-card button{
+#edit-card button {
     border: none;
-    border-radius:10px;
+    border-radius: 10px;
     background-color: #EDE7DC;
     padding: 5px;
     margin: 5px 0;
 }
-#edit-card button:hover{
+
+/*Buttons in edit card when hover will not have border, change color and cursor*/
+#edit-card button:hover {
     border: none;
     outline: none;
     background-color: #D6CFC1;
     cursor: pointer;
 }
-#edit-delete-card{
-    display: flex;
-}
+
 /*The plus event*/
 .new-card-plus img {
     height: 20px;
@@ -290,7 +298,7 @@ header {
     margin-bottom: 20px;
 }
 
-/*Properties*/
+/*Properties in the card will be flex and with some gap*/
 .properties {
     display: flex;
     max-width: 100%;
@@ -298,6 +306,7 @@ header {
     flex-wrap: wrap;
 }
 
+/*Property of the card*/
 .property {
     flex: 0 0 auto;
     /* adapt to the container */
@@ -314,25 +323,34 @@ header {
     /* hide the text that is outgoing */
     text-overflow: ellipsis;
     /* Show "..." */
-
 }
+
 /*Type Option (trash and pen)*/
-.typeOpt{
+.typeOpt {
     display: flex;
 }
+
 /*Types Option aligned*/
-.type-and-options{
+.type-and-options {
     display: flex;
     align-items: center;
 }
+
 /*Images for trash and pen in the property type*/
-.type-and-options img{
+.type-and-options img {
     width: 25px;
     height: 25px;
 }
 
-.type-div{
-    width: 50%;
+/*Trash and pen in the editcard*/
+#edit-delete-card {
+    display: flex;
+}
+
+/*Property type divs, heigh, border (color in js), margin and padding*/
+.type-div {
+    min-width: 200px;
+    max-width: 75%;
     border-radius: 20px;
     padding: 0 5px;
     margin: 5px 0;
@@ -351,9 +369,26 @@ header {
         padding: 0;
 
     }
-
+    /*Edit card change width and height*/
+    #edit-card {
+        width: 100%;
+        height: 80%;
+    }
+    /*Content will be in column*/
+    #content {
+        flex-direction: column;
+    }
+    /*Board change width and height*/
     #board {
         width: 100%;
         max-height: 80%;
+        opacity: 1;
+    }
+    /*Contract will change to hide the board*/
+    #board.contract {
+        opacity: 0;
+        pointer-events: none;
+        width: 100%;
+        display: none;
     }
 }
