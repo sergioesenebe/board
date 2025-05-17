@@ -471,6 +471,9 @@ function showOptionsColumns(options, index) {
             optionsBoard = hideOptions(optionsBoard);
             hideEditOptions();
             optionsBoard = hideOptions(optionsBoard);
+            if (textEditing != '') {
+                textEditing = returnToText(textEditing, boardId)
+            }
             //If this option is not opened
             if (optionsColumnOpen != index) {
                 //Hide other column option 
@@ -1345,6 +1348,9 @@ optionsGeneralIcon.addEventListener('click', (event) => {
         search = hideSearch(search);
         hideEditCards();
         hideEditOptions();
+        if (textEditing != '') {
+            textEditing = returnToText(textEditing, boardId)
+        }
         event.stopPropagation(); //prevent document.addEventListener
     }
     //If it's open close it

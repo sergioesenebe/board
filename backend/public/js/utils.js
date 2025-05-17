@@ -76,7 +76,15 @@ export const fetchJson = (url, method, body) => {
 };
 //Function to add Boards
 export function addBoards(username, openBoards) {
-    const divBoards = document.getElementById('boards');
+    //if is usign the id boards or elements
+    let divBoards;
+    if (document.getElementById('boards')) {
+        divBoards = document.getElementById('boards');
+    }
+    else if (document.getElementById('elements')) {
+        divBoards = document.getElementById('elements');
+    }
+
     fetchJson('/getBoards', 'POST', { username })
         .then(data => {
             if (data.length > 0) {
@@ -226,31 +234,80 @@ function addCards(column, table, addData) {
 
 }
 //Function to add Notes
-export function addNotes(username) {
-    const homenotes = document.getElementById('home-notes');
+export function addNotes(username, openNotes) {
+    let notesDiv;
+    if (document.getElementById('notes')) {
+        notesDiv = document.getElementById('notes');
+    }
+    else if (document.getElementById('elements')) {
+        notesDiv = document.getElementById('elements');
+    }
     fetchJson('/getNotes', 'POST', { username })
         .then(data => {
             if (data.length > 0) {
                 data.forEach(n => {
                     //Create elements for the DOM
-                    const homenote = document.createElement('div');
+                    const noteDiv = document.createElement('div');
                     const title = document.createElement('h2');
                     const content = document.createElement('div');
                     //Save a note object
                     const note = new Note({ noteId: n.note_id, name: n.name, content: n.content });
                     //Display note info 
                     title.textContent = note.name;
-                    homenote.classList.add('home-note');
-                    homenotes.appendChild(homenote);
-                    homenote.appendChild(title);
-                    homenote.appendChild(content);
+                    noteDiv.classList.add('note');
+                    notesDiv.appendChild(noteDiv);
+                    noteDiv.appendChild(title);
+                    noteDiv.appendChild(content);
                     content.innerHTML = note.content;
+                    //if openNotes is true, will allow to open the components
+                    //Update div id and text
+                    noteDiv.id = note.noteId;
+                    const noteId = note.noteId;
+                    //if openBoards is true, will allow to open the components
+                    if (openNotes) {
+                        //Call the openComponent to allow go to page of board and save the id of the table
+                        openComponent(noteId, "./note.html", "noteId");
+                    }
                 });
             }
             else {
                 const noNotes = document.getElementById("no-notes")
                 if (noNotes) {
                     noNotes.textContent = "You don't have notes";
+                }
+            }
+            //If you want to open the notes in other page an add the plus to add more notes
+            if (openNotes) {
+                //Create a plus at the end
+                const divNote = document.createElement('div');
+                const notePlus = document.createElement('img');
+                notePlus.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1743961025/Icons/Black/plus_black.png";
+                notesDiv.appendChild(divNote);
+                console.log(notesDiv);
+                divNote.appendChild(notePlus);
+                divNote.classList.add('note');
+                const noteId = "new-board";
+                divNote.id = noteId;
+
+                //Create a new board
+                //if openBoards is true, will allow to open the components
+                divNote.classList.add('components-click');
+                if (notesDiv) {
+                    divNote.addEventListener('click', () => {
+                        const newName = "New Note";
+                        fetchJson('/insertNote', 'POST', { newNoteName: newName, username: username })
+                            .then(data => {
+                                //Call the openComponent to allow go to page of board and save the id of the table
+                                const noteId = data.noteId;
+                                //Insert columns as example (To Do, Doing, Done)
+                                localStorage.setItem('noteId', noteId);
+                                // Redirect to the new note
+                                window.location.href = "./note.html";
+                            })
+                            .catch(error => {
+                                console.error("Error Inserting a Note: ", error);
+                            })
+                    });
                 }
             }
         })
@@ -498,7 +555,7 @@ export function addInputToChange(id, textEditing) {
     return id;
 }
 //Function to update, delete the input and return the text
-export function returnToText(textEditing, change, boardId, propertyColor) {
+export function returnToText(textEditing, change, id, propertyColor) {
     //If something is being edited
     if (textEditing != '') {
         //Get the text and input
@@ -536,7 +593,7 @@ export function returnToText(textEditing, change, boardId, propertyColor) {
                 })
         }
         else if (textEditing === 'card-edit-name') {
-            fetchJson('/updateCardName', 'POST', { newName: newName, cardId: change, boardId: boardId })
+            fetchJson('/updateCardName', 'POST', { newName: newName, cardId: change, boardId: id })
                 .then(() => {
                     textToReturn.textContent = newName;
                     document.getElementById(change).querySelector('span').textContent = newName;
@@ -547,7 +604,7 @@ export function returnToText(textEditing, change, boardId, propertyColor) {
                 })
         }
         else if (textEditing === 'property-name') {
-            fetchJson('/updatePropertyName', 'POST', { newName: newName, propertyId: change, boardId: boardId })
+            fetchJson('/updatePropertyName', 'POST', { newName: newName, propertyId: change, boardId: id })
                 .then(() => {
                     textToReturn.textContent = newName;
                     document.getElementById(change).textContent = newName;
@@ -558,7 +615,7 @@ export function returnToText(textEditing, change, boardId, propertyColor) {
                 })
         }
         else if (textEditing.startsWith('prop-type')) {
-            fetchJson('/updatePropTypeName', 'POST', { newName: newName, propTypeId: change, boardId: boardId })
+            fetchJson('/updatePropTypeName', 'POST', { newName: newName, propTypeId: change, boardId: id })
                 .then(() => {
                     const prop = propertyColor.find(p => p.property === textToReturn.textContent);
                     if (prop) {
@@ -591,6 +648,17 @@ export function returnToText(textEditing, change, boardId, propertyColor) {
                     console.error("Error Updating the Property Type: ", error);
                 })
         }
+        //Edit note name
+        else if (textEditing === 'note-title') {
+            fetchJson('/updateNoteName', 'POST', { newName: newName, noteId: change })
+                .then(() => {
+                    textToReturn.textContent = newName;
+                    removeAndReturn(inputToDelete, textToReturn);
+                })
+                .catch(error => {
+                    console.error("Error Updating the board name: ", error);
+                })
+        }
         return '';
 
     }
@@ -605,4 +673,18 @@ function removeAndReturn(inputToDelete, textToReturn) {
     requestAnimationFrame(() => {
         textToReturn.classList.remove('hidden');
     });
+}
+//Insert After
+export function insertAfter(newNode, referenceNode) {
+    //If it has a parent
+    if (referenceNode.parentNode) {
+        //If it has next element
+        if (referenceNode.nextSibling) {
+            //Insert before next element
+            referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+        } else {
+            // If it hasn't a nex element insert as a child
+            referenceNode.parentNode.appendChild(newNode);
+        }
+    }
 }

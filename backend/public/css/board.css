@@ -30,16 +30,31 @@
 }
 
 /*Cut if its bigger than 3 lines*/
-.event span {
+.content-card span {
     height: auto;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     overflow: hidden;
     /* hide bigger than 3 lines */
     -webkit-line-clamp: 3;
-    /* max 3 lines */
+    /* Cut long words */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
-
+/*Limit board title*/
+#board-title{
+    width: 100%;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    /* hide bigger than 3 lines */
+    -webkit-line-clamp: 2;
+    /* Cut long words */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
 /*header will display the title on the left and the search and option on the right*/
 header {
     display: flex;
@@ -369,21 +384,25 @@ header {
         padding: 0;
 
     }
+
     /*Edit card change width and height*/
     #edit-card {
         width: 100%;
         height: 80%;
     }
+
     /*Content will be in column*/
     #content {
         flex-direction: column;
     }
+
     /*Board change width and height*/
     #board {
         width: 100%;
         max-height: 80%;
         opacity: 1;
     }
+
     /*Contract will change to hide the board*/
     #board.contract {
         opacity: 0;

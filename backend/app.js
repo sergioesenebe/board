@@ -388,7 +388,7 @@ app.post('/getNotes', (req, res) => {
   }
 
   // SELECT to get notes
-  db.query('SELECT note_id, name, content FROM `notes` WHERE user_id=? ORDER BY last_updated', [username], (err, results) => {
+  db.query('SELECT note_id, name, content FROM `notes` WHERE user_id=? ORDER BY last_updated DESC', [username], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
@@ -1434,7 +1434,136 @@ app.post('/updatePropTypeName', (req, res) => {
   });
 });
 
+//--- Notes ---
+//Insert Note
+app.post('/insertNote', (req, res) => {
+  console.log('Body of the application:', req.body);
+  // Takes the usernames and newBoardName from the body
+  const { newNoteName, username } = req.body;
 
+  //Generate the column_id with UUID v4
+  const { v4: uuidv4 } = require('uuid');
+  const newNoteId = uuidv4();
+
+
+  if (!newNoteName || !newNoteId || !username) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+
+  // INSERT new note with the id, user, name amd last updated
+  db.query('INSERT INTO `notes`(`note_id`, `name`, `user_id`, `last_updated`) VALUES (?,?,?,(SELECT NOW())); ', [newNoteId, newNoteName, username], (err, results) => {
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the Database' });
+    }
+    // If it is inserted correctly return the noteId
+    if (results.affectedRows > 0) {
+      return res.status(200).json({ noteId: newNoteId });
+    } else {
+      return res.status(200).json({ success: false, message: 'Note not inserted' });
+    }
+  });
+});
+//Query to get the note with the note_id
+app.post('/getNoteById', (req, res) => {
+  console.log('Body of the application:', req.body);
+  // Takes the board id from the body
+  const { noteId } = req.body;
+
+  if (!noteId) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+
+  // SELECT to get the board with the id
+  db.query('SELECT * FROM `notes` WHERE note_id = ?;', [noteId], (err, results) => {
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the Database' });
+    }
+
+    // If there is more than one note will return true
+    if (results.length > 0) {
+      return res.status(200).json(results);
+    } else {
+      return res.status(200).json({ success: false, message: 'Note not found' });
+    }
+  });
+});
+//Update Note Name
+app.post('/updateNoteName', (req, res) => {
+  console.log('Body of the application:', req.body);
+  // Takes the newName and board id from the body
+  const { newName, noteId } = req.body;
+
+  if (!newName || !noteId) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+
+  // Update the name of a note and the last_updated
+  db.query('UPDATE notes SET name = ?,last_updated = NOW() WHERE note_id = ?;', [newName, noteId], (err, results) => {
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the Database' });
+    }
+
+    // If there is a change return true
+    if (results.affectedRows > 0) {
+      return res.status(200).json({ success: true, message: 'Note name updated' });
+    } else {
+      return res.status(200).json({ success: false, message: 'Note not found' });
+    }
+  });
+});
+//Remove Note
+app.post('/deleteNote', (req, res) => {
+  console.log('Body of the application:', req.body);
+  // Takes the username from the body
+  const { noteId } = req.body;
+  if (!noteId) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+
+  // Delete board with the id
+  db.query('DELETE FROM `notes` WHERE note_id=?; ', [noteId], (err, results) => {
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the Database' });
+    }
+
+    // If it is deleted return the results
+    if (results.affectedRows > 0) {
+      return res.status(200).json({ success: true, message: 'Note deleted' });
+    } else {
+      return res.status(200).json({ success: false, message: 'Note not deleted' });
+    }
+  });
+
+});
+//Update Card Content
+app.post('/updateNoteContent', (req, res) => {
+  console.log('Body of the application:', req.body);
+  // Takes the cardId, content and boardId from the body
+  const { noteId, content } = req.body;
+
+  if (!noteId || !content) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+
+  // Update card content for the card id
+  db.query('UPDATE `notes` SET `content`=? WHERE `note_id`=?;', [content, noteId], (err, results) => {
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the Database' });
+    }
+    // If it is updated will return the results
+    if (results.affectedRows > 0) {
+      return res.status(200).json({ success: true, message: 'Note content' });
+    } else {
+      return res.status(200).json({ success: false, message: 'Note content not Updated' });
+    }
+  });
+
+});
 
 /*Open port*/
 app.listen(port, '0.0.0.0', () => {
