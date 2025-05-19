@@ -183,5 +183,7 @@ generateCalendar();
 const today = new Date();
 const month = today.getMonth() + 1;
 addColorToEvents(username, month);
-//Enable select divs and redirect to them (boards, notes, etc.)
+//Open the boards when clicked
 openComponent("half-board", "/boards.html");
+//Open notes when clicked
+openComponent("half-notes", "/notes.html");

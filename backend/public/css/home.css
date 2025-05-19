@@ -116,7 +116,7 @@
     border-radius: 20px;
 }
 /*Div for notes, border and color*/
-.half-notes {
+#half-notes {
     grid-area: halfnotes;
     background: #DBCCB7;
     padding: 20px;

@@ -15,6 +15,7 @@
     margin-left: 5%;
     margin-right: 5%;
 }
+
 /*Content will display the board and the edit card*/
 #content {
     grid-area: note;
@@ -26,6 +27,7 @@
     overflow-x: auto;
     gap: 50px;
 }
+
 /*header will display the title on the left and the search and option on the right*/
 header {
     display: flex;
@@ -34,6 +36,7 @@ header {
     width: 100%;
     flex-wrap: wrap;
 }
+
 /*A container for the note, configuring the size*/
 #note {
     width: 100%;
@@ -65,18 +68,21 @@ header {
     border: none;
     outline: none;
 }
+
 /*Buttons will have gap*/
 #text-options {
     display: flex;
     gap: 20px;
 }
+
 /*Stile for the buttons*/
-#text-options button{
+#text-options button {
     border: none;
     border-radius: 10px;
     background-color: #EDE7DC;
     padding: 10px;
 }
+
 /*Buttons will not have border, change color and cursor when hover*/
 #text-options button:hover {
     border: none;

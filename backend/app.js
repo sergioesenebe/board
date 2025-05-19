@@ -1545,7 +1545,7 @@ app.post('/updateNoteContent', (req, res) => {
   // Takes the cardId, content and boardId from the body
   const { noteId, content } = req.body;
 
-  if (!noteId || !content) {
+  if (!noteId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 

@@ -263,6 +263,29 @@ export function addNotes(username, openNotes) {
                     //Update div id and text
                     noteDiv.id = note.noteId;
                     const noteId = note.noteId;
+                    //Take the checks lists
+                    const todos = document.querySelectorAll('.check-list');
+                    console.log(todos);
+                    //For each to do list
+                    todos.forEach(todo => {
+                        //For each field
+                        const fields = Array.from(todo.children)
+                        fields.forEach(field => {
+                            //Get the input
+                            const input = field.querySelector('input');
+                            console.log('input', input)
+                            //If field clicked and not selected add class selected, if selected, remove it
+                            input.addEventListener('click', () => {
+                                if (input.className === 'selected') input.classList.remove('selected');
+                                else input.className = 'selected';
+                            })
+                            //If has class selected check it
+                            if (input.className === 'selected') {
+                                input.checked = true;
+                            }
+                        })
+                    })
+
                     //if openBoards is true, will allow to open the components
                     if (openNotes) {
                         //Call the openComponent to allow go to page of board and save the id of the table
