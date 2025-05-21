@@ -79,6 +79,7 @@ header {
 .options-button:hover {
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
 }
 
 .back:hover {
@@ -105,6 +106,22 @@ header {
     width: auto;
     display: flex;
     transition: 0.4s;
+}
+
+/*Explain colors in calendar change color of the text, align and gap. Width same as header*/
+#calendar-legend {
+    display: flex;
+    align-items: center;
+    color: #6E6E6E;
+    gap: 20px;
+    width: 320px;
+}
+
+/*Color to show, size and border*/
+#calendar-legend div {
+    height: 10px;
+    width: 10px;
+    border-radius: 100%;
 }
 
 /*Options for the board*/
@@ -343,6 +360,20 @@ header {
     background-position: center;
 }
 
+/*Button calendar is selected*/
+.button-calendar-selected {
+    border: none;
+    cursor: pointer;
+    background-color: #292C35;
+    background-image: url("https://res.cloudinary.com/drmjf3gno/image/upload/v1743429268/Icons/Beige/calendar_beige.png");
+    /* Styles the element with rounded corners and a centered, non-repeating background image scaled to 50% */
+    border-radius: 50px;
+    display: block;
+    background-size: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
 /*To hide elements*/
 .hidden {
     display: none;
@@ -361,21 +392,24 @@ header {
     opacity: 0;
     pointer-events: none;
 }
+
 /*Check list style, remove margin and list points*/
-.check-list{
+.check-list {
     list-style-type: none;
     padding-left: 0;
     margin-left: 0;
 }
+
 /*Change cursor when hover*/
 input[type="checkbox"]:hover {
     cursor: pointer;
 }
+
 /*Change color when selected*/
 input[type="checkbox"]:checked {
-    accent-color: #d0f0c0; 
-  }
-    
+    accent-color: #d0f0c0;
+}
+
 
 /*The layout of the elements will be changed when the width is less than 1325px. So that each container occupies one row*/
 @media (max-width: 1325px) {

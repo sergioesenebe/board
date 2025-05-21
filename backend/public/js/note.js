@@ -46,7 +46,7 @@ function changeElementType(type) {
     //Clone content and creates an array with them
     const fragment = range.cloneContents();
     const startContainer = range.startContainer;
-    const endContainer = range.endContainer;
+    let endContainer = range.endContainer;
     let selectedElements = Array.from(fragment.childNodes);
     //Initialize newElement, nodeAtOffset, focusNode, list and checkList
     let newElement;
@@ -111,12 +111,16 @@ function changeElementType(type) {
             if (element.parentNode.id === 'note-content') {
                 //Create a div and replace by focus node
                 const newDiv = document.createElement('div');
-                element.parentNode.replaceChild(newDiv, element);
-                //Add focus node as a child of div
-                newDiv.appendChild(element);
+                newDiv.textContent = element.textContent;
+                document.getElementById('note-content').insertBefore(newDiv, element);
+                //Remove element and newdiv will be the new element
+                element.remove();
+                //Add focus node text as div text
                 element = newDiv;
                 focusNode = element;
             }
+            //if it's a document fragment (when some senelcted and the element doesn't have a parent (ex. div)), don't do anything
+            else if (element.parentNode instanceof DocumentFragment) { }
             else {
                 //get the parent (a div, h1, etc.)
                 element = element.parentNode;
@@ -139,7 +143,6 @@ function changeElementType(type) {
                 if (checkList) {
                     const children = Array.from(element.children);
                     children.forEach(child => {
-                        console.log(child);
                         addInput(child);
                     })
 
@@ -152,7 +155,6 @@ function changeElementType(type) {
                 children.forEach(child => {
                     list.appendChild(child);
                     addInput(child);
-                    console.log(child);
                 })
                 //Update new element with this one and remove it
                 newElement = element;
@@ -160,7 +162,7 @@ function changeElementType(type) {
             }
         }
         else {
-            //Create the new Wlement
+            //Create the new Element
             newElement = document.createElement(type);
             //Insert after where the cursor is
             insertAfter(newElement, element);
@@ -212,6 +214,10 @@ function changeElementType(type) {
                     if (startParent.parentNode.nodeName === 'UL' || startParent.parentNode.nodeName === 'OL') {
                         document.getElementById('note-content').insertBefore(newElement, startParent.parentNode);
                     }
+                    else if (startParent instanceof DocumentFragment) {
+
+                        document.getElementById('note-content').insertBefore(newElement, endContainer.parentNode.parentNode);
+                    }
                     else {
                         document.getElementById('note-content').insertBefore(newElement, startParent);
                     }
@@ -236,9 +242,33 @@ function changeElementType(type) {
         if (selectedElements.length > 1) {
             //If the started element is a li take the parent of the parent (ex. ul) else take just the parent (ex. li)
             let endParent;
-            if (endContainer.parentNode.nodeName === 'LI') endParent = endContainer.parentNode.parentNode;
-            else endParent = endContainer.parentNode;
-            insertAfter(list, endParent)
+            //If endcontainer doesn't have a parent (ex. div or h1)
+            if (endContainer.parentNode.id === 'note-content') {
+                //Create a div and replace by endContainer
+                const newDiv = document.createElement('div');
+                newDiv.textContent = endContainer.textContent;
+                document.getElementById('note-content').appendChild(newDiv);
+                //Remove element and newdiv will be the new element
+                //Add focus node text as div text
+                endParent = newDiv;
+                //Insert new element
+                insertAfter(list, endParent);
+                //Remove the new endParent (for the case we have created one)
+                endParent.remove();
+            }
+            //If last container selected parent  is a li get parent (ul) of the parent (li)
+            else if (endContainer.parentNode.nodeName === 'LI') {
+                endParent = endContainer.parentNode.parentNode;
+                //Insert new element
+                insertAfter(list, endParent);
+            }
+            //if its another elemt take the parent (ex. div or h1)
+            else {
+                 endParent = endContainer.parentNode;
+                 //Insert new element
+                insertAfter(list, endParent);
+            }
+
         }
         //If is just one element insert before
         else {
@@ -318,8 +348,6 @@ function addToDoWhenEnter(todo) {
                 }
                 //If not get just the parent (ul)
                 else parent = focusNode.parentNode
-                console.log('focus', parent)
-
             }
             //If parent is a check-list and enter is clicked
             if (parent && parent.className == ('check-list') && event.key === 'Enter') {
@@ -355,7 +383,7 @@ function addInput(element) {
     //If field clicked and not selected add class selected, if selected, remove
     input.addEventListener('click', () => {
         if (input.className === 'selected') input.classList.remove('selected')
-            else input.className = 'selected';
+        else input.className = 'selected';
     })
 }
 
@@ -497,7 +525,6 @@ fetchJson('/getNoteById', 'POST', { noteId })
         contentTextArea.innerHTML = note.content;
         //Take the checks lists
         const todos = document.querySelectorAll('.check-list');
-        console.log(todos);
         //For each to do list
         todos.forEach(todo => {
             //When user in the ul checklist click in enter add another enter with check
@@ -507,7 +534,6 @@ fetchJson('/getNoteById', 'POST', { noteId })
             fields.forEach(field => {
                 //Get the input
                 const input = field.querySelector('input');
-                console.log('input', input)
                 //If field clicked and not selected add class selected, if selected, remove it
                 input.addEventListener('click', () => {
                     if (input.className === 'selected') input.classList.remove('selected');

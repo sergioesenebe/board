@@ -177,12 +177,15 @@ addNotes(username);
 getUpcomingEvent(username);
 //Show percentage of last column
 getLastUsedBoardLastColumn(username);
-//Generate a calendar of the month
-generateCalendar();
-//Add yellow to the days with events
+//Get day and month
 const today = new Date();
 const month = today.getMonth() + 1;
+//Generate a calendar of the month
+generateCalendar(today);
+//Add yellow to the days with events
 addColorToEvents(username, month);
+//Add month to calendar
+document.getElementById('calendar-month').textContent = today.toLocaleString('en-US', {month: 'short'});
 //Open the boards when clicked
 openComponent("half-board", "/boards.html");
 //Open notes when clicked

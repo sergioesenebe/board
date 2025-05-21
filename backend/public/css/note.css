@@ -90,3 +90,17 @@ header {
     background-color: #D6CFC1;
     cursor: pointer;
 }
+/*The layout of the elements will be changed when the width is less than 1325px. So that each container occupies one row*/
+@media (max-width: 1325px) {
+    .note-half-content {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr 20fr;
+        grid-template-areas:
+            "bar"
+            "header"
+            "note";
+        width: 90%;
+        padding: 0;
+
+    }
+}

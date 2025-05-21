@@ -139,7 +139,7 @@ header {
 
 /*The layout of the elements will be changed when the width is less than 1325px. So that each container occupies one row*/
 @media (max-width: 1325px) {
-    .boards-half-content {
+    .elements-half-content {
         grid-template-columns: 1fr;
         grid-template-rows: min-content min-content min-content;
         grid-template-areas:
@@ -149,7 +149,6 @@ header {
         width: 90%;
         padding: 0;
     }
-
     /*Change gap in the boards*/
     #elements {
         gap: 20px;

@@ -36,7 +36,7 @@
             </div>
         </div>
         <div class="half-calendar components-click">
-            <h2>Your Calendar</h2>
+            <div id="calendar-header"><h2>Your Calendar</h2><span id="calendar-month"></span></div>
             <table id="calendar-table">
                 <tbody id="tbody">
                     <tr>
@@ -50,6 +50,10 @@
                     </tr>
                 </tbody>
             </table>
+            <div id="calendar-legend">
+                <div style="background-color: lightsalmon;"></div>Today
+                <div style="background-color: lightgoldenrodyellow;"></div>Event
+            </div>
         </div>
         <div class="half-task components-click">
             <h2 id="board-name"></h2>

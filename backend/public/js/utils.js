@@ -265,7 +265,6 @@ export function addNotes(username, openNotes) {
                     const noteId = note.noteId;
                     //Take the checks lists
                     const todos = document.querySelectorAll('.check-list');
-                    console.log(todos);
                     //For each to do list
                     todos.forEach(todo => {
                         //For each field
@@ -273,7 +272,6 @@ export function addNotes(username, openNotes) {
                         fields.forEach(field => {
                             //Get the input
                             const input = field.querySelector('input');
-                            console.log('input', input)
                             //If field clicked and not selected add class selected, if selected, remove it
                             input.addEventListener('click', () => {
                                 if (input.className === 'selected') input.classList.remove('selected');
@@ -306,7 +304,6 @@ export function addNotes(username, openNotes) {
                 const notePlus = document.createElement('img');
                 notePlus.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1743961025/Icons/Black/plus_black.png";
                 notesDiv.appendChild(divNote);
-                console.log(notesDiv);
                 divNote.appendChild(notePlus);
                 divNote.classList.add('note');
                 const noteId = "new-board";
@@ -349,10 +346,9 @@ export async function getBoardById(boardId) {
     }
 }
 //Function to add the calendar of this month
-export function generateCalendar() {
-    const today = new Date();
-    const month = today.getMonth();
-    const year = today.getFullYear();
+export function generateCalendar(dateCalendar) {
+    const month = dateCalendar.getMonth();
+    const year = dateCalendar.getFullYear();
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const firstDayDay = firstDay.getDay();
@@ -401,7 +397,7 @@ export function addColorToEvents(username, month) {
                     const eventDay = eventDate.getDate();
                     //Add yellow color to the day
                     const eventTd = document.getElementById(`calendar-day-${eventDay}`);
-                    eventTd.classList.add('yellow-day');
+                    eventTd.classList.add('event-day');
                 })
             }
             //Add red to today
@@ -410,8 +406,8 @@ export function addColorToEvents(username, month) {
             if (todayMonth === month) {
                 const todayDay = today.getDate();
                 const todayTd = document.getElementById(`calendar-day-${todayDay}`);
-                todayTd.classList.remove('yellow-day');
-                todayTd.classList.add('red-day');
+                todayTd.classList.remove('event-day');
+                todayTd.classList.add('today-day');
             }
 
         })

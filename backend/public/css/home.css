@@ -46,13 +46,13 @@
 
 /*A container for the boards, configuring the size*/
 #boards {
-    gap: 5%;
+    gap: 25px;
     overflow-x: auto;
     /*Enables horizontal scrolling*/
     box-sizing: border-box;
-    height: 60%;
+    height: 70%;
     padding-bottom: 10px;
-    margin-right: 20px;
+    margin-right: 25px;
     display: flex;
     max-width: 100%;
 }
@@ -68,6 +68,7 @@
     overflow: auto;
     /*Enables horizontal and vertical scrolling*/
 }
+
 /*Div for board, border and color*/
 #half-board {
     grid-area: halfboard;
@@ -75,13 +76,13 @@
     padding: 20px;
     border-radius: 20px;
 }
+
 /*Div for calendar, border and color, center with flex*/
 .half-calendar {
     grid-area: halfcalendar;
-    background: black;
+    background: #C3C3C3;
     padding: 20px;
     border-radius: 20px;
-    color: white;
     /*We center the content*/
     display: flex;
     flex-direction: column;
@@ -89,10 +90,8 @@
     justify-content: center;
 
 }
-/*Change color of the calendar when hover*/
-.half-calendar:hover {
-    background-color: #444444;
-}
+
+
 /*Red for a calentar day (Today)*/
 .red-day {
     background-color: red;
@@ -101,6 +100,7 @@
     min-width: 20px;
     width: auto;
 }
+
 /*task percentage div, border and color*/
 .half-task {
     grid-area: halftask;
@@ -108,6 +108,7 @@
     padding: 20px;
     border-radius: 20px;
 }
+
 /*Div for events, border and color*/
 .half-event {
     grid-area: halfevent;
@@ -115,6 +116,7 @@
     padding: 20px;
     border-radius: 20px;
 }
+
 /*Div for notes, border and color*/
 #half-notes {
     grid-area: halfnotes;
@@ -122,6 +124,7 @@
     padding: 20px;
     border-radius: 20px;
 }
+
 /*table with board info (space between)*/
 #half-board table {
     border-spacing: 10px;
@@ -135,29 +138,60 @@
 
 }
 
-
+/*Div for text Your Calendar and Month, will be in extrems*/
+#calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 320px;
+    flex-wrap: wrap;
+}
 
 /*Table for the calendar*/
 .half-calendar table {
     display: flex;
     flex-wrap: wrap;
-    /* Allows elements to be wrapped in multiple rows */
-    gap: 20px;
+    /* set space between rows and columns */
+    border-collapse: separate;
+    border-spacing: 15px 10px;
+}
 
+/*elements of the table align center and size*/
+.half-calendar td {
+    height: 35px;
+    width: 35px;
+    text-align: center;
+}
+
+
+/*Red for a calentar day (Today)*/
+.today-day {
+    background-color: lightsalmon;
+    border-radius: 100%;
+    color: black;
+}
+
+/*Yellow for a calendar day (Event)*/
+.event-day {
+    background-color: lightgoldenrodyellow;
+    border-radius: 100%;
+    height: 20px;
+    min-width: 20px;
+    width: auto;
+    color: black;
 }
 
 /*A container for the notes, configuring the size*/
 #notes {
     display: flex;
-    gap: 5%;
+    gap: 25px;
     overflow-x: auto;
     /*Enables horizontal scrolling*/
     box-sizing: border-box;
-    max-height: 60%;
+    max-height: 70%;
     padding-bottom: 10px;
     margin-right: 20px;
 }
-
 /*Note container*/
 .note {
     min-width: 40%;
@@ -177,32 +211,15 @@
     border: none;
     display: flex;
 }
+
 /*Line orange for the percentage, width in js*/
 #orange-line {
     height: 3px;
-    background-color: orange;
+    background-color: lightsalmon;
     border: none;
     display: flex;
 }
 
-/*Red for a calentar day (Today)*/
-.red-day {
-    background-color: red;
-    border-radius: 100%;
-    height: 20px;
-    min-width: 20px;
-    width: auto;
-}
-
-/*Yellow for a calendar day (Event)*/
-.yellow-day {
-    background-color: yellow;
-    border-radius: 100%;
-    height: 20px;
-    min-width: 20px;
-    width: auto;
-    color: black;
-}
 /*When it is smaller*/
 @media (max-width: 1325px) {
     .home-half-content {
@@ -217,5 +234,18 @@
             "halfnotes halfnotes";
         width: 90%;
         padding: 0;
+    }
+
+    /*change elements of the table size*/
+    .half-calendar td {
+        height: 25px;
+        width: 25px;
+    }
+    /*Change calendar header and legend size*/
+    #calendar-header {
+        width: 250px;
+    }
+    #calendar-legend {
+        width: 250px;
     }
 }
