@@ -100,6 +100,7 @@ function showEvent(calEvent, nextElement) {
     eventDiv.classList.add("event", "components-click");
     eventDiv.id = calEvent.eventId;
     //If there aren't a day created with start Day create a header and a div for elements
+    console.log(startDay);
     if (!eventsDay[startDay]) {
         //Create day title and line and add it to a div
         dayDiv = document.createElement('div')
@@ -238,49 +239,8 @@ function displayEditEvent(calEvent) {
         //Update Event
         calEvent.update({ newName: inputName, newStartDate: startDate, newEndDate: endDate, newLocation: textAreaLocation })
             .then(() => {
-                //If end date change update it
-                if (new Date(oldEvent.endDate).getTime() !== new Date(calEvent.endDate).getTime()) {
-                    //Change format
-                    const endDate = formatDateTime(calEvent.endDate);
-                    const endTime = endDate.split(' ', 2)[1];
-                    //Change content
-                    eventDiv.querySelector('.end-time').textContent = endTime;
-                }
-                //If name is different change update it
-                if (oldEvent.name !== calEvent.name) {
-                    eventDiv.querySelector('.event-name').textContent = calEvent.name;
-                }
-                //If start time doesn't change Update just end time and name
-                if (new Date(oldEvent.startDate).getTime() === new Date(calEvent.startDate).getTime()) {
-                    const eventDiv = document.getElementById(calEvent.eventId);
-                    //Return to events
-                    
-                }
-                //If changes
-                else {
-                    //Change format
-                    const startDate = formatDateTime(calEvent.startDate);
-                    const startTime = startDate.split(' ', 2)[1];
-                    //Change content
-                    eventDiv.querySelector('.end-time').textContent = startTime;
-                    //Get old Index
-                    const oldIndex = eventsMonth.findIndex(e => e.eventId === calEvent.eventId);
-                    insertByTime(eventsMonth, calEvent)
-                        .then(() => {
-                            //Get new index
-                            const newIndex = eventsMonth.findIndex(e => e.eventId === calEvent.eventId);
-                            //If has been moved
-                            if (oldIndex != newIndex){
-                                const eventDiv = document.getElementById(calEvent.eventId);
-                                //Move if parent exists (appendChild)
-                                //Else create parents and add it
-                                //Change calendar
-                                //If different day watch if its necessary to delete it
-                                //Add it to new day (if necessary)
-                            }
-                        })
-                }
-                returnToEvents();
+                //Update event in the DOM
+                updateEventDOM(calEvent, oldEvent);
             })
             .catch(error => {
                 console.error('Error Updating the Event', error);
@@ -329,7 +289,23 @@ function addEventOptions(calEvent) {
         const cardButton = document.createElement('a');
         cardButton.id = 'open-card-link';
         cardButton.textContent = 'Open Card';
-        cardButton.href = './board.html';
+        //When open card clicked
+        cardButton.addEventListener('click', () => {
+            //Get Board of the card
+            fetchJson('/getBoardByCard', 'POST', { cardId: calEvent.cardId })
+                .then(data => {
+                    if (data.length > 0) {
+                            //Save board id
+                            localStorage.setItem('boardId', data[0]?.board_id);
+                            localStorage.setItem('cardToClick', calEvent.cardId);
+                            //Open board page
+                            window.open('./board.html', '_self');
+                    }
+                })
+                .catch(error => {
+                    console.error("Error showing the card content: ", error);
+                });
+        })
         td.appendChild(cardButton);
         row.appendChild(td);
     }
@@ -382,36 +358,35 @@ function returnToEvents() {
 }
 //Add an event to the DOM
 function addEventDOM(newEvent) {
-    insertByTime(eventsMonth, newEvent)
-        .then((orderEvents) => {
-            //Add it and order the array
-            eventsMonth = orderEvents;
-            //Add it to the day array
-            //If it's the first event day, add yellow to calendar
-            if (!eventsDay[newEvent.startDate]) {
-                addYellowToEventDay(newEvent);
-            }
-            //Get index
-            const index = eventsMonth.findIndex(e => e.eventId === newEvent.eventId)
-            //Create a variable to group events by days
-            let dayToDisplay;
-            //Save the previous day
-            if (eventsMonth[index - 1]) {
-                dayToDisplay = formatDateTime(eventsMonth[index - 1].startDate);
-                dayToDisplay = dayToDisplay.split(' ', 2)[0];
-            }
-            else if (eventsMonth.length === 1)
-                document.getElementById('events-by-day').innerHTML = '';
-            //Display the event
-            //If there are a next element insert before
-            if (eventsMonth[index + 1]) {
-                showEvent(newEvent, eventsMonth[index + 1]);
-            }
-            //Else inserted as a child
-            else
-                showEvent(newEvent)
-        })
-
+    //Get formated date
+    const startDate = formatDateTime(newEvent.startDate);
+    //Take before ' ', day and after, time
+    const startDay = startDate.split(' ', 2)[0];
+    //Add it to the day array
+    //If it's the first event day, add yellow to calendar
+    if (!eventsDay[startDay]) {
+        addYellowToEventDay(newEvent);
+    }
+    //Get index
+    const index = eventsMonth.findIndex(e => e.eventId === newEvent.eventId)
+    //Create a variable to group events by days
+    let dayToDisplay;
+    //Save the previous day
+    if (eventsMonth[index - 1]) {
+        dayToDisplay = formatDateTime(eventsMonth[index - 1].startDate);
+        dayToDisplay = dayToDisplay.split(' ', 2)[0];
+    }
+    else if (eventsMonth.length === 1)
+        document.getElementById('events-by-day').innerHTML = '';
+    //Display the event
+    //If there are a next element insert before
+    if (eventsMonth[index + 1]) {
+        console.log(eventsMonth);
+        showEvent(newEvent, eventsMonth[index + 1]);
+    }
+    //Else inserted as a child
+    else
+        showEvent(newEvent)
 }
 
 //Order events
@@ -455,14 +430,24 @@ function addYellowToEventDay(event) {
 }
 //Function to delete event in the db and in the DOM
 function deleteEvent(event) {
-
     //Get the event Day
     let eventDay = formatDateTime(event.startDate);
     eventDay = eventDay.split(' ', 2)[0];
-    //Delete it from the month and day array
+    //Delete it from the month array (day in deleteEventDOM, necessary for update)
     const monthIndex = eventsMonth.findIndex(e => e.eventId === event.eventId);
-    const dayIndex = eventsDay[eventDay].findIndex(e => e.eventId === event.eventId);
     eventsMonth.splice(monthIndex, 1);
+    //Delete event from the DOM and yellow from calendar (if necessary)
+    deleteEventDOM(event);
+    //Return to events
+    returnToEvents();
+}
+//Function delete an event from the DOM
+async function deleteEventDOM(event) {
+    //Get the event Day
+    let eventDay = formatDateTime(event.startDate);
+    eventDay = eventDay.split(' ', 2)[0];
+    //Delete in day array
+    const dayIndex = eventsDay[eventDay].findIndex(e => e.eventId === event.eventId);
     eventsDay[eventDay].splice(dayIndex, 1);
     //if there aren't more events this day, delete array, div and yellow in calendar
     if (eventsDay[eventDay].length === 0) {
@@ -483,6 +468,74 @@ function deleteEvent(event) {
     if (eventsMonth.length === 0) {
         document.getElementById('events-by-day').innerHTML = `You don't have events for this month yet`;
     }
+
+}
+//Function to update an event in the DOM
+function updateEventDOM(calEvent, oldEvent) {
+    //Get the DIV
+    const eventDiv = document.getElementById(calEvent.eventId)
+    //If month and year are different, delete it  and exit from the function
+    if (new Date(calEvent.startDate).getMonth() !== new Date(oldEvent.startDate).getMonth() || new Date(calEvent.startDate).getFullYear() !== new Date(oldEvent.startDate).getFullYear()) {
+        deleteEvent(oldEvent);
+        //Exit from the function
+        return;
+    }
+    //If end date change update it
+    if (new Date(oldEvent.endDate).getTime() !== new Date(calEvent.endDate).getTime()) {
+        //Change format
+        const endDate = formatDateTime(calEvent.endDate);
+        const endTime = endDate.split(' ', 2)[1];
+        //Change content
+        eventDiv.querySelector('.end-time').textContent = endTime;
+    }
+    //If name is different change update it
+    if (oldEvent.name !== calEvent.name) {
+        eventDiv.querySelector('.event-name').textContent = calEvent.name;
+    }
+    //If start time doesn't change Update just end time and name
+    if (new Date(oldEvent.startDate).getTime() === new Date(calEvent.startDate).getTime()) {
+        const eventDiv = document.getElementById(calEvent.eventId);
+    }
+    //If start time change
+    else {
+        //Change format
+        const startDate = formatDateTime(calEvent.startDate);
+        //Take before ' ', day and after, time
+        const startDay = startDate.split(' ', 2)[0];
+        const startTime = startDate.split(' ', 2)[1];
+        //Change content
+        eventDiv.querySelector('.end-time').textContent = startTime;
+        //Get old Index
+        const oldIndex = eventsMonth.findIndex(e => e.eventId === calEvent.eventId);
+        //If will be in a different place of the array (compare with previous and next element start day), remove old one and add it new one
+        if ((eventsMonth[oldIndex + 1] && new Date(eventsMonth[oldIndex + 1].startDate).getTime() < new Date(calEvent.startDate).getTime()) ||
+            (eventsMonth[oldIndex - 1] && new Date(eventsMonth[oldIndex - 1].startDate).getTime() > new Date(calEvent.startDate).getTime())
+            || new Date(oldEvent.startDate).toDateString() !== new Date(calEvent.startDate).toDateString()) {
+            //Remove old one in the DOM and in the day (if necessary) 
+            deleteEventDOM(oldEvent)
+                .then(() => {
+                    //Remove old one
+                    eventsMonth.splice(oldIndex, 1);
+                    //Add new one
+                    insertByTime(eventsMonth, calEvent)
+                        .then(() => {
+                            //Get new index
+                            const newIndex = eventsMonth.findIndex(e => e.eventId === calEvent.eventId);
+                        })
+                        .catch(error => {
+                            console.error('error inserting the event', error);
+                        })
+                    //Add element updated
+                    addEventDOM(calEvent);
+                })
+        }
+        //If will be in same place just update it
+        else {
+            eventsMonth
+        }
+    }
+    console.log('month', eventsMonth);
+    console.log('days', eventsDay);
     //Return to events
     returnToEvents();
 }
@@ -539,10 +592,16 @@ document.getElementById('plus-event').addEventListener('click', () => {
         .then(() => {
             //Display the edit event to update info
             displayEditEvent(newEvent);
-            //Add it in the events
-            addEventDOM(newEvent);
+            //Insert it sort by time and display in DOM
+            insertByTime(eventsMonth, newEvent)
+                .then((orderEvents) => {
+                    addEventDOM(newEvent);
+                })
+                .catch(error => {
+                    console.error('Error displaying the event', error);
+                })
         })
-})
+});
 //When click search will be a input
 const searchInput = document.getElementById('search-input');
 const searchDiv = document.getElementById('search');

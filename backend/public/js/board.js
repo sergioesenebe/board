@@ -43,7 +43,8 @@ let propertyColor = [];
 var propColor;
 //Get boardId from the other page
 const boardId = localStorage.getItem('boardId');
-//Get username from the other page
+let cardToCLick = localStorage.getItem('cardToClick');
+// Get username from the other page
 const username = localStorage.getItem('username');
 //Put the name of the board as a title
 let boardName;
@@ -375,6 +376,17 @@ function displayCardPropTypes(card, contentCard, cardText) {
             console.error("Error fetching cards properties: ", error);
         });
 }
+//open a card if passed by event
+function openCardToClick() {
+        //If card Click has been saved
+        if(cardToCLick) {
+            //Clikc the pen to open
+            document.getElementById(cardToCLick).querySelector('.pen-button').click();
+            //Set card again to null
+            cardToCLick = null;
+        }
+}
+
 
 //--- Function for Event listeners ---
 
@@ -680,7 +692,7 @@ function displayEditCard(cardPen, card, cardText) {
             })
             .catch(error => {
                 console.error("Error showing the card content: ", error);
-            })
+            });
         //Update content
         var lastSavedContent;
         var timeoutId = 0;
@@ -854,9 +866,9 @@ function displayEvent(card) {
                 //Get the starting date, create a date
                 const eventDate = new Date(calEvent.startDate);
                 //Get year, month and day and add it in the correct format
-                const dayEvent = `${eventDate.getFullYear()}-${String(eventDate.getMonth() + 1).padStart(2,'0')}-${String(eventDate.getDate()).padStart(2,'0')}`;
+                const dayEvent = `${eventDate.getFullYear()}-${String(eventDate.getMonth() + 1).padStart(2, '0')}-${String(eventDate.getDate()).padStart(2, '0')}`;
                 //Take time from the Date
-                const timeEvent = `${String(eventDate.getHours()).padStart(2,'0')}:${String(eventDate.getMinutes()).padStart(2,'0')}`;
+                const timeEvent = `${String(eventDate.getHours()).padStart(2, '0')}:${String(eventDate.getMinutes()).padStart(2, '0')}`;
 
                 //Display it as an input that can be edited (one for time and other for day) with a minimum of today
                 timeTd.innerHTML = `<input id='input-card-event-time' type='time' value=${timeEvent}></input><input id='input-card-event-day' type='date' value=${dayEvent}></input>`;
@@ -1150,7 +1162,6 @@ function addCards(columnId) {
                     .catch(error => {
                         console.error("Error inserting the card: ", error);
                     })
-
             })
         })
         .catch(error => {
@@ -1515,6 +1526,8 @@ fetchJson('/getColumns', 'POST', { boardId: boardId })
                 const column = new Column({ boardId: boardId, columnId: c.column_id, name: c.name, order: index });
                 addColumn(column, index);
             })
+            //Wait and open card if passed by event
+            setTimeout(openCardToClick, 1000); 
         }
         //Show a plus at the end of the boards
         const columnId = 'new-column';
@@ -1556,3 +1569,4 @@ fetchJson('/getColumns', 'POST', { boardId: boardId })
 
 //Search cards with the loupe
 showSearch("column", "card");
+

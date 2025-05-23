@@ -301,6 +301,30 @@ app.post('/getCardContent', (req, res) => {
     }
   });
 });
+//Query to get a board id by a card
+app.post('/getBoardByCard', (req, res) => {
+  // Takes the card
+  const { cardId } = req.body;
+  //Return missing credentials if not card inserted
+  if (!cardId) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+  // SELECT to show board id from card
+  db.query('SELECT board_id FROM `columns` WHERE column_id=(SELECT column_id FROM `cards` WHERE card_id=?); ', [cardId], (err, results) => {
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the Database' });
+    }
+
+    // If the card has a board return it
+    if (results.length > 0) {
+      return res.status(200).json(results);
+    } else {
+      return res.status(200).json({ success: false, message: 'Card not found' });
+    }
+  });
+});
+
 //Query to show properties of a card
 app.post('/getCardPropTypes', (req, res) => {
   console.log('Body of the application:', req.body);

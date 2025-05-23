@@ -23,28 +23,28 @@ export class CalendarEvent {
         this.location = location;
         this.username = username;
     }
-    insert(){ 
-        return fetchJson('/insertEvent', 'POST', {name: this.name, startDate: this.startDate, endDate: this.endDate, username: this.username })
+    insert() {
+        return fetchJson('/insertEvent', 'POST', { name: this.name, startDate: this.startDate, endDate: this.endDate, username: this.username })
             .then(data => {
                 this.eventId = data.eventId;
                 return this;
             })
             .catch(error => {
-                console.error('Error inserting the event: ',error)
+                console.error('Error inserting the event: ', error)
             });
     }
-    update({newName, newStartDate, newEndDate, newLocation}){
+    update({ newName, newStartDate, newEndDate, newLocation }) {
         console.log('newName:', newName);
-        return fetchJson('/updateEvent', 'POST', {name: newName, startDate: newStartDate, endDate: newEndDate, location: newLocation, eventId: this.eventId})
+        return fetchJson('/updateEvent', 'POST', { name: newName, startDate: newStartDate, endDate: newEndDate, location: newLocation, eventId: this.eventId })
             .then(data => {
                 this.name = newName;
-                this.startDate= newStartDate;
-                this.endDate= newEndDate;
-                this.location= newLocation;
+                this.startDate = newStartDate;
+                this.endDate = newEndDate;
+                this.location = newLocation;
                 return this;
             })
             .catch(error => {
-                console.error('Error inserting the event: ',error)
+                console.error('Error inserting the event: ', error)
             });
 
     }
@@ -442,7 +442,7 @@ export function addColorToEvents(username, day) {
                     const eventDay = eventDate.getDate();
                     //Add yellow color to the day
                     const eventTd = document.getElementById(`calendar-day-${eventDay}`);
-                    eventTd.classList.add('event-day');                   
+                    eventTd.classList.add('event-day');
                 })
             }
             //Add red to today
