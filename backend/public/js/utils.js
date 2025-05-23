@@ -14,12 +14,39 @@ export class Column {
     }
 }
 export class CalendarEvent {
-    constructor({ eventId, name, startDate, endDate, cardId }) {
+    constructor({ eventId, name, startDate, endDate, cardId, location, username }) {
         this.eventId = eventId;
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.cardId = cardId;
+        this.location = location;
+        this.username = username;
+    }
+    insert(){ 
+        return fetchJson('/insertEvent', 'POST', {name: this.name, startDate: this.startDate, endDate: this.endDate, username: this.username })
+            .then(data => {
+                this.eventId = data.eventId;
+                return this;
+            })
+            .catch(error => {
+                console.error('Error inserting the event: ',error)
+            });
+    }
+    update({newName, newStartDate, newEndDate, newLocation}){
+        console.log('newName:', newName);
+        return fetchJson('/updateEvent', 'POST', {name: newName, startDate: newStartDate, endDate: newEndDate, location: newLocation, eventId: this.eventId})
+            .then(data => {
+                this.name = newName;
+                this.startDate= newStartDate;
+                this.endDate= newEndDate;
+                this.location= newLocation;
+                return this;
+            })
+            .catch(error => {
+                console.error('Error inserting the event: ',error)
+            });
+
     }
 }
 export class Card {
@@ -271,15 +298,17 @@ export function addNotes(username, openNotes) {
                         const fields = Array.from(todo.children)
                         fields.forEach(field => {
                             //Get the input
-                            const input = field.querySelector('input');
-                            //If field clicked and not selected add class selected, if selected, remove it
-                            input.addEventListener('click', () => {
-                                if (input.className === 'selected') input.classList.remove('selected');
-                                else input.className = 'selected';
-                            })
-                            //If has class selected check it
-                            if (input.className === 'selected') {
-                                input.checked = true;
+                            if (field.querySelector('input')) {
+                                const input = field.querySelector('input');
+                                //If field clicked and not selected add class selected, if selected, remove it
+                                input.addEventListener('click', () => {
+                                    if (input.className === 'selected') input.classList.remove('selected');
+                                    else input.className = 'selected';
+                                })
+                                //If has class selected check it
+                                if (input.className === 'selected') {
+                                    input.checked = true;
+                                }
                             }
                         })
                     })
@@ -346,22 +375,35 @@ export async function getBoardById(boardId) {
     }
 }
 //Function to add the calendar of this month
-export function generateCalendar(dateCalendar) {
+export function generateCalendar(username, dateCalendar) {
+    //Get month and year
     const month = dateCalendar.getMonth();
     const year = dateCalendar.getFullYear();
+    //Get first day and last of the month (day one and day before first (0) from next mont)
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
-    const firstDayDay = firstDay.getDay();
+    //Get day of the month for first dy
+    let firstDayDay = firstDay.getDay();
+    //If the day is equal to 0 (Sunday) move it to last one (sunday will be last day), else move to the left the day
+    firstDayDay === 0 ? firstDayDay = 6 : firstDayDay--;
+    //Get table
     const table = document.getElementById('tbody');
+    //Declare variable day to 1
     var day = 1;
+    //For every day of the month display them
     while (day <= lastDay.getDate()) {
+        //Create a row
         const tr = document.createElement('tr');
         table.appendChild(tr);
+        //For first day add emptys td and days
         if (day === 1) {
+
+            //Create empty tds until day 1
             for (let j = 0; j < firstDayDay; j++) {
                 const td = document.createElement('td');
                 tr.appendChild(td);
             }
+            //Add days from 1 to end of the week (incrementing day)
             for (let j = firstDayDay; j <= 6; j++) {
                 const td = document.createElement('td');
                 tr.appendChild(td);
@@ -370,6 +412,7 @@ export function generateCalendar(dateCalendar) {
                 day++;
             }
         }
+        //For the others add the days until the end
         else {
             for (let j = 0; j <= 6; j++) {
                 if (day <= lastDay.getDate()) {
@@ -382,11 +425,13 @@ export function generateCalendar(dateCalendar) {
             }
         }
     }
-
 }
 //Function add yellow to the days with events and red for today
-export function addColorToEvents(username, month) {
-    fetchJson('/addYellowToEvents', 'POST', { username, month })
+export function addColorToEvents(username, day) {
+    //Show month as a number starting from 1 not, 0
+    const month = day.getMonth() + 1;
+    const year = day.getFullYear();
+    fetchJson('/getEventsByMonth', 'POST', { username, month, year })
         .then(data => {
             if (data.length > 0) {
                 data.forEach(e => {
@@ -397,13 +442,14 @@ export function addColorToEvents(username, month) {
                     const eventDay = eventDate.getDate();
                     //Add yellow color to the day
                     const eventTd = document.getElementById(`calendar-day-${eventDay}`);
-                    eventTd.classList.add('event-day');
+                    eventTd.classList.add('event-day');                   
                 })
             }
             //Add red to today
-            const today = new Date();//Function to add columns for boards
-            const todayMonth = today.getMonth() + 1;
-            if (todayMonth === month) {
+            const today = new Date();
+            //If today month and year is the month and year selected
+            if (today.getMonth() === day.getMonth() && today.getFullYear() === day.getFullYear()) {
+                //Get the td and add class to show it red (also remove yellow event if it's the case)
                 const todayDay = today.getDate();
                 const todayTd = document.getElementById(`calendar-day-${todayDay}`);
                 todayTd.classList.remove('event-day');

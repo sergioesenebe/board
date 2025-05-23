@@ -172,7 +172,6 @@ function getProperties(cardId, property, row) {
                 fetchJson('insertPropType', 'POST', { newPropTypeName, propertyId, boardId })
                     .then(data => {
                         const propType = new PropType({ propTypeId: data.prop_type_id, name: data.prop_type_name, propertyId: data.property_id });
-                        console.log(propType);
                         const { typeDiv, trash, pen } = displayType(propType, propertyTypesDiv, true);
                         //When clicked on type, will change the type of the property
                         typeDiv.addEventListener('click', () => {
@@ -494,8 +493,6 @@ function showOptionsColumns(options, index) {
 async function selectPropType(cardId, property, propType, row, typeDiv) {
     //Take Type selected info
     const propTypeId = propType.propTypeId;
-    console.log('propType', propType);
-    console.log('propTypeId', propTypeId);
     const typeName = typeDiv.textContent;
     //Split what is before PT:
     const typeId = row.querySelector('.property-edit-card').id.split('PT:')[1];
@@ -854,9 +851,12 @@ function displayEvent(card) {
             if (data.length > 0) {
                 //Save event info
                 const calEvent = new CalendarEvent(({ eventId: data[0]?.event_id, name: data[0]?.name, startDate: data[0]?.start_date, endDate: data[0]?.end_date, cardId: cardId }))
-                //Get the starting date, take the day and time, before and after T
-                const dayEvent = calEvent.startDate.split("T")[0];
-                const timeEvent = calEvent.startDate.split("T")[1].slice(0, 5);
+                //Get the starting date, create a date
+                const eventDate = new Date(calEvent.startDate);
+                //Get year, month and day and add it in the correct format
+                const dayEvent = `${eventDate.getFullYear()}-${String(eventDate.getMonth() + 1).padStart(2,'0')}-${String(eventDate.getDate()).padStart(2,'0')}`;
+                //Take time from the Date
+                const timeEvent = `${String(eventDate.getHours()).padStart(2,'0')}:${String(eventDate.getMinutes()).padStart(2,'0')}`;
 
                 //Display it as an input that can be edited (one for time and other for day) with a minimum of today
                 timeTd.innerHTML = `<input id='input-card-event-time' type='time' value=${timeEvent}></input><input id='input-card-event-day' type='date' value=${dayEvent}></input>`;
@@ -1301,7 +1301,7 @@ function updateEventUser(eventId) {
     const dayEvent = document.getElementById('input-card-event-day').value;
     const startDate = `${dayEvent} ${timeEvent}:00`;
     //Add 1 hour for the endTime
-    var endDate = new Date(startDate);
+    let endDate = new Date(startDate);
     endDate.setHours(endDate.getHours() + 1);
     //Format the number adding a 0 if necessary, get the day and time
     const pad = (n) => n.toString().padStart(2, '0');

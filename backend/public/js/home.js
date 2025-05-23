@@ -1,3 +1,5 @@
+//--- Import functions ---
+
 //Import function fetchJson
 import { Board, Column, CalendarEvent, fetchJson } from './utils.js';
 //Import function fetchJson
@@ -12,6 +14,15 @@ import { addColorToEvents } from './utils.js';
 import { openComponent } from './utils.js';
 //Import function fetchJson
 import { getBoardById } from './utils.js';
+
+//--- Declarate variables ---
+
+//Get day and month
+const today = new Date();
+const month = today.getMonth() + 1;
+
+//--- Functions ---
+
 //Function to say hello to the user name, depending on time
 function sayHello(username) {
     //Get the first name
@@ -61,7 +72,7 @@ function getUpcomingEvent(username) {
             const eventDate = document.getElementById('event-date');
             if (data[0] != undefined) {
                 //Save the event
-                const calEvent = new CalendarEvent({ eventId:data[0].event_id, name:data[0].name, startDate:data[0].start_date, endDate: data[0].end_date, cardId:data[0].card_id });
+                const calEvent = new CalendarEvent({ eventId: data[0].event_id, name: data[0].name, startDate: data[0].start_date, endDate: data[0].end_date, cardId: data[0].card_id });
                 //Create a date
                 const eventdate = new Date(calEvent.startDate);
                 //Set the context for name 
@@ -97,7 +108,7 @@ function getLastUsedBoardLastColumn(username) {
                 //Get in promise all the columns
                 const promises = data.map((c, index) => {
                     //Save the column info
-                    column = new Column ({columnId:c.column_id, boardId: c.board_id, name:c.name});
+                    column = new Column({ columnId: c.column_id, boardId: c.board_id, name: c.name });
                     const columnId = column.columnId;
                     //The first one (last updated)
                     if (index === 0) {
@@ -159,6 +170,8 @@ function getLastUsedBoardLastColumn(username) {
 
 }
 
+//--- DOM ---
+
 //Get username from the other page
 const username = localStorage.getItem('username');
 //Get the actual hour
@@ -177,15 +190,12 @@ addNotes(username);
 getUpcomingEvent(username);
 //Show percentage of last column
 getLastUsedBoardLastColumn(username);
-//Get day and month
-const today = new Date();
-const month = today.getMonth() + 1;
 //Generate a calendar of the month
-generateCalendar(today);
+generateCalendar(username, today);
 //Add yellow to the days with events
-addColorToEvents(username, month);
+addColorToEvents(username, today);
 //Add month to calendar
-document.getElementById('calendar-month').textContent = today.toLocaleString('en-US', {month: 'short'});
+document.getElementById('calendar-month').textContent = today.toLocaleString('en-US', { month: 'short' });
 //Open the boards when clicked
 openComponent("half-board", "/boards.html");
 //Open notes when clicked

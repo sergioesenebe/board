@@ -87,12 +87,14 @@ header {
     background-color: white;
     border-radius: 20px;
 }
+
 /*When hover add a shadow and change cursor*/
 .day-button:hover {
     cursor: pointer;
     filter: brightness(90%);
     transition: all 0.3s ease;
 }
+
 /*Red for a calentar day (Today)*/
 td.today-day {
     background-color: lightsalmon;
@@ -120,7 +122,7 @@ td.event-day {
 }
 
 /*Events display*/
-.events {
+#events {
     background-color: #EDE7DC;
     border-radius: 20px;
     width: 90%;
@@ -129,10 +131,17 @@ td.event-day {
     box-sizing: border-box;
     /*Display the events by column*/
     display: flex;
+    flex-direction: column;
+    /*Allow scroll*/
+    overflow-y: auto;
+}
+
+/*Justify items with space (ex. one top other center and other bottom)*/
+.justify-space {
     justify-content: space-between;
     align-items: flex-start;
     flex-wrap: wrap;
-    flex-direction: column;
+
 }
 
 /*Allow scrolling y in events*/
@@ -146,9 +155,19 @@ td.event-day {
 }
 
 /*Title and events will let space for the plus*/
-#title-and-events {
+#header-and-events {
     height: 70%;
     width: 100%;
+}
+
+/*Title and loup (left and right)*/
+#title-and-seach {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
 /*Event in events*/
@@ -178,11 +197,73 @@ td.event-day {
     align-items: center;
     justify-content: center;
     width: 100%;
-    background-color: white;
-    border-radius: 20px;
-    padding: 10px 0;
 }
 
+/*When editing a event*/
+#edit-event-header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+#edit-event-header img {
+    width: 40px;
+    height: 40px;
+}
+
+/*Table will have spaces*/
+#table-event-edit {
+    border-spacing: 10px 10px;
+}
+
+/*Input to edit an event, just bottom border and with all pasible*/
+#events input {
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    background-color: transparent;
+    border-color: white;
+    font-size: 16px;
+    width: 100%;
+}
+
+/*Don't change the border when focus*/
+#events input:focus {
+    outline: none;
+}
+
+/*Display both input in one line*/
+.input-row {
+    display: flex;
+    flex-direction: row;
+}
+
+/*Same for text area, won't be resizable also*/
+#events textarea {
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    background-color: transparent;
+    border-color: white;
+    font-size: 16px;
+    width: 100%;
+    resize: none;
+}
+/*Don't show the outline*/
+#events textarea:focus {
+    outline: none;
+}
+/*Link to open the event card*/
+#open-card-link {
+    text-decoration: underline;
+    color: #8c6d5d;
+}
+/*Div for open card and update*/
+#edit-event-buttons{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 /*The layout of the elements will be changed when the width is less than 1325px. So that each container occupies one row*/
 @media (max-width: 1325px) {
     #calendar-half-content {

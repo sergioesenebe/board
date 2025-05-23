@@ -45,87 +45,43 @@
                 </div>
                 <table id="tbody">
                     <tr>
-                        <th>Sun</th>
                         <th>Mon</th>
                         <th>Tue</th>
                         <th>Wed</th>
                         <th>Thu</th>
                         <th>Fri</th>
                         <th>Sat</th>
+                        <th>Sun</th>
                     </tr>
-            </table>
-            <div id="calendar-legend">
-                <div style="background-color: lightsalmon;"></div>Today
-                <div style="background-color: lightgoldenrodyellow;"></div>Event
+                </table>
+                <div id="calendar-legend">
+                    <div style="background-color: lightsalmon;"></div>Today
+                    <div style="background-color: lightgoldenrodyellow;"></div>Event
+                </div>
             </div>
-        </div>
-        <div class="right">
-            <div class="events">
-                <div id="title-and-events">
-                    <h1>Your events</h1>
-                    <div id="events-by-day">
-                        <h3>26 March</h3>
-                        <div style="border-top: 1px solid gray; width: 100%;"></div>
-                        <div class="event components-click">
-                            <div>
-                                <span class="start-time">8:30</span></br>
-                                <span class="end-time">9:30</span>
+            <div class="right">
+                <div id="events" class = "justify-space">
+                    <div id="header-and-events">
+                        <div id="title-and-seach">
+                            <h1>Your events</h1>
+                            <div id="search">
+                                <input type="text" id="search-input" class="fade fade-out" placeholder="Search..."
+                                    style="display: none;">
+                                <img id="search-icon" class="options-button" width="40px" height="40px"
+                                    src="https://res.cloudinary.com/drmjf3gno/image/upload/v1745307219/Icons/Black/search_black.png">
                             </div>
-                            <div style="width: 1px; height: 40px; background-color: gray;"></div>
-                            <span>Product Demo</span>
                         </div>
-                        <div style="border-top: 1px solid gray; width: 100%;"></div>
-                        <div class="event components-click">
-                            <div time>
-                                <span class="start-time">8:30</span></br>
-                                <span class="end-time">9:30</span>
-                            </div>
-                            <div style="width: 1px; height: 40px; background-color: gray;"></div>
-                            <span>Product Demo</span>
-                        </div>
-
-                        <h3>26 March</h3>
-                        <div style="border-top: 1px solid gray; width: 100%;"></div>
-                        <div class="event components-click">
-                            <div time>
-                                <span class="start-time">8:30</span></br>
-                                <span class="end-time">9:30</span>
-                            </div>
-                            <div style="width: 1px; height: 40px; background-color: gray;"></div>
-                            <span>Product Demo</span>
-                        </div>
-
-                        <h3>26 March</h3>
-                        <div style="border-top: 1px solid gray; width: 100%;"></div>
-                        <div class="event components-click">
-                            <div time>
-                                <span class="start-time">8:30</span></br>
-                                <span class="end-time">9:30</span>
-                            </div>
-                            <div style="width: 1px; height: 40px; background-color: gray;"></div>
-                            <span>Product Demo</span>
-                        </div>
-                        <h3>26 March</h3>
-                        <div style="border-top: 1px solid gray; width: 100%;"></div>
-                        <div class="event components-click">
-                            <div time>
-                                <span class="start-time">8:30</span></br>
-                                <span class="end-time">9:30</span>
-                            </div>
-                            <div style="width: 1px; height: 40px; background-color: gray;"></div>
-                            <span>Product Demo</span>
+                        <div id="events-by-day">
                         </div>
                     </div>
-                </div>
-                <div id="plus-event" class="components-click">
-                    <img height="25px"
-                        src="https://res.cloudinary.com/drmjf3gno/image/upload/v1743961025/Icons/Black/plus_black.png">
-                </div>
+                    <div id="plus-event" class="white-button">
+                        <img height="25px"
+                            src="https://res.cloudinary.com/drmjf3gno/image/upload/v1743961025/Icons/Black/plus_black.png">
+                    </div>
 
+                </div>
             </div>
-        </div>
-    </div>
-    <script type="module" src="js/calendar.js"></script>
+            <script type="module" src="js/calendar.js"></script>
 </body>
 
 </html>

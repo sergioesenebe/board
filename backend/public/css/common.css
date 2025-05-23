@@ -56,7 +56,21 @@ header {
     border-radius: 20px;
     padding: 5px;
 }
-
+/*Button white*/
+.white-button {
+    border: none;
+    border-radius: 10px;
+    padding: 5px;
+    margin: 5px 0;
+    background-color: white;
+}
+/*Buttons white when hover will not have border, change color (beige with 90%brightness) and cursor*/
+.white-button:hover {
+    border: none;
+    outline: none;
+    background-color: #D5D0C6;
+    cursor: pointer;
+}
 /*Image size for go back*/
 .back {
     width: 40px;

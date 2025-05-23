@@ -27,17 +27,13 @@ searchDiv.addEventListener('click', (event) => {
         event.stopPropagation(); //prevent document.addEventListener
 });
 
-/*When click in other place hide again*/
-document.addEventListener('click', () => {
-    hideSearch();
-});
 //Delete the input value when the page refresh
 document.addEventListener('DOMContentLoaded', () => {
     searchInput.value = null;
 })
 //Get the input when writing and show just the elements that match
 showSearch("board");
-/*When click in other place hide again*/
+//When click in other place hide again
 document.addEventListener('click', () => {
     search = hideSearch(search);
 });

@@ -8,7 +8,8 @@ const db = mysql.createConnection({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  port: process.env.DB_PORT
+  port: process.env.DB_PORT,
+  dateStrings: true //Evit convert to string
 });
 /*Connect to mySQL*/
 db.connect(err => {
@@ -475,31 +476,6 @@ app.post('/getBoardById', (req, res) => {
       return res.status(200).json(results);
     } else {
       return res.status(200).json({ success: false, message: 'Board not found' });
-    }
-  });
-});
-//Query to show month events
-app.post('/addYellowToEvents', (req, res) => {
-  console.log('Body of the application:', req.body);
-  // Takes the usernames and month from the body
-  const { username, month } = req.body;
-
-  if (!username || !month) {
-    return res.status(400).json({ success: false, message: 'Missing credentials' });
-  }
-
-  // SELECT to show month events for a user
-  db.query('SELECT * FROM events WHERE MONTH(start_date) = ? AND user_id=?', [month, username], (err, results) => {
-    if (err) {
-      console.error('Error in the query:', err);
-      return res.status(500).json({ success: false, message: 'Error in the Database' });
-    }
-
-    // If there is more than one event will return it
-    if (results.length > 0) {
-      return res.status(200).json(results);
-    } else {
-      return res.status(200).json({ success: false, message: 'Username not found' });
     }
   });
 });
@@ -1435,13 +1411,14 @@ app.post('/updatePropTypeName', (req, res) => {
 });
 
 //--- Notes ---
+
 //Insert Note
 app.post('/insertNote', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the usernames and newBoardName from the body
   const { newNoteName, username } = req.body;
 
-  //Generate the column_id with UUID v4
+  //Generate the note_id with UUID v4
   const { v4: uuidv4 } = require('uuid');
   const newNoteId = uuidv4();
 
@@ -1467,14 +1444,14 @@ app.post('/insertNote', (req, res) => {
 //Query to get the note with the note_id
 app.post('/getNoteById', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the board id from the body
+  // Takes the note id from the body
   const { noteId } = req.body;
 
   if (!noteId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  // SELECT to get the board with the id
+  // SELECT to get the note with the id
   db.query('SELECT * FROM `notes` WHERE note_id = ?;', [noteId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
@@ -1492,7 +1469,7 @@ app.post('/getNoteById', (req, res) => {
 //Update Note Name
 app.post('/updateNoteName', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the newName and board id from the body
+  // Takes the newName and board id from the bodyshow
   const { newName, noteId } = req.body;
 
   if (!newName || !noteId) {
@@ -1564,6 +1541,113 @@ app.post('/updateNoteContent', (req, res) => {
   });
 
 });
+
+//--- Query to get events from a month ---
+
+app.post('/getEventsByMonth', (req, res) => {
+  console.log('Body of the application:', req.body);
+  // Takes the username, month and year from the body
+  const { username, month, year } = req.body;
+
+  if (!username || !month || !year) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+
+  // SELECT to get the board with the id
+  db.query('SELECT `event_id`, `name`, `start_date`, `end_date`, `card_id`, `location` FROM `events` WHERE user_id = ? AND MONTH(start_date) = ? AND YEAR(start_date) = ? ORDER BY start_date;', [username, month, year], (err, results) => {
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the Database' });
+    }
+
+    // If there is more than one note will return true
+    if (results.length > 0) {
+      return res.status(200).json(results);
+    } else {
+      return res.status(200).json({ success: false, message: 'No events for this month' });
+    }
+  });
+});
+//Insert Event
+app.post('/insertEvent', (req, res) => {
+  console.log('Body of the application:', req.body);
+  // Takes the name, startDate and endDate from the body
+  const { name, startDate, endDate, username } = req.body;
+
+  //Generate the event_id with UUID v4
+  const { v4: uuidv4 } = require('uuid');
+  const eventId = uuidv4();
+
+
+  if (!name || !startDate || !endDate || !username || !eventId) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+
+  // INSERT new event with the name, startDate, endDate, username
+  db.query('INSERT INTO `events`(`event_id`, `name`, `start_date`, `end_date`, `user_id`) VALUES (?, ?, ?, ?, ?)', [eventId, name, startDate, endDate, username], (err, results) => {
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the Database' });
+    }
+    // If it is inserted correctly return the eventId
+    if (results.affectedRows > 0) {
+      return res.status(200).json({ eventId: eventId });
+    } else {
+      return res.status(200).json({ success: false, message: 'Event not inserted' });
+    }
+  });
+});
+//Remove Event
+app.post('/deleteEvent', (req, res) => {
+  console.log('Body of the application:', req.body);
+  // Takes the eventId from the body
+  const { eventId } = req.body;
+  if (!eventId) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+
+  // Delete Event with the id
+  db.query('DELETE FROM `events` WHERE event_id=?; ', [eventId], (err, results) => {
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the Database' });
+    }
+
+    // If it is deleted return true
+    if (results.affectedRows > 0) {
+      return res.status(200).json({ success: true, message: 'Event deleted' });
+    } else {
+      return res.status(200).json({ success: false, message: 'Event not deleted' });
+    }
+  });
+});
+//Update Event
+app.post('/updateEvent', (req, res) => {
+  console.log('Body of the application:', req.body);
+  // Takes the name, startDate, endDate, location an eventId from the body
+  const { name, startDate, endDate, location, eventId } = req.body;
+
+  if (!name || !startDate || !endDate || !eventId) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+
+  // Update the name of a board and the last_updated
+  db.query('UPDATE events SET name = ?, start_date = ?, end_date = ?, location = ? WHERE event_id = ?;', [name, startDate, endDate, location, eventId], (err, results) => {
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the Database' });
+    }
+
+    // If there is a change return true
+    if (results.affectedRows > 0) {
+      return res.status(200).json({success: true, message: 'Event updated'});
+    } else {
+      return res.status(200).json({ success: false, message: 'Event not updated' });
+    }
+  });
+});
+
+
 
 /*Open port*/
 app.listen(port, '0.0.0.0', () => {
