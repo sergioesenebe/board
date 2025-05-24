@@ -383,7 +383,7 @@ function openCardToClick() {
             //Clikc the pen to open
             document.getElementById(cardToCLick).querySelector('.pen-button').click();
             //Set card again to null
-            cardToCLick = null;
+            localStorage.setItem('cardToClick', null);
         }
 }
 
