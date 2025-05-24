@@ -13,8 +13,6 @@
         "bar header header header"
         "bar elements elements elements";
     gap: 20px;
-    margin-left: 5%;
-    margin-right: 5%;
 }
 
 /*header will display the title on the left and the search and option on the right*/
@@ -22,7 +20,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-
+    width: 100%;
 }
 
 /*A container for the boards, configuring the size*/
@@ -33,8 +31,10 @@ header {
     max-width: 100%;
     display: flex;
     flex-wrap: wrap;
-    margin-bottom: 200px;
     padding: 30px;
+    /*Allow y scroll*/
+    overflow-y: auto;
+    padding-bottom: 40px;
 }
 
 /*Tables of the boards font style and bordercolor*/
@@ -52,7 +52,6 @@ header {
 .board {
     width: 45%;
     height: 300px;
-
     border-radius: 20px;
     background-color: white;
     box-sizing: border-box;
@@ -146,12 +145,21 @@ header {
             "bar"
             "header"
             "elements";
-        width: 90%;
-        padding: 0;
+        width: 100%;
+        height: 100%;
+        padding: 5%;
+        max-height: auto;
     }
+
     /*Change gap in the boards*/
     #elements {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
         gap: 20px;
+        align-items: center;
+        overflow-x: auto;
+        width: 100%;
     }
 
     /*Board will be with all the width and 30% of height as maximum*/

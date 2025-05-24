@@ -120,7 +120,7 @@ app.post('/insertUser', (req, res) => {
 
     // If the user is inserted will return true
     if (results.affectedRows > 0) {
-      return res.status(200).json({ success:true });
+      return res.status(200).json({ success: true });
     } else {
       return res.status(200).json({ success: false, message: 'Board not inserted' });
     }
@@ -635,7 +635,7 @@ app.post('/updateColumnOrderIncrease', (req, res) => {
             console.error('Error in the query:', err);
             return res.status(500).json({ success: false, message: 'Error in the update time query' });
           }
-    
+
         });
       });
     })
@@ -1664,9 +1664,61 @@ app.post('/updateEvent', (req, res) => {
 
     // If there is a change return true
     if (results.affectedRows > 0) {
-      return res.status(200).json({success: true, message: 'Event updated'});
+      return res.status(200).json({ success: true, message: 'Event updated' });
     } else {
       return res.status(200).json({ success: false, message: 'Event not updated' });
+    }
+  });
+});
+
+//--- Settings ---
+//Query to show the User with the id
+app.post('/getUserFromUserId', (req, res) => {
+  console.log('Body of the application:', req.body);
+  // Takes the board from the body
+  const { userId } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+
+  // SELECT to show the columns from a board
+  db.query('SELECT * FROM `users` WHERE user_id=?; ', [userId], (err, results) => {
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the Database' });
+    }
+
+    // If the user exist return the results
+    if (results.length > 0) {
+      return res.status(200).json(results);
+    } else {
+      return res.status(200).json({ success: false, message: 'User not found' });
+    }
+  });
+});
+//Update user data
+app.post('/updateUser', (req, res) => {
+  console.log('Body of the application:', req.body);
+  // Takes the firstName, secondName, newUsername, email, password and username from the body
+  const { firstName, secondName, newUsername, email, username, avatar } = req.body;
+
+  if (!username && (!firstName || !secondName || !newUsername || !email || !avatar )) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+
+  // Update the user with the id
+  db.query('UPDATE `users` SET `user_id`=?,`first_name`=?,`second_name`=?,`email`=?,`image_url`=? WHERE `user_id` = ?;', [newUsername, firstName, secondName, email, avatar, username], (err, results) => {
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the Database' });
+    }
+
+    // If there is a change return true
+    if (results.affectedRows > 0) {
+      return res.status(200).json({ success: true, message: 'User updated' });
+    } else {
+      return res.status(200).json({ success: false, message: 'User not updated' });
     }
   });
 });

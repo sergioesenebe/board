@@ -11,6 +11,7 @@ async function login(event) {
     const errorMessage = document.getElementById('errorMessage');
     //Encrypt the password to check if its correct (in db has a hash)
     const hashPassword = await hash(password);
+    console.log('hash',hashPassword);
     //If there is nothing in the username and password field, show a message
     if (username == '' || password == '') {
         errorMessage.textContent = 'Please enter a username and a password';

@@ -12,8 +12,6 @@
         "bar header header header"
         "bar box box box";
     gap: 20px;
-    margin-left: 5%;
-    margin-right: 5%;
 }
 
 /*header will display the title on the left and the search and option on the right*/
@@ -28,7 +26,6 @@ header {
     grid-area: box;
     border-radius: 20px;
     padding: 60px;
-    padding-bottom: 20px;
     background-color: white;
     /*Enables horizontal scrolling*/
     overflow: auto;
@@ -110,6 +107,12 @@ td.event-day {
     min-width: 20px;
     width: auto;
     color: black;
+}
+
+/*Event in calendar add cursor*/
+.clikcable-day:hover {
+    cursor: pointer;
+    filter: brightness(90%);
 }
 
 /* Half of the board for the events */
@@ -249,37 +252,48 @@ td.event-day {
     width: 100%;
     resize: none;
 }
+
 /*Don't show the outline*/
 #events textarea:focus {
     outline: none;
 }
+
 /*Link to open the event card*/
 #open-card-link {
     text-decoration: underline;
     color: #8c6d5d;
 }
-/*Hover change coursor*/
+
+/*Hover change cursor*/
 #open-card-link:hover {
     cursor: pointer;
     filter: brightness(60%);
 }
+
 /*Div for open card and update*/
-#edit-event-buttons{
+#edit-event-buttons {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
+
 /*The layout of the elements will be changed when the width is less than 1325px. So that each container occupies one row*/
 @media (max-width: 1325px) {
     #calendar-half-content {
         grid-template-columns: 1fr;
-        grid-template-rows: 1fr 1fr 20fr;
+        grid-template-rows: min-content min-content min-content;
         grid-template-areas:
             "bar"
             "header"
             "box";
-        width: 90%;
-        padding: 0;
+        width: 100%;
+        height: 100%;
+        padding: 5%;
+        max-height: auto;
+        /* el espacio que quieras */
+        box-sizing: border-box;
+        overflow-y: auto;
+
     }
 
     /*Change sizes*/
@@ -295,19 +309,28 @@ td.event-day {
 
     /*Right and left will take 100%*/
     .right {
+        width: 60%;
+    }
+
+    #events {
+        height: 400px;
         width: 100%;
-        height: 50%;
     }
 
     .calendar {
         width: 100%;
-        height: 50%;
+        height: min-content;
     }
 
     /*show elements inside the box ordered by column*/
     .box {
         display: flex;
-        flex-direction: column;
-        max-height: 90%;
+        flex-direction: column-reverse;
+        gap: 20px;
+        align-items: center;
+        overflow-x: auto;
+        width: 100%;
+        margin: 0;
+
     }
 }

@@ -1,16 +1,12 @@
 //--- Import functions ---
 
-//Import function fetchJson
+//Import classes
 import { Board, Column, CalendarEvent, fetchJson } from './utils.js';
-//Import function fetchJson
-import { addBoards } from './utils.js';
-//Import function fetchJson
+//Import functions
+import { addBoards, setAvatar } from './utils.js';
 import { addNotes } from './utils.js';
-//Import function fetchJson
 import { generateCalendar } from './utils.js';
-//Import function fetchJson
 import { addColorToEvents } from './utils.js';
-//Import function fetchJson
 import { openComponent } from './utils.js';
 //Import function fetchJson
 import { getBoardById } from './utils.js';
@@ -50,15 +46,6 @@ function sayHello(username) {
         .catch(error => {
             console.error('Error fetching Users data', error)
         });
-}
-//Function to get avatar Avatar
-function setAvatar(username) {
-    fetchJson('/getAvatar', 'POST', { username })
-        .then(data => {
-            //Save the image url and add it as the src
-            const avatarsrc = data.image_url;
-            document.getElementById('avatar').src = avatarsrc;
-        })
 }
 
 //Function to get upcoming Event

@@ -753,3 +753,18 @@ export function insertAfter(newNode, referenceNode) {
         }
     }
 }
+//--- Common ----
+//Function to get avatar Avatar
+export function setAvatar(username) {
+    return fetchJson('/getAvatar', 'POST', { username })
+        .then(data => {
+            //Save the image url and add it as the src
+            const avatarsrc = data.image_url;
+            document.getElementById('avatar').src = avatarsrc;
+            //Return the avatar src
+            return (avatarsrc);
+        })
+        .catch(error => {
+            console.error('Error getting the avatar', error);
+        })
+}

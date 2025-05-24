@@ -100,7 +100,6 @@ function showEvent(calEvent, nextElement) {
     eventDiv.classList.add("event", "components-click");
     eventDiv.id = calEvent.eventId;
     //If there aren't a day created with start Day create a header and a div for elements
-    console.log(startDay);
     if (!eventsDay[startDay]) {
         //Create day title and line and add it to a div
         dayDiv = document.createElement('div')
@@ -295,11 +294,11 @@ function addEventOptions(calEvent) {
             fetchJson('/getBoardByCard', 'POST', { cardId: calEvent.cardId })
                 .then(data => {
                     if (data.length > 0) {
-                            //Save board id
-                            localStorage.setItem('boardId', data[0]?.board_id);
-                            localStorage.setItem('cardToClick', calEvent.cardId);
-                            //Open board page
-                            window.open('./board.html', '_self');
+                        //Save board id
+                        localStorage.setItem('boardId', data[0]?.board_id);
+                        localStorage.setItem('cardToClick', calEvent.cardId);
+                        //Open board page
+                        window.open('./board.html', '_self');
                     }
                 })
                 .catch(error => {
@@ -381,7 +380,6 @@ function addEventDOM(newEvent) {
     //Display the event
     //If there are a next element insert before
     if (eventsMonth[index + 1]) {
-        console.log(eventsMonth);
         showEvent(newEvent, eventsMonth[index + 1]);
     }
     //Else inserted as a child
@@ -418,14 +416,21 @@ function displayCalendarColors() {
 }
 //Add yellow to day of the event
 function addYellowToEventDay(event) {
+    //Create a date for the start event
+    const eventDate = new Date(event.startDate);
+    const eventDay = eventDate.getDate();
+    //Get the event in calendar
+    const eventTd = document.getElementById(`calendar-day-${eventDay}`);
     //If it's not the actual day add it yellow
     if (new Date(event.startDate).toDateString() !== actualDay.toDateString()) {
-        //Create a date for the start event
-        const eventDate = new Date(event.startDate);
-        const eventDay = eventDate.getDate();
         //Add yellow color to the day
-        const eventTd = document.getElementById(`calendar-day-${eventDay}`);
         eventTd.classList.add('event-day');
+        //Allow click the event to move scroll
+        eventTd.classList.add('clikcable-day');
+    }
+    else {
+        //Allow click the event to move scroll
+        eventTd.classList.add('clikcable-day');
     }
 }
 //Function to delete event in the db and in the DOM
@@ -534,10 +539,44 @@ function updateEventDOM(calEvent, oldEvent) {
             eventsMonth
         }
     }
-    console.log('month', eventsMonth);
-    console.log('days', eventsDay);
     //Return to events
     returnToEvents();
+}
+//Function to move events to a specific day
+function moveToDay(moveDay) {
+    //Convet the date and get the day
+    let dayId = formatDateTime(moveDay);
+    dayId = dayId.split(' ', 2)[0];
+    //If it exists a event in that day
+    if (document.getElementById(dayId)) {
+        //Get the day div
+        const dayDiv = document.getElementById(dayId);
+        //Get the events div
+        const eventsDiv = document.getElementById('events')
+        //Scroll to the event with animation (in nearest div), and try to move to the start
+        dayDiv.scrollIntoView({ block: "nearest", inline: "nearest", behavior: 'smooth' });        
+    }
+}
+//Move to event clicked
+function moveToClicked() {
+    //Wait to load events
+    setTimeout(() => {
+        //Get all days with eventss (clickable)
+        const eventsDayDiv = document.querySelectorAll('.clikcable-day')
+        //For each, when clicked move to them
+        eventsDayDiv.forEach(eventDayDiv => {
+            eventDayDiv.addEventListener('click', () => {
+                moveToDay(`${day.getMonth() + 1}-${eventDayDiv.textContent}-${day.getFullYear()}`);
+            })
+        })
+    }, 500);
+}
+//Move to Today
+function moveToToday() {
+    //Wait to load events and move to today
+    setTimeout(() => {
+        moveToDay(actualDay);
+    }, 200);
 }
 
 //--- Event Handlers ---
@@ -553,6 +592,12 @@ nextMonthEl.addEventListener('click', () => {
     if (openEvent !== 'none') {
         returnToEvents();
     }
+    //Move to event day calendar when clicked
+    moveToClicked();
+    //If month is actual month scroll to today event
+    if (day.getMonth() === actualDay.getMonth() && day.getFullYear() === actualDay.getFullYear()){
+        moveToToday();
+    }
 })
 //When previous month in calendar clicked show next month
 const previousMonthEl = document.getElementById('previous-month');
@@ -564,6 +609,13 @@ previousMonthEl.addEventListener('click', () => {
     //Close edit Event if open
     if (openEvent !== 'none') {
         returnToEvents();
+    }
+    //Move to event day calendar when clicked
+    moveToClicked();
+    //If month is actual month scroll to today event
+    console.log(day,actualDay)
+    if (day.getMonth() === actualDay.getMonth() && day.getFullYear() === actualDay.getFullYear()){
+        moveToToday();
     }
 })
 //When plus is clicked create a new event
@@ -624,6 +676,10 @@ showSearch("event");
 document.addEventListener('click', () => {
     search = hideSearch(search);
 });
+//Move to today
+moveToToday();
+//Move to event clicked
+moveToClicked();
 
 //--- DOM ---
 

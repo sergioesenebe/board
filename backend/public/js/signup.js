@@ -1,5 +1,5 @@
 //Import function fetchJson
-import { fetchJson } from './utils.js';
+import { fetchJson, hash } from './utils.js';
 //Initialice all avatars
 var avatar = '';
 //Select avatars on click
@@ -27,6 +27,13 @@ async function signup(event) {
     const username = document.getElementById('username').value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
+    // Check if the password meets the requirements
+    if (!isPasswordValid(password)) {
+        errorMessage.textContent = 'The password must have at least one number, one lowercase, one uppercase, and more than 8 characters';
+        return;
+    }
+    //Add a hash to save the password
+    const hashPassword = await hash(password);
     //Get the p to show the message in case of error
     const errorMessage = document.getElementById('errorMessage');
     // Main function to handle user registration
@@ -53,20 +60,14 @@ async function signup(event) {
                         errorMessage.textContent = 'This email is already in use';
                         return;
                     }
-
-                    // Check if the password meets the requirements
-                    if (!isPasswordValid(password)) {
-                        errorMessage.textContent = 'The password must have at least one number, one lowercase, one uppercase, and more than 8 characters';
-                        return;
-                    }
-
+                    console.log(password,hashPassword);
                     // Insert the user into the database
                     fetchJson('/insertUser', 'POST', {
                         first_name,
                         second_name,
                         username,
                         email,
-                        password,
+                        password: hashPassword,
                         avatar
                     })
                         .then(data => {

@@ -56,6 +56,7 @@ header {
     border-radius: 20px;
     padding: 5px;
 }
+
 /*Button white*/
 .white-button {
     border: none;
@@ -64,6 +65,7 @@ header {
     margin: 5px 0;
     background-color: white;
 }
+
 /*Buttons white when hover will not have border, change color (beige with 90%brightness) and cursor*/
 .white-button:hover {
     border: none;
@@ -71,6 +73,7 @@ header {
     background-color: #D5D0C6;
     cursor: pointer;
 }
+
 /*Image size for go back*/
 .back {
     width: 40px;
@@ -388,6 +391,21 @@ header {
     background-position: center;
 }
 
+/*Button settings selected*/
+.butonsettingsselected {
+    border: none;
+    cursor: pointer;
+    background-color: #292C35;
+    background-image: url("https://res.cloudinary.com/drmjf3gno/image/upload/v1743429269/Icons/Beige/settings_beige.png");
+    /* Styles the element with rounded corners and a centered, non-repeating background image scaled to 50% */
+    border-radius: 50px;
+    display: block;
+    background-size: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+
 /*To hide elements*/
 .hidden {
     display: none;
@@ -422,6 +440,23 @@ input[type="checkbox"]:hover {
 /*Change color when selected*/
 input[type="checkbox"]:checked {
     accent-color: #d0f0c0;
+}
+
+/*Label will have a border when they are hover and checked*/
+.select-avatar {
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border 0.3s;
+}
+
+.select-avatar:hover {
+    border: 2px solid #BFA177;
+    filter: brightness(0.8);
+}
+
+.select-avatar.active {
+    border: 2px solid #BFA177;
+    filter: brightness(0.8);
 }
 
 

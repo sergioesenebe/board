@@ -12,8 +12,6 @@
         "bar header header header"
         "bar note note note";
     gap: 20px;
-    margin-left: 5%;
-    margin-right: 5%;
 }
 
 /*Content will display the board and the edit card*/
@@ -90,6 +88,7 @@ header {
     background-color: #D6CFC1;
     cursor: pointer;
 }
+
 /*The layout of the elements will be changed when the width is less than 1325px. So that each container occupies one row*/
 @media (max-width: 1325px) {
     .note-half-content {
@@ -99,8 +98,8 @@ header {
             "bar"
             "header"
             "note";
-        width: 90%;
-        padding: 0;
-
+        width: 100%;
+        height: 100%;
+        padding: 5%;
     }
 }

@@ -288,20 +288,6 @@ body {
     display: block;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-/*Label will have a border when they are hover and checked*/
-.signup-img-group img {
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: border 0.3s;
-  }
-  .signup-img-group img:hover {
-    border: 2px solid #00f;
-    filter: brightness(0.8);
-  }
-  .signup-img-group img.active {
-    border: 2px solid #00f;
-    filter: brightness(0.8);
-  }
 
 /*The layout of the elements will be changed when the width is less than 480px. So that each container occupies one row*/
 @media (max-width: 1325px) {

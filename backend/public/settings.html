@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<!--  -->
+
+<head>
+    <meta charset="utf8">
+    <title>esenebe board - Settings</title>
+    <link rel="stylesheet" href="./css/common.css">
+    <link rel="stylesheet" href="./css/settings.css">
+    <link rel="icon" href="https://res.cloudinary.com/drmjf3gno/image/upload/v1743428301/Logos/esenebe_logo.png" />
+</head>
+
+<body>
+    <div class="half-content">
+        <div class="half-bar">
+            <img class="icon"
+                src="https://res.cloudinary.com/drmjf3gno/image/upload/v1743428301/Logos/esenebe_logo.png">
+            <div class="options-bar">
+                <a href="./home.html"><button class="button-not-selected button-home"></button></a>
+                <a href="./boards.html"><button class="button-not-selected button-board"></button></a>
+                <a href="./notes.html"><button class="button-not-selected button-notes"></button></a>
+                <a href="./calendar.html"><button class="button-not-selected button-calendar"></button></a>
+            </div>
+            <div class="profile-bar">
+                <button class="button-home-selected"></button>
+                <img id="avatar">
+            </div>
+        </div>
+        <header>
+            <div id="back-and-title">
+                <a href="./home.html"><img class="back"
+                        src="https://res.cloudinary.com/drmjf3gno/image/upload/v1745322144/Icons/Black/back_black.png"></a>
+                <h1 id="board-title"></h1>
+            </div>
+            <h1>Settings</h1>
+        </header>
+        <div class="box">
+            <div>
+                <h2>Profile</h2>
+                <table class="change-data-table">
+                    <tr>
+                        <td><label for="username">Username</label></td>
+                        <td><input type="text" id="username" name="username" placeholder="johndoe"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="name">First Name</label></td>
+                        <td><input type="text" id="first-name" name="first-name" placeholder="John"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="surname">Second Name</label></td>
+                        <td><input type="text" id="second-name" name="second-name" placeholder="Doe"></td>
+                    </tr>
+                    <tr>
+                        <td> <label for="email">Email</label></td>
+                        <td><input type="email" id="email" name="email" placeholder="johndoe@example.com"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="avatar">Avatar</label></td>
+                        <td style="display: flex; gap: 20px">
+                            <img class="select-avatar" id="boy-avatar"
+                                src="https://res.cloudinary.com/drmjf3gno/image/upload/v1743417676/Avatars/boy_avatar.jpg">
+                            <img class="select-avatar" id="girl-avatar"
+                                src="https://res.cloudinary.com/drmjf3gno/image/upload/v1743417683/Avatars/girl_avatar.jpg">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div>
+                <button id="save-profile" class="settings-button" type="submit">Save</button>
+            </div>
+            <div>
+                <h2>Security</h2>
+                <table class="change-data-table">
+                    <tr>
+                        <td><label for="password">New Password</label></td>
+                        <td><input type="password" id="password" name="password"
+                                placeholder="min 8 characters, one number, one lowercase and one uppercase"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="confirm-password">Confirm New Password</label></td>
+                        <td><input type="password" id="password" name="password"
+                                placeholder="min 8 characters, one number, one lowercase and one uppercase"></td>
+                    </tr>
+                </table>
+                <div>
+                    <button id="save-security" class="settings-button" type="submit">Save</button>
+                </div>
+                <div>
+                    <h2>Log Out</h2>
+                    <p>End your current session</p>
+                    <button id="log-out" class="settings-button" style="color: #F08080">Log out</button>
+                </div>
+            </div>
+            <script type="module" src="js/settings.js"></script>
+        </div>
+    </div>
+</body>
+
+</html>
