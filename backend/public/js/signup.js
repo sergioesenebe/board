@@ -1,5 +1,5 @@
 //Import function fetchJson
-import { fetchJson, hash } from './utils.js';
+import { fetchJson, hash, isPasswordValid } from './utils.js';
 //Initialice all avatars
 var avatar = '';
 //Select avatars on click
@@ -60,7 +60,6 @@ async function signup(event) {
                         errorMessage.textContent = 'This email is already in use';
                         return;
                     }
-                    console.log(password,hashPassword);
                     // Insert the user into the database
                     fetchJson('/insertUser', 'POST', {
                         first_name,
@@ -91,10 +90,6 @@ async function signup(event) {
         });
 };
 
-// Function to validate password based on requirements
-const isPasswordValid = (password) => {
-    return password.length >= 8 && /\d/.test(password) && /[A-Z]/.test(password) && /[a-z]/.test(password);
-};
 
 // Function to check if the input fields are empty
 const areFieldsEmpty = (first_name, second_name, username, email, password, avatar) => {

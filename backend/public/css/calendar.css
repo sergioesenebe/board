@@ -326,11 +326,11 @@ td.event-day {
     .box {
         display: flex;
         flex-direction: column-reverse;
-        gap: 20px;
+        gap: 40px;
         align-items: center;
         overflow-x: auto;
         width: 100%;
         margin: 0;
-
+        padding: 40px;
     }
 }

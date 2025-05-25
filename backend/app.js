@@ -1703,7 +1703,7 @@ app.post('/updateUser', (req, res) => {
   // Takes the firstName, secondName, newUsername, email, password and username from the body
   const { firstName, secondName, newUsername, email, username, avatar } = req.body;
 
-  if (!username && (!firstName || !secondName || !newUsername || !email || !avatar )) {
+  if (!username || !firstName || !secondName || !newUsername || !email || !avatar) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
@@ -1719,6 +1719,31 @@ app.post('/updateUser', (req, res) => {
       return res.status(200).json({ success: true, message: 'User updated' });
     } else {
       return res.status(200).json({ success: false, message: 'User not updated' });
+    }
+  });
+});
+//Update user password
+app.post('/updateUserPassword', (req, res) => {
+  console.log('Body of the application:', req.body);
+  // Takes the password and username from the body
+  const { password, username } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ success: false, message: 'Missing credentials' });
+  }
+
+  // Update the user with the id
+  db.query('UPDATE `users` SET `password`=? WHERE `user_id` = ?;', [password, username], (err, results) => {
+    if (err) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the Database' });
+    }
+
+    // If there is a change return true
+    if (results.affectedRows > 0) {
+      return res.status(200).json({ success: true, message: 'User Password updated' });
+    } else {
+      return res.status(200).json({ success: false, message: 'User Password not updated' });
     }
   });
 });

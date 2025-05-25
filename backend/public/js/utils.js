@@ -768,3 +768,8 @@ export function setAvatar(username) {
             console.error('Error getting the avatar', error);
         })
 }
+// Function to validate password based on requirements
+export const isPasswordValid = (password) => {
+    return password.length >= 8 && /\d/.test(password) && /[A-Z]/.test(password) && /[a-z]/.test(password);
+};
+
