@@ -1,8 +1,11 @@
-//--- Import functions ---
-import { CalendarEvent, fetchJson, generateCalendar, insertAfter } from './utils.js';
-//Import function fetchJson
-import { showSearch, showElement, hideSearch } from './utils.js';
-//--- Declarate variables ---
+
+//--- Imported functions ---
+
+//Import functions from utils
+import { showSearch, showElement, hideSearch, CalendarEvent, fetchJson, generateCalendar, setAvatar } from './utils.js';
+
+//--- State Initialization ---
+
 //Get username from the other page
 const username = localStorage.getItem('username');
 //Get Day (where calendar is) and an actual day 
@@ -14,9 +17,77 @@ let eventsMonth = [];
 let eventsDay = {};
 //Know if some event is being edited
 let openEvent = 'none';
+//Get event to click and month (when open event from board)
+let eventToClick = localStorage.getItem('eventToClick');
+let monthToMove = localStorage.getItem('monthToMove');
+//Get input for search
+const searchInput = document.getElementById('search-input');
 
+//--- Usable Functions ---
 
-//--- Functions ---
+//Function to format a date to text
+function formatToDB(date) {
+    //All dates with 2 digits
+    const pad = (n) => String(n).padStart(2, '0');
+    //Get day month and year
+    const formatDay = pad(date.getDate());
+    const formatMonth = pad(date.getMonth() + 1);
+    const formatYear = date.getFullYear();
+    //Get time
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    //Return a formated date
+    return `${formatYear}-${formatMonth}-${formatDay} ${hours}:${minutes}`;
+}
+//Function to move events to a specific day
+function moveToDay(moveDay) {
+    //Convet the date and get the day
+    let dayId = formatDateTime(moveDay);
+    dayId = dayId.split(' ', 2)[0];
+    //If it exists a event in that day
+    if (document.getElementById(dayId)) {
+        //Get the day div
+        const dayDiv = document.getElementById(dayId);
+        //Get the events div
+        const eventsDiv = document.getElementById('events')
+        //Scroll to the event with animation (in nearest div), and try to move to the start
+        dayDiv.scrollIntoView({ block: "nearest", inline: "nearest", behavior: 'smooth' });
+    }
+}
+//Move to event clicked
+function moveToClicked() {
+    //Wait to load events
+    setTimeout(() => {
+        //Get all days with eventss (clickable)
+        const eventsDayDiv = document.querySelectorAll('.clikcable-day')
+        //For each, when clicked move to them
+        eventsDayDiv.forEach(eventDayDiv => {
+            eventDayDiv.addEventListener('click', () => {
+                moveToDay(`${day.getMonth() + 1}-${eventDayDiv.textContent}-${day.getFullYear()}`);
+            })
+        })
+    }, 500);
+}
+//open a event if passed by board
+async function openEventToClick() {
+    //If event Click has been saved
+    if (eventToClick && monthToMove) {
+        day.setMonth(monthToMove);
+        //Move to month
+        changeMonth();
+        //Wait to display month
+        setTimeout(() => {
+            //Clikc the pen to open
+            document.getElementById(eventToClick).click();
+            //Set card again to null
+            localStorage.removeItem('eventToClick');
+
+        }, 200)
+    }
+}
+
+//--- Calendar functions ---
+
 //Remove calendar
 function removeCalendar() {
     //Get the table and an array for all rows
@@ -27,6 +98,7 @@ function removeCalendar() {
         rows[i].remove();
     }
 }
+//Function to move to month
 function changeMonth() {
     //Delete the other month
     removeCalendar();
@@ -38,6 +110,11 @@ function changeMonth() {
     //Show also day if it's actual month
     else
         document.getElementById('calendar-date').textContent = day.toLocaleString('en-US', { month: 'long', year: 'numeric' })
+    //Hide Search
+    if (searchInput.value) {
+        searchInput.value = '';
+    }
+    search = hideSearch(search);
     //Display Events for this month
     showEvents()
         .then((eventsMonth) => {
@@ -45,6 +122,63 @@ function changeMonth() {
             displayCalendarColors();
         })
 }
+//Function to format a date to text
+function formatDateTime(date) {
+    //Chage to Date
+    date = new Date(date);
+    //All dates with 2 digits
+    const pad = (n) => String(n).padStart(2, '0');
+    //Get day month and year
+    const formatDay = pad(date.getDate());
+    const formatMonth = pad(date.getMonth() + 1);
+    const formatYear = date.getFullYear();
+    //Get time
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    //Return a formated date
+    return `${formatDay}-${formatMonth}-${formatYear} ${hours}:${minutes}`;
+}
+//Add red color to today and yellow for events
+function displayCalendarColors() {
+    if (eventsMonth.length > 0) {
+        eventsMonth.forEach(e => {
+            addYellowToEventDay(e);
+        })
+    }
+    //Add red to today
+    const today = new Date();
+    //If today month and year is the month and year selected
+    if (today.getMonth() === day.getMonth() && today.getFullYear() === day.getFullYear()) {
+        //Get the td and add class to show it red (also remove yellow event if it's the case)
+        const todayDay = today.getDate();
+        const todayTd = document.getElementById(`calendar-day-${todayDay}`);
+        todayTd.classList.remove('event-day');
+        todayTd.classList.add('today-day');
+    }
+
+}
+//Add yellow to day of the event
+function addYellowToEventDay(event) {
+    //Create a date for the start event
+    const eventDate = new Date(event.startDate);
+    const eventDay = eventDate.getDate();
+    //Get the event in calendar
+    const eventTd = document.getElementById(`calendar-day-${eventDay}`);
+    //If it's not the actual day add it yellow
+    if (new Date(event.startDate).toDateString() !== actualDay.toDateString()) {
+        //Add yellow color to the day
+        eventTd.classList.add('event-day');
+        //Allow click the event to move scroll
+        eventTd.classList.add('clikcable-day');
+    }
+    else {
+        //Allow click the event to move scroll
+        eventTd.classList.add('clikcable-day');
+    }
+}
+
+//--- Event function ---
+
 //Show event of the month selected
 async function showEvents() {
     //Get month
@@ -159,36 +293,6 @@ function showEvent(calEvent, nextElement) {
         displayEditEvent(calEvent);
     })
 }
-//Function to format a date to text
-function formatDateTime(date) {
-    //Chage to Date
-    date = new Date(date);
-    //All dates with 2 digits
-    const pad = (n) => String(n).padStart(2, '0');
-    //Get day month and year
-    const formatDay = pad(date.getDate());
-    const formatMonth = pad(date.getMonth() + 1);
-    const formatYear = date.getFullYear();
-    //Get time
-    const hours = pad(date.getHours());
-    const minutes = pad(date.getMinutes());
-    //Return a formated date
-    return `${formatDay}-${formatMonth}-${formatYear} ${hours}:${minutes}`;
-}
-//Function to format a date to text
-function formatToDB(date) {
-    //All dates with 2 digits
-    const pad = (n) => String(n).padStart(2, '0');
-    //Get day month and year
-    const formatDay = pad(date.getDate());
-    const formatMonth = pad(date.getMonth() + 1);
-    const formatYear = date.getFullYear();
-    //Get time
-    const hours = pad(date.getHours());
-    const minutes = pad(date.getMinutes());
-    //Return a formated date
-    return `${formatYear}-${formatMonth}-${formatDay} ${hours}:${minutes}`;
-}
 //Display an Event to be edited
 function displayEditEvent(calEvent) {
     //Hide header, events and plus
@@ -258,7 +362,6 @@ function displayEditEvent(calEvent) {
                 })
         }
     })
-    //Open the card
 }
 //Show Event Options To Edit
 function addEventOptions(calEvent) {
@@ -277,7 +380,10 @@ function addEventOptions(calEvent) {
     addRows(tableEventEdit, 'Name', `<input type='text' id='event-name' maxlength='500' value="${calEvent.name}">`);
     addRows(tableEventEdit, 'Start Date', `<input type='time' id='event-start-time' value=${startTime}><input type='date' id='event-start-day' value=${calEvent.startDate}>`);
     addRows(tableEventEdit, 'End Date', `<input type='time' id='event-end-time' value=${endTime}><input type='date' id='event-end-day' value=${calEvent.endDate}>`);
-    addRows(tableEventEdit, 'Location', `<textarea rows = '3' type='date' id='event-location' maxlength='500' value="${calEvent.endDate}"></textarea>`);
+    if (calEvent.location)
+        addRows(tableEventEdit, 'Location', `<textarea rows = '3' type='date' id='event-location' maxlength='500'>${calEvent.location}</textarea>`);
+    else
+        addRows(tableEventEdit, 'Location', `<textarea rows = '3' type='date' id='event-location' maxlength='500'></textarea>`);
     //Add link to open card if it has a Card in the table
     if (calEvent.cardId) {
         //Create a row
@@ -287,6 +393,7 @@ function addEventOptions(calEvent) {
         const td = document.createElement('td');
         const cardButton = document.createElement('a');
         cardButton.id = 'open-card-link';
+        cardButton.classList.add("link");
         cardButton.textContent = 'Open Card';
         //When open card clicked
         cardButton.addEventListener('click', () => {
@@ -326,7 +433,7 @@ function addEventOptions(calEvent) {
     deleteButton.classList.add('white-button');
     buttonsDiv.appendChild(deleteButton);
 }
-//Function to add rows in a table
+//Function to add rows in a table when editing event
 function addRows(table, name, input) {
     //Create a row
     const row = document.createElement('tr');
@@ -386,7 +493,6 @@ function addEventDOM(newEvent) {
     else
         showEvent(newEvent)
 }
-
 //Order events
 async function insertByTime(events, event) {
     //Create an array and push the event
@@ -394,44 +500,6 @@ async function insertByTime(events, event) {
     //Sort by start date
     events.sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
     return events
-}
-//Add red color to today and yellow for events
-function displayCalendarColors() {
-    if (eventsMonth.length > 0) {
-        eventsMonth.forEach(e => {
-            addYellowToEventDay(e);
-        })
-    }
-    //Add red to today
-    const today = new Date();
-    //If today month and year is the month and year selected
-    if (today.getMonth() === day.getMonth() && today.getFullYear() === day.getFullYear()) {
-        //Get the td and add class to show it red (also remove yellow event if it's the case)
-        const todayDay = today.getDate();
-        const todayTd = document.getElementById(`calendar-day-${todayDay}`);
-        todayTd.classList.remove('event-day');
-        todayTd.classList.add('today-day');
-    }
-
-}
-//Add yellow to day of the event
-function addYellowToEventDay(event) {
-    //Create a date for the start event
-    const eventDate = new Date(event.startDate);
-    const eventDay = eventDate.getDate();
-    //Get the event in calendar
-    const eventTd = document.getElementById(`calendar-day-${eventDay}`);
-    //If it's not the actual day add it yellow
-    if (new Date(event.startDate).toDateString() !== actualDay.toDateString()) {
-        //Add yellow color to the day
-        eventTd.classList.add('event-day');
-        //Allow click the event to move scroll
-        eventTd.classList.add('clikcable-day');
-    }
-    else {
-        //Allow click the event to move scroll
-        eventTd.classList.add('clikcable-day');
-    }
 }
 //Function to delete event in the db and in the DOM
 function deleteEvent(event) {
@@ -475,6 +543,7 @@ async function deleteEventDOM(event) {
     }
 
 }
+
 //Function to update an event in the DOM
 function updateEventDOM(calEvent, oldEvent) {
     //Get the DIV
@@ -542,154 +611,137 @@ function updateEventDOM(calEvent, oldEvent) {
     //Return to events
     returnToEvents();
 }
-//Function to move events to a specific day
-function moveToDay(moveDay) {
-    //Convet the date and get the day
-    let dayId = formatDateTime(moveDay);
-    dayId = dayId.split(' ', 2)[0];
-    //If it exists a event in that day
-    if (document.getElementById(dayId)) {
-        //Get the day div
-        const dayDiv = document.getElementById(dayId);
-        //Get the events div
-        const eventsDiv = document.getElementById('events')
-        //Scroll to the event with animation (in nearest div), and try to move to the start
-        dayDiv.scrollIntoView({ block: "nearest", inline: "nearest", behavior: 'smooth' });        
-    }
-}
-//Move to event clicked
-function moveToClicked() {
-    //Wait to load events
-    setTimeout(() => {
-        //Get all days with eventss (clickable)
-        const eventsDayDiv = document.querySelectorAll('.clikcable-day')
-        //For each, when clicked move to them
-        eventsDayDiv.forEach(eventDayDiv => {
-            eventDayDiv.addEventListener('click', () => {
-                moveToDay(`${day.getMonth() + 1}-${eventDayDiv.textContent}-${day.getFullYear()}`);
+
+
+//--- Event Handlers ---
+if (username) {
+    //When next month in calendar clicked show next month
+    const nextMonthEl = document.getElementById('next-month');
+    nextMonthEl.addEventListener('click', () => {
+        //Change day to show
+        day.setMonth(day.getMonth() + 1);
+        //Change calendar Month
+        changeMonth();
+        //Close edit Event if open
+        if (openEvent !== 'none') {
+            returnToEvents();
+        }
+        //Move to event day calendar when clicked
+        moveToClicked();
+        //If month is actual month scroll to today event
+        if (day.getMonth() === actualDay.getMonth() && day.getFullYear() === actualDay.getFullYear()) {
+            moveToToday();
+        }
+    })
+
+    //When previous month in calendar clicked show next month
+    const previousMonthEl = document.getElementById('previous-month');
+    previousMonthEl.addEventListener('click', () => {
+        //Change day to show
+        day.setMonth(day.getMonth() - 1);
+        //Change calendar Month
+        changeMonth();
+        //Close edit Event if open
+        if (openEvent !== 'none') {
+            returnToEvents();
+        }
+        //Close loup
+
+        //Move to event day calendar when clicked
+        moveToClicked();
+        //If month is actual month scroll to today event
+        if (day.getMonth() === actualDay.getMonth() && day.getFullYear() === actualDay.getFullYear()) {
+            moveToToday();
+        }
+    })
+    //When plus is clicked create a new event
+    document.getElementById('plus-event').addEventListener('click', () => {
+        //Create info to start: name new event and time actual time (+1 for the end) or first of month
+        //Start Date is equal to the day (month selected)
+        let startDate = day;
+        //If its not the actual month the day will be one
+        if (day.getMonth() !== actualDay.getMonth() || day.getFullYear() !== actualDay.getFullYear())
+            startDate.setDate(1);
+        //End date will be start date + 1 hour
+        let endDate = new Date(startDate);
+        endDate.setHours(startDate.getHours() + 1);
+        //Set seconds to 0
+        startDate.setSeconds(0);
+        endDate.setSeconds(0);
+
+        //Format dates to be understanded by database
+        startDate = formatToDB(startDate);
+        endDate = formatToDB(endDate);
+
+        //Create new event with the info that we have
+        const newEvent = new CalendarEvent({ name: 'New Event', startDate: startDate, endDate: endDate, username: username })
+        //Inserted in the database and get extra info as the event id
+        newEvent.insert()
+            .then(() => {
+                //Display the edit event to update info
+                displayEditEvent(newEvent);
+                //Insert it sort by time and display in DOM
+                insertByTime(eventsMonth, newEvent)
+                    .then((orderEvents) => {
+                        addEventDOM(newEvent);
+                    })
+                    .catch(error => {
+                        console.error('Error displaying the event', error);
+                    })
             })
-        })
-    }, 500);
+    });
+    //When click search will be a input
+    const searchDiv = document.getElementById('search');
+    searchDiv.addEventListener('click', (event) => {
+        const searchInput = document.getElementById('search-input');
+        const searchDiv = document.getElementById('search');
+        searchDiv.classList.add('search-focus');
+        showElement(searchInput, 200);
+        searchInput.focus();
+        search = 'display';
+        event.stopPropagation(); //prevent document.addEventListener
+    });
+    //Delete the input value when the page refresh
+    document.addEventListener('DOMContentLoaded', () => {
+        searchInput.value = null;
+    })
+    //Get the input when writing and show just the elements that match
+    showSearch("event");
+    //When click in other place hide again
+    document.addEventListener('click', () => {
+        search = hideSearch(search);
+    });
+
 }
-//Move to Today
-function moveToToday() {
-    //Wait to load events and move to today
+//--- DOM ---
+
+//If user is not logged in don't show anything
+if (!username) {
+    document.body.innerHTML = `<h2>You're not logged in</h2>
+    <p>Please <a href="login.html" class="link">log in</a> to access this page.</p>`;
+    document.body.style = 'display: flex; flex-direction: column;'
+}
+//Display all the DOM
+else {
+    //Generate a calendar of the month
+    generateCalendar(username, day);
+    //Show today day in the calendar
+    document.getElementById('calendar-date').textContent = day.toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    //Show events
+    showEvents()
+        .then((eventsMonth) => {
+            //Display colors for day and events
+            displayCalendarColors();
+        })
+    //Update the avatar image
+    setAvatar(username);
+
+    //Move to today, wait to load events and move to today
     setTimeout(() => {
         moveToDay(actualDay);
     }, 200);
+    //Move to event clicked
+    moveToClicked();
+    //Wait and open card if passed by event
+    setTimeout(openEventToClick);
 }
-
-//--- Event Handlers ---
-
-//When next month in calendar clicked show next month
-const nextMonthEl = document.getElementById('next-month');
-nextMonthEl.addEventListener('click', () => {
-    //Change day to show
-    day.setMonth(day.getMonth() + 1);
-    //Change calendar Month
-    changeMonth();
-    //Close edit Event if open
-    if (openEvent !== 'none') {
-        returnToEvents();
-    }
-    //Move to event day calendar when clicked
-    moveToClicked();
-    //If month is actual month scroll to today event
-    if (day.getMonth() === actualDay.getMonth() && day.getFullYear() === actualDay.getFullYear()){
-        moveToToday();
-    }
-})
-//When previous month in calendar clicked show next month
-const previousMonthEl = document.getElementById('previous-month');
-previousMonthEl.addEventListener('click', () => {
-    //Change day to show
-    day.setMonth(day.getMonth() - 1);
-    //Change calendar Month
-    changeMonth();
-    //Close edit Event if open
-    if (openEvent !== 'none') {
-        returnToEvents();
-    }
-    //Move to event day calendar when clicked
-    moveToClicked();
-    //If month is actual month scroll to today event
-    console.log(day,actualDay)
-    if (day.getMonth() === actualDay.getMonth() && day.getFullYear() === actualDay.getFullYear()){
-        moveToToday();
-    }
-})
-//When plus is clicked create a new event
-document.getElementById('plus-event').addEventListener('click', () => {
-    //Create info to start: name new event and time actual time (+1 for the end) or first of month
-    //Start Date is equal to the day (month selected)
-    let startDate = day;
-    //If its not the actual month the day will be one
-    if (day.getMonth() !== actualDay.getMonth() || day.getFullYear() !== actualDay.getFullYear())
-        startDate.setDate(1);
-    //End date will be start date + 1 hour
-    let endDate = new Date(startDate);
-    endDate.setHours(startDate.getHours() + 1);
-    //Set seconds to 0
-    startDate.setSeconds(0);
-    endDate.setSeconds(0);
-
-    //Format dates to be understanded by database
-    startDate = formatToDB(startDate);
-    endDate = formatToDB(endDate);
-
-    //Create new event with the info that we have
-    const newEvent = new CalendarEvent({ name: 'New Event', startDate: startDate, endDate: endDate, username: username })
-    //Inserted in the database and get extra info as the event id
-    newEvent.insert()
-        .then(() => {
-            //Display the edit event to update info
-            displayEditEvent(newEvent);
-            //Insert it sort by time and display in DOM
-            insertByTime(eventsMonth, newEvent)
-                .then((orderEvents) => {
-                    addEventDOM(newEvent);
-                })
-                .catch(error => {
-                    console.error('Error displaying the event', error);
-                })
-        })
-});
-//When click search will be a input
-const searchInput = document.getElementById('search-input');
-const searchDiv = document.getElementById('search');
-searchDiv.addEventListener('click', (event) => {
-    const searchInput = document.getElementById('search-input');
-    const searchDiv = document.getElementById('search');
-    searchDiv.classList.add('search-focus');
-    showElement(searchInput, 200);
-    searchInput.focus();
-    search = 'display';
-    event.stopPropagation(); //prevent document.addEventListener
-});
-//Delete the input value when the page refresh
-document.addEventListener('DOMContentLoaded', () => {
-    searchInput.value = null;
-})
-//Get the input when writing and show just the elements that match
-showSearch("event");
-//When click in other place hide again
-document.addEventListener('click', () => {
-    search = hideSearch(search);
-});
-//Move to today
-moveToToday();
-//Move to event clicked
-moveToClicked();
-
-//--- DOM ---
-
-//Generate a calendar of the month
-generateCalendar(username, day);
-//Show today day in the calendar
-document.getElementById('calendar-date').textContent = day.toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-//Show events
-showEvents()
-    .then((eventsMonth) => {
-        //Display colors for day and events
-        displayCalendarColors();
-    })

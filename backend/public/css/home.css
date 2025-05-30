@@ -76,7 +76,7 @@
 }
 
 /*Div for calendar, border and color, center with flex*/
-.half-calendar {
+#half-calendar {
     grid-area: halfcalendar;
     background: #C3C3C3;
     padding: 20px;
@@ -100,7 +100,7 @@
 }
 
 /*task percentage div, border and color*/
-.half-task {
+#half-task {
     grid-area: halftask;
     background: #D9D9D9;
     padding: 20px;
@@ -108,7 +108,7 @@
 }
 
 /*Div for events, border and color*/
-.half-event {
+#half-event {
     grid-area: halfevent;
     background: #D9D9D9;
     padding: 20px;
@@ -146,7 +146,7 @@
 }
 
 /*Table for the calendar*/
-.half-calendar table {
+#half-calendar table {
     display: flex;
     flex-wrap: wrap;
     /* set space between rows and columns */
@@ -155,7 +155,7 @@
 }
 
 /*elements of the table align center and size*/
-.half-calendar td {
+#half-calendar td {
     height: 35px;
     width: 35px;
     text-align: center;
@@ -239,7 +239,7 @@
     }
 
     /*change elements of the table size*/
-    .half-calendar td {
+    #half-calendar td {
         height: 25px;
         width: 25px;
     }

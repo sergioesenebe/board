@@ -11,11 +11,14 @@ import { openComponent } from './utils.js';
 //Import function fetchJson
 import { getBoardById } from './utils.js';
 
-//--- Declarate variables ---
-
+//--- State Initialization ---
+// Get username
+const username = localStorage.getItem('username');
 //Get day and month
 const today = new Date();
 const month = today.getMonth() + 1;
+//Get the actual hour
+const actualTime = new Date().getHours();
 
 //--- Functions ---
 
@@ -67,6 +70,15 @@ function getUpcomingEvent(username) {
                 //Save the options to display the date and add it as the textContent
                 const options = { weekday: 'long', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
                 eventDate.textContent = eventdate.toLocaleDateString("en-US", options);
+                //Open calendar with event when clicked
+                halfevent.addEventListener('click', () => {
+                    //Set card id local storage and open the calendar page to diplay it
+                    localStorage.setItem('eventToClick', calEvent.eventId);
+                    //Set card month to move to it
+                    const monthToMove = new Date(calEvent.startDate).getMonth();
+                    localStorage.setItem('monthToMove', monthToMove);
+                    window.open('./calendar.html', '_self');
+                })
             }
             else {
                 eventName.textContent = "You don't have upcoming events";
@@ -78,7 +90,6 @@ function getUpcomingEvent(username) {
 }
 //Function to get percentage of last used board last column
 function getLastUsedBoardLastColumn(username) {
-    const halfevent = document.getElementById('half-event');
     let boardId;
     //Get the last board used for the user
     fetchJson('/getLastUsedBoardLastColumn', 'POST', { username })
@@ -140,6 +151,13 @@ function getLastUsedBoardLastColumn(username) {
                             boardTitle.textContent = boardName;
 
                         })();
+                        //Open board when clicked
+                        const halfTask = document.getElementById('half-task');
+                        halfTask.addEventListener('click', () => {
+                            //Save the board id
+                            localStorage.setItem('boardId', column.boardId);
+                            window.location.href = 'board.html'; // Redirect to selected page
+                        })
                     })
                     .catch(error => {
                         console.error("Error doing the percentage: ", error);
@@ -157,33 +175,42 @@ function getLastUsedBoardLastColumn(username) {
 
 }
 
-//--- DOM ---
+//--- Create DOM ---
 
-//Get username from the other page
-const username = localStorage.getItem('username');
-//Get the actual hour
-const actualTime = new Date().getHours();
-//Get the header element
-const hello = document.getElementById('hello');
-//Say hello with the user name, depending the time (ex. Good morning, John)
-sayHello(username);
-//Update the avatar image
-setAvatar(username);
-//Add all the boards in the div
-addBoards(username);
-//Add all notes in the div
-addNotes(username);
-//Add the Upcoming event
-getUpcomingEvent(username);
-//Show percentage of last column
-getLastUsedBoardLastColumn(username);
-//Generate a calendar of the month
-generateCalendar(username, today);
-//Add yellow to the days with events
-addColorToEvents(username, today);
-//Add month to calendar
-document.getElementById('calendar-month').textContent = today.toLocaleString('en-US', { month: 'short' });
-//Open the boards when clicked
-openComponent("half-board", "/boards.html");
-//Open notes when clicked
-openComponent("half-notes", "/notes.html");
+//If user is not logged in don't show anything
+if (!username) {
+    document.body.innerHTML = `<h2>You're not logged in</h2>
+    <p>Please <a href="login.html" class="link">log in</a> to access this page.</p>`;
+    document.body.style = 'display: flex; flex-direction: column;'
+}
+//Display all the DOM
+else {
+    //Get username from the other page
+    const username = localStorage.getItem('username');
+    //Get the header element
+    const hello = document.getElementById('hello');
+    //Say hello with the user name, depending the time (ex. Good morning, John)
+    sayHello(username);
+    //Update the avatar image
+    setAvatar(username);
+    //Add all the boards in the div
+    addBoards(username);
+    //Add all notes in the div
+    addNotes(username);
+    //Add the Upcoming event
+    getUpcomingEvent(username);
+    //Show percentage of last column
+    getLastUsedBoardLastColumn(username);
+    //Generate a calendar of the month
+    generateCalendar(username, today);
+    //Add yellow to the days with events
+    addColorToEvents(username, today);
+    //Add month to calendar
+    document.getElementById('calendar-month').textContent = today.toLocaleString('en-US', { month: 'short' });
+    //Open the boards when clicked
+    openComponent("half-board", "/boards.html");
+    //Open notes when clicked
+    openComponent("half-notes", "/notes.html");
+    //Open calendar when clicked
+    openComponent("half-calendar", "/calendar.html");
+}

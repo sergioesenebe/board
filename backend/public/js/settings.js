@@ -1,6 +1,8 @@
-//Import function fetchJson
+//--- Imported functions ---
 import { fetchJson, hash, setAvatar, isPasswordValid } from './utils.js';
-//--- Initialize variables ---
+
+//--- State Initialization ---
+
 //Get username from the other page
 let username = localStorage.getItem('username');
 let oldAvatar;
@@ -33,14 +35,12 @@ async function updateProfile(event) {
         return;
     }
     //If user has changed the username check if is in use
-    if (newData.newUsername != username) {
+    if (newData.newUsername !== username) {
         // Check if the username already exists (do it with try, if return will exit)
         const newUsername = newData.newUsername;
         try {
             const data = await fetchJson('/checkUsername', 'POST', { username: newUsername })
-            console.log('username', data.success)
             if (!data.success) {
-                console.log('user');
                 document.getElementById('profile-message').textContent = 'This username is already in use';
                 document.getElementById('profile-message').style.color = '#F08080';
                 return;
@@ -52,7 +52,7 @@ async function updateProfile(event) {
     }
 
     //If user has changed the email check if is valid and if is in use
-    if (newData.email != email) {
+    if (newData.email !== email) {
         // Check if the email is valid
         const email = newData.email;
         if (!document.getElementById('email').checkValidity()) {
@@ -63,7 +63,6 @@ async function updateProfile(event) {
         // Check if the email already exists (do it with try, if return will exit)
         try {
             const data = await fetchJson('/checkEmail', 'POST', { email })
-            console.log('email', data.success)
             if (!data.success) {
                 document.getElementById('profile-message').textContent = 'This email is already in use';
                 document.getElementById('profile-message').style.color = '#F08080';
@@ -77,9 +76,7 @@ async function updateProfile(event) {
     }
     //Add actual username
     newData['username'] = username;
-    console.log(newData);
-    // Update the user into the database with the new data added
-    console.log(newData);
+    //Update the user into the database with the new data added
     fetchJson('/updateUser', 'POST', newData)
         .then(data => {
             if (data.success) {
@@ -107,7 +104,6 @@ async function updateProfile(event) {
 //Check if has changed and add it to the newData
 async function checkIfWIllUpdate(oldValue, name, id) {
     const newvalue = document.getElementById(id).value;
-    console.log(oldValue);
     if (newvalue !== oldValue) {
         newData[name] = newvalue;
     }
@@ -136,71 +132,101 @@ async function updatePassword() {
         return;
     }
 
+    //Add a hash to save the password
     const hashPassword = await hash(password);
-    console.log(hashPassword);
-    fetchJson('/updateUserPassword', 'POST', { password: hashPassword, username })
+    //If password is the same
+    fetchJson('/login', 'POST', { username, password: hashPassword })
         .then(data => {
-            if (data.success) {
-                //Show a message as it has updated successfully
-                document.getElementById('security-message').textContent = 'Password successfully updated';
-                document.getElementById('security-message').style.color = 'green';
+            if (data.success === true) {
+                //Show a message and return
+                document.getElementById('security-message').textContent = 'This is your current password';
+                document.getElementById('security-message').style.color = '#F08080';
+                return;
             }
             else {
-                document.getElementById('security-message').textContent = 'Error updating the password';
-                document.getElementById('security-message').style.color = '#F08080';
+                fetchJson('/updateUserPassword', 'POST', { password: hashPassword, username })
+                    .then(data => {
+                        if (data.success) {
+                            //Show a message as it has updated successfully
+                            document.getElementById('security-message').textContent = 'Password successfully updated';
+                            document.getElementById('security-message').style.color = 'green';
+                        }
+                        else {
+                            document.getElementById('security-message').textContent = 'Error updating the password';
+                            document.getElementById('security-message').style.color = '#F08080';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error updating password: ', error);
+                    });
+
             }
         })
-    //Add a hash to save the password
+        .catch(error => {
+            console.error('Error checking actual password: ', error);
+        });
+
 }
 
 //-- Event Listeners ---
-
-//Select avatars on click
-document.querySelectorAll('.select-avatar').forEach(img => {
-    //Get all the possible avatar elements, onclick will be save as the variable avatar
-    img.addEventListener('click', () => {
-        newData.avatar = img.src;
-        //Remove the class active to all images
-        document.querySelectorAll('.select-avatar').forEach(img => { img.classList.remove('active'); });
-        img.classList.add('active'); //Add the class and select the img
+if (username) {
+    //Select avatars on click
+    document.querySelectorAll('.select-avatar').forEach(img => {
+        //Get all the possible avatar elements, onclick will be save as the variable avatar
+        img.addEventListener('click', () => {
+            newData.avatar = img.src;
+            //Remove the class active to all images
+            document.querySelectorAll('.select-avatar').forEach(img => { img.classList.remove('active'); });
+            img.classList.add('active'); //Add the class and select the img
+        });
     });
-});
+}
 
 //--- DOM ---
-//Update the avatar image and select the avatar (to show which has selected)
-setAvatar(username).then(
-    avatar => {
-        if (avatar === 'https://res.cloudinary.com/drmjf3gno/image/upload/v1743417676/Avatars/boy_avatar.jpg') {
-            document.getElementById('boy-avatar').classList.add('active');
-            newData.avatar = avatar;
-        } else if (avatar === 'https://res.cloudinary.com/drmjf3gno/image/upload/v1743417683/Avatars/girl_avatar.jpg') {
-            document.getElementById('girl-avatar').classList.add('active');
-            newData.avatar = avatar;
-        }
-    }).catch(error => {
-        console.error('Error getting the avatar', error)
-    })
-//Get the values of the user and add them to the input
-fetchJson('/getUserFromUserId', 'POST', { userId: username })
-    .then(data => {
-        firstName = data[0]?.first_name;
-        secondName = data[0]?.second_name;
-        userName = data[0]?.user_id;
-        email = data[0]?.email;
-        document.getElementById('first-name').value = firstName;
-        document.getElementById('second-name').value = secondName;
-        document.getElementById('username').value = userName;
-        document.getElementById('email').value = email;
-    })
-//When click in the save profile button call the function updateProfile
-const saveProfileButton = document.getElementById('save-profile');
-saveProfileButton.addEventListener('click', updateProfile);
-//When click in the save security (password) button call the function updateProfile
-const saveSecurittyButton = document.getElementById('save-security');
-saveSecurittyButton.addEventListener('click', updatePassword);
-//When click in log out, remove username (session) and redirect to home
-const logOutButton = document.getElementById('log-out');
-logOutButton.addEventListener('click', () => {
-    localStorage.setItem('username', '');
-    window.location.href = "./login.html";
-});
+
+//If user is not logged in don't show anything
+if (!username) {
+    document.body.innerHTML = `<h2>You're not logged in</h2>
+    <p>Please <a href="login.html" class="link">log in</a> to access this page.</p>`;
+    document.body.style = 'display: flex; flex-direction: column;'
+}
+//Display all the DOM
+else {
+    //Update the avatar image and select the avatar (to show which has selected)
+    setAvatar(username).then(
+        avatar => {
+            if (avatar === 'https://res.cloudinary.com/drmjf3gno/image/upload/v1743417676/Avatars/boy_avatar.jpg') {
+                document.getElementById('boy-avatar').classList.add('active');
+                newData.avatar = avatar;
+            } else if (avatar === 'https://res.cloudinary.com/drmjf3gno/image/upload/v1743417683/Avatars/girl_avatar.jpg') {
+                document.getElementById('girl-avatar').classList.add('active');
+                newData.avatar = avatar;
+            }
+        }).catch(error => {
+            console.error('Error getting the avatar', error)
+        })
+    //Get the values of the user and add them to the input
+    fetchJson('/getUserFromUserId', 'POST', { userId: username })
+        .then(data => {
+            firstName = data[0]?.first_name;
+            secondName = data[0]?.second_name;
+            userName = data[0]?.user_id;
+            email = data[0]?.email;
+            document.getElementById('first-name').value = firstName;
+            document.getElementById('second-name').value = secondName;
+            document.getElementById('username').value = userName;
+            document.getElementById('email').value = email;
+        })
+    //When click in the save profile button call the function updateProfile
+    const saveProfileButton = document.getElementById('save-profile');
+    saveProfileButton.addEventListener('click', updateProfile);
+    //When click in the save security (password) button call the function updateProfile
+    const saveSecurittyButton = document.getElementById('save-security');
+    saveSecurittyButton.addEventListener('click', updatePassword);
+    //When click in log out, remove username (session) and redirect to home
+    const logOutButton = document.getElementById('log-out');
+    logOutButton.addEventListener('click', () => {
+        localStorage.removeItem('username');
+        window.location.href = "./login.html";
+    });
+}

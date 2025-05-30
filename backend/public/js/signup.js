@@ -1,13 +1,18 @@
-//Import function fetchJson
+//--- Imported functions ---
 import { fetchJson, hash, isPasswordValid } from './utils.js';
+
+//--- State Initialization ---
+
 //Initialice all avatars
 var avatar = '';
+
+//--- Event Listeners ---
+
 //Select avatars on click
 document.querySelectorAll('.signup-img-group img').forEach(img => {
     //Get all the possible avatar elements, onclick will be save as the variable avatar
     img.addEventListener('click', () => {
         avatar = img.src;
-        console.log(avatar);
         //Remove the class active to all images
         document.querySelectorAll('.signup-img-group img').forEach(img => { img.classList.remove('active'); });
         img.classList.add('active'); //Add the class and select the img
@@ -17,6 +22,9 @@ document.querySelectorAll('.signup-img-group img').forEach(img => {
 const submit = document.getElementById('SignUpBtn');
 //When click call the function signup
 submit.addEventListener('click', signup);
+
+//--- Functions ---
+
 //function to signup
 async function signup(event) {
     //Prevent default values
@@ -89,8 +97,6 @@ async function signup(event) {
             console.error('Error:', error);
         });
 };
-
-
 // Function to check if the input fields are empty
 const areFieldsEmpty = (first_name, second_name, username, email, password, avatar) => {
     return !first_name || !second_name || !username || !email || !password || !avatar;

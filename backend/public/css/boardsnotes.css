@@ -71,11 +71,13 @@ header {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
-/*Limits the long of the rcolumns*/
+/*td width*/
 .board td {
     max-width: 200px;
     word-wrap: break-word;
+}
+/*Limits the long of the rcolumns*/
+.card {
     /* cut long words */
     word-break: break-word;
     white-space: nowrap;

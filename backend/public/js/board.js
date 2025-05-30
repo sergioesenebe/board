@@ -1,28 +1,16 @@
-// --- Imported functions ---
 
-//Import function fetchJson
-import { fetchJson } from './utils.js';
-//Import function getBoardById
-import { getBoardById } from './utils.js';
-//Import function showSearch
-import { showSearch } from './utils.js';
-//Import function hideOptions
-import { hideOptions } from './utils.js';
-//Import function hideSearch
-import { hideSearch } from './utils.js';
-//Import function addInputToChange
-import { addInputToChange } from './utils.js';
-//Import function returnToText
-import { returnToText } from './utils.js';
-//Import function showElement
-import { showElement } from './utils.js';
-//Import function hideElement
-import { hideElement } from './utils.js';
+//--- Imported functions ---
+
+//Import functions from utils
+import {
+    fetchJson, getBoardById, showSearch, hideOptions, addInputToChange, hideSearch,
+    returnToText, hideElement, showElement, setAvatar
+} from './utils.js';
 //Import class Column, Card, Property, PropType and Event
 import { Column, Card, Property, PropType, CalendarEvent } from './utils.js';
 
 
-// --- State Initialization ---
+//--- State Initialization ---
 
 //Declare to know if search or options are open or hidden, by default will be hidden
 //Knowing which option is open
@@ -48,18 +36,20 @@ let cardToCLick = localStorage.getItem('cardToClick');
 const username = localStorage.getItem('username');
 //Put the name of the board as a title
 let boardName;
-(async () => {
-    boardName = await getBoardById(boardId);
-    //Add Title
-    const title = document.getElementById('board-title');
-    title.textContent = boardName;
-})();
+if (username) {
+    (async () => {
+        boardName = await getBoardById(boardId);
+        //Add Title
+        const title = document.getElementById('board-title');
+        title.textContent = boardName;
+    })();
+}
 //Declare colors for properties
 const propertyColors = ["lightblue", "lightgoldenrodyellow", "lightgreen", "lightpink", "lightsalmon", "lightseagreen", "lightskyblue",
     "lightsteelblue", "lightyellow", "lightcyan", "aquamarine", "lavender", "palegreen", "paleturquoise", "peachpuff",
     "mistyrose", "wheat", "cornsilk"];
 
-//-- Usable Functions ---
+//--- Usable Functions ---
 
 //Function to add color to properties
 function addPropertyColor(propertyName, propertyDiv) {
@@ -92,7 +82,7 @@ function addPropertyColor(propertyName, propertyDiv) {
     }
 }
 
-//-- Function to display info --
+//--- Function to display info ---
 
 //Function to get the properties of a card
 function getProperties(cardId, property, row) {
@@ -134,7 +124,7 @@ function getProperties(cardId, property, row) {
             if (property.typeId != 'notDefined') {
                 typeDivNotDefined.addEventListener('click', () => {
                     if (property.typeId != 'notDefined') {
-                        fetchJson('/deletePropTypeCard', 'POST', { propTypeId: property.typeId, cardId, boardId })
+                        fetchJson('/deletePropTypeCard', 'POST', { propTypeId: property.typeId, cardId })
                             .then(data => {
                                 //Remove the property div of the card
                                 const propertyDiv = document.getElementById(`C:${cardId}-PT:${property.typeId}`);
@@ -170,7 +160,7 @@ function getProperties(cardId, property, row) {
             //When the button click
             addTypeBtn.addEventListener('click', () => {
                 const newPropTypeName = 'New Option';
-                fetchJson('insertPropType', 'POST', { newPropTypeName, propertyId, boardId })
+                fetchJson('insertPropType', 'POST', { newPropTypeName, propertyId })
                     .then(data => {
                         const propType = new PropType({ propTypeId: data.prop_type_id, name: data.prop_type_name, propertyId: data.property_id });
                         const { typeDiv, trash, pen } = displayType(propType, propertyTypesDiv, true);
@@ -291,7 +281,7 @@ function displayEditingProperty(row, propertyId) {
     const trashProperty = document.getElementById('delete-property');
     trashProperty.addEventListener('click', (event) => {
         if (confirm(`Are you sure that you want to delete the Option "${propertyName}"?`)) {
-            fetchJson('/deleteProperty', 'POST', { propertyId, boardId })
+            fetchJson('/deleteProperty', 'POST', { propertyId })
                 .then(data => {
                     //Take all the types of the property to delete them from the cards
                     const propertyTypes = document.querySelectorAll('.type-div');
@@ -378,13 +368,13 @@ function displayCardPropTypes(card, contentCard, cardText) {
 }
 //open a card if passed by event
 function openCardToClick() {
-        //If card Click has been saved
-        if(cardToCLick) {
-            //Clikc the pen to open
-            document.getElementById(cardToCLick).querySelector('.pen-button').click();
-            //Set card again to null
-            localStorage.setItem('cardToClick', null);
-        }
+    //If card Click has been saved
+    if (cardToCLick) {
+        //Clikc the pen to open
+        document.getElementById(cardToCLick).querySelector('.pen-button').click();
+        //Set card again to null
+        localStorage.removeItem('cardToClick');
+    }
 }
 
 
@@ -458,7 +448,7 @@ function rowClickEvent(row, property, cardId) {
         if (typeId && typeId != '') property.typeId = typeId;
         //If not save it as not defined
         else property.typeId = 'notDefined';
-        //Hidde al the elements from the editing card
+        //Hide al the elements from the editing card
         hideOptionsEditingCard();
         //Display Editing property options
         displayEditingProperty(row, propertyId);
@@ -516,7 +506,7 @@ async function selectPropType(cardId, property, propType, row, typeDiv) {
     if (property.typeId === 'notDefined') {
         try {
             //Insert the type of the property
-            await fetchJson('/insertCardPropertyType', 'POST', { propTypeId, cardId, boardId })
+            await fetchJson('/insertCardPropertyType', 'POST', { propTypeId, cardId })
                 .then(data => {
                     //Take the card that is being eddited
                     const cardDiv = document.getElementById(cardId);
@@ -556,7 +546,7 @@ async function selectPropType(cardId, property, propType, row, typeDiv) {
     else {
         try {
             //Update Card Property Type (Will delet the old one, and insert the new)
-            await fetchJson('/updateCardPropertyType', 'POST', { oldPropTypeId: property.typeId, propTypeId, cardId, boardId })
+            await fetchJson('/updateCardPropertyType', 'POST', { oldPropTypeId: property.typeId, propTypeId, cardId })
                 .then(data => {
                     //Search the Property in the card
                     const propertyDiv = document.getElementById(`C:${cardId}-PT:${property.typeId}`);
@@ -608,7 +598,7 @@ function deletePropType(trash, property) {
         //Show a confirm message
         if (confirm(`Are you sure that you want to delete the Option "${typeDiv.textContent}"?`)) {
             //Delete the property type
-            fetchJson('/deletePropType', 'POST', { propTypeId, boardId })
+            fetchJson('/deletePropType', 'POST', { propTypeId })
                 .then(data => {
                     //Delete it from the Editing Property
                     typeDiv.parentNode.remove();
@@ -688,7 +678,6 @@ function displayEditCard(cardPen, card, cardText) {
                 else {
                     contentTextArea.value = '';
                 }
-
             })
             .catch(error => {
                 console.error("Error showing the card content: ", error);
@@ -701,7 +690,7 @@ function displayEditCard(cardPen, card, cardText) {
             timeoutId = setTimeout(() => {
                 const content = contentTextArea.value;
                 if (content !== lastSavedContent) {
-                    fetchJson('/updateCardContent', 'POST', { cardId: editCardOpen, content, boardId });
+                    fetchJson('/updateCardContent', 'POST', { cardId: editCardOpen, content });
                     lastSavedContent = content;
                 }
             }, 1000);
@@ -869,24 +858,10 @@ function displayEvent(card) {
                 const dayEvent = `${eventDate.getFullYear()}-${String(eventDate.getMonth() + 1).padStart(2, '0')}-${String(eventDate.getDate()).padStart(2, '0')}`;
                 //Take time from the Date
                 const timeEvent = `${String(eventDate.getHours()).padStart(2, '0')}:${String(eventDate.getMinutes()).padStart(2, '0')}`;
-
-                //Display it as an input that can be edited (one for time and other for day) with a minimum of today
+                //Display it as an input that can be edited (one for time and other for day)
                 timeTd.innerHTML = `<input id='input-card-event-time' type='time' value=${timeEvent}></input><input id='input-card-event-day' type='date' value=${dayEvent}></input>`;
-                const openEvent = document.createElement('td');
-                rowEvent.appendChild(openEvent);
-                localStorage.setItem('eventId', calEvent.eventId);
-                openEvent.innerHTML = "<button id='open-event'>Open</a>";
-                var timeoutId;
-                document.getElementById('input-card-event-time').addEventListener('input', () => {
-                    timeoutId = setTimeout(() => {
-                        updateEventUser(calEvent.eventId);
-                    }, 1000);
-                })
-                document.getElementById('input-card-event-day').addEventListener('input', () => {
-                    timeoutId = setTimeout(() => {
-                        updateEventUser(calEvent.eventId);
-                    }, 1000);
-                })
+                //Add a button to update and open event
+                addEventButton(rowEvent, calEvent);
             }
             else {
                 rowEvent.style = "color: gray";
@@ -907,6 +882,11 @@ function displayEvent(card) {
                     const timeEvent = document.getElementById('input-event-new-time').value;
                     const dayEvent = document.getElementById('input-event-new-day').value;
                     const startDate = `${dayEvent} ${timeEvent}:00`;
+                    //Check if it has an empty value
+                    if (!timeEvent || !dayEvent) {
+                        alert('Please add a correct time and date');
+                        return;
+                    };
                     //Add 1 hour for the endTime
                     var endDate = new Date(startDate);
                     endDate.setHours(endDate.getHours() + 1);
@@ -921,24 +901,11 @@ function displayEvent(card) {
                             //Show the event
                             timeTd.innerHTML = `<input style="color:black" id='input-card-event-time' type='time' min=${timeEvent} value=${timeEvent}></input><input id='input-card-event-day' type='date' value=${dayEvent} min=${dayEvent}></input>`;
                             createEventBtn.remove();
-                            const openEvent = document.createElement('td');
-                            rowEvent.appendChild(openEvent);
-                            calEvent.eventId = data[0]?.event_id;
-                            localStorage.setItem('eventId', calEvent.eventId);
-                            openEvent.innerHTML = "<button id='open-evente'>Open</a>";
-                            rowEvent.style = "color: black";
-                            var timeoutId;
-                            document.getElementById('input-card-event-time').addEventListener('input', () => {
-                                timeoutId = setTimeout(() => {
-                                    updateEventUser(calEvent.eventId);
-                                }, 1000);
-
-                            })
-                            document.getElementById('input-card-event-day').addEventListener('input', () => {
-                                updatimeoutId = setTimeout(() => {
-                                    updateEventUser(calEvent.eventId);
-                                }, 1000);
-                            })
+                            //Update event 
+                            calEvent.eventId = data.eventId;
+                            //Add the buttons 
+                            addEventButton(rowEvent, calEvent)
+                            rowEvent.style = "font-color: black";
                         })
 
                 })
@@ -948,6 +915,31 @@ function displayEvent(card) {
         .catch(error => {
             console.error("Error showing the event: ", error);
         })
+}
+//Add options to update event and open it
+function addEventButton(rowEvent, calEvent) {
+    //Add a button to update it
+    const updateEvent = document.createElement('td');
+    rowEvent.appendChild(updateEvent);
+    updateEvent.innerHTML = "<button id='update-event'>Update</button>";
+    //Add a link to open the event
+    const openEvent = document.createElement('a');
+    openEvent.textContent = 'Open Event';
+    openEvent.id = 'open-event-link';
+    openEvent.classList.add("link");
+    document.getElementById('edit-card').insertBefore(openEvent, document.getElementById('line-edit-card'));
+    openEvent.addEventListener('click', () => {
+        //Set card id local storage and open the calendar page to diplay it
+        localStorage.setItem('eventToClick', calEvent.eventId);
+        //Set card month to move to it
+        const monthToMove = new Date(calEvent.startDate).getMonth();
+        localStorage.setItem('monthToMove', monthToMove);
+        window.open('./calendar.html', '_self');
+    })
+    //When click in the Update button update it
+    document.getElementById('update-event').addEventListener('click', () => {
+        calEvent = updateEventUser(calEvent);
+    })
 }
 
 //--- Hide Functions ---
@@ -990,6 +982,11 @@ function hideEditCards() {
             document.getElementById('card-edit-name').classList.remove('hidden');
             textEditing = '';
         }
+        //Remove Open Event and success message if exists
+        if (document.getElementById('success-message-event'))
+            document.getElementById('success-message-event').remove();
+        if (document.getElementById('open-event-link'))
+            document.getElementById('open-event-link').remove();
         //The board will be bigger, removing the contract class
         document.getElementById('board').classList.remove('contract');
     }
@@ -1007,6 +1004,9 @@ function hideEditOptions() {
         document.getElementById('edit-card-back').classList.remove('hidden');
         document.getElementById('delete-card').classList.remove('hidden');
         document.getElementById('pen-card').classList.remove('hidden');
+        //Show Open event if exists
+        if (document.getElementById('open-event-link'))
+            document.getElementById('open-event-link').classList.remove('hidden');
         //Hide the back, title and properties
         document.getElementById('edit-property-back').remove();
         document.getElementById('edit-property-title').remove();
@@ -1023,9 +1023,13 @@ function hideOptionsEditingCard() {
     document.getElementById('edit-card-back').classList.add('hidden');
     document.getElementById('delete-card').classList.add('hidden');
     document.getElementById('pen-card').classList.add('hidden');
+    if (document.getElementById('success-message-event'))
+        document.getElementById('success-message-event').remove();
+    if (document.getElementById('open-event-link'))
+        document.getElementById('open-event-link').classList.add('hidden');
 }
 
-//-- Board function ---
+//--- Board function ---
 
 //Function to add a column
 function addColumn(column, index) {
@@ -1294,7 +1298,7 @@ function moveComponents(component, dragging, isAfter) {
     }
     //Save the values for cards or column to do the fetch
     if (isCard && differentColumn) values = { oldColumnId: oldColumnId, newColumnId: newColumnId, cardId: draggingId, newOrder: newOrder };
-    else if (isCard) values = { boardId: boardId, cardId: draggingId, newOrder: newOrder };
+    else if (isCard) values = { cardId: draggingId, newOrder: newOrder };
     else if (isColumn) values = { columnId: draggingId, newOrder: newOrder };
     //Update the order in the database
     fetchJson(apiURL, 'POST', values)
@@ -1306,10 +1310,18 @@ function moveComponents(component, dragging, isAfter) {
 //--- Events ---
 
 //Function to update event            
-function updateEventUser(eventId) {
+function updateEventUser(calEvent) {
+    //Save the id
+    const eventId = calEvent.eventId;
     //Get value of input
     const timeEvent = document.getElementById('input-card-event-time').value;
     const dayEvent = document.getElementById('input-card-event-day').value;
+    //Check if it has an empty value
+    if (!timeEvent || !dayEvent) {
+        alert('Please add a correct time and date');
+        return;
+    };
+    //Add format
     const startDate = `${dayEvent} ${timeEvent}:00`;
     //Add 1 hour for the endTime
     let endDate = new Date(startDate);
@@ -1321,132 +1333,70 @@ function updateEventUser(eventId) {
     endDate = `${endDay} ${endTime}`;
     //Update the date
     fetchJson('/updateEventDate', 'POST', { startDate, endDate, eventId, boardId })
+        .then(data => {
+            if (data.success !== false && !document.getElementById('success-message-event')) {
+                const successMessage = document.createElement('p');
+                successMessage.style = 'color: green; font-size: 12px';
+                successMessage.textContent = 'Event Updated';
+                successMessage.id = 'success-message-event'
+                document.getElementById('edit-card').insertBefore(successMessage, document.getElementById('line-edit-card'));
+                calEvent.startDate = startDate;
+                calEvent.endDate = endDate;
+                return calEvent;
+            }
+        })
 }
 
 //--- Event Listeners ---
-
-//When click search will be a input
-const searchDiv = document.getElementById('search');
-searchDiv.addEventListener('click', (event) => {
-    //Add the class search-focus(change color)
-    const searchInput = document.getElementById('search-input');
-    searchDiv.classList.add('search-focus');
-    //Display the input with transition
-    showElement(searchInput);
-    //Focus in the input (for writing)
-    searchInput.focus();
-    //Save the state of the search
-    search = 'display';
-    //If something is open, close it
-    optionsBoard = hideOptions(optionsBoard);
-    hideColumnOptions();
-    hideEditCards();
-    hideEditOptions();
-    event.stopPropagation(); //prevent document.addEventListener
-});
-//When click options for boards will show
-const optionsGeneralIcon = document.getElementById('options-icon');
-optionsGeneralIcon.addEventListener('click', (event) => {
-    //If it's not open
-    if (optionsBoard != 'display') {
-        //Show the option
-        const optionsGeneralDiv = document.getElementById('options-general');
-        showElement(optionsGeneralDiv);
-        //Save the state to display
-        optionsBoard = 'display';
+if (username) {
+    //When click search will be a input
+    const searchDiv = document.getElementById('search');
+    searchDiv.addEventListener('click', (event) => {
+        //Add the class search-focus(change color)
+        const searchInput = document.getElementById('search-input');
+        searchDiv.classList.add('search-focus');
+        //Display the input with transition
+        showElement(searchInput);
+        //Focus in the input (for writing)
+        searchInput.focus();
+        //Save the state of the search
+        search = 'display';
         //If something is open, close it
+        optionsBoard = hideOptions(optionsBoard);
         hideColumnOptions();
-        search = hideSearch(search);
         hideEditCards();
         hideEditOptions();
-        if (textEditing != '') {
-            textEditing = returnToText(textEditing, boardId)
+        event.stopPropagation(); //prevent document.addEventListener
+    });
+    //When click options for boards will show
+    const optionsGeneralIcon = document.getElementById('options-icon');
+    optionsGeneralIcon.addEventListener('click', (event) => {
+        //If it's not open
+        if (optionsBoard != 'display') {
+            //Show the option
+            const optionsGeneralDiv = document.getElementById('options-general');
+            showElement(optionsGeneralDiv);
+            //Save the state to display
+            optionsBoard = 'display';
+            //If something is open, close it
+            hideColumnOptions();
+            search = hideSearch(search);
+            hideEditCards();
+            hideEditOptions();
+            if (textEditing != '') {
+                textEditing = returnToText(textEditing, boardId)
+            }
+            event.stopPropagation(); //prevent document.addEventListener
         }
-        event.stopPropagation(); //prevent document.addEventListener
-    }
-    //If it's open close it
-    else {
-        optionsBoard = hideOptions(optionsBoard);
-    }
-});
+        //If it's open close it
+        else {
+            optionsBoard = hideOptions(optionsBoard);
+        }
+    });
 
-//When click in other place hide again
-document.addEventListener('click', () => {
-    //If something is being editted save it 
-    if (textEditing.startsWith('board-title')) {
-        textEditing = returnToText(textEditing, boardId);
-    }
-    else if (textEditing.startsWith('column-title-')) {
-        const columnId = textEditing.replace('column-title-', '');
-        textEditing = returnToText(textEditing, columnId);
-    }
-    else if (textEditing === 'card-edit-name') {
-        textEditing = returnToText(textEditing, editCardOpen, boardId);
-    }
-    else if (textEditing === 'property-name') {
-        textEditing = returnToText(textEditing, editOptionOpen, boardId);
-    }
-    else if (textEditing.startsWith('prop-type')) {
-        const propType = textEditing.replace('prop-type-', '');
-        textEditing = returnToText(textEditing, propType, boardId, propertyColor);
-    }
-    //Hide if something is open
-    hideAll();
-});
-//Delete the input value when the page refresh
-document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('search-input');
-    searchInput.value = null;
-})
-
-//Edit a text in board title when click in text
-const textToInput = document.getElementById('board-title');
-textToInput.addEventListener('click', (event) => {
-    //Hide if something is open
-    hideAll();
-    //Change it to input (save the what is being edit)
-    textEditing = addInputToChange('board-title', textEditing);
-    event.stopPropagation(); //prevent document.addEventListener
-
-})
-//Edit the board title text when click in edit options
-const editGeneral = document.getElementById('edit-general');
-const boardTitle = 'board-title';
-editGeneral.addEventListener('click', (event) => {
-    if (boardTitle != textEditing) {
-        //Hide board options
-        optionsBoard = hideOptions(optionsBoard);
-        //Change it to input (save the what is being edit)
-        textEditing = addInputToChange(boardTitle, textEditing);
-        event.stopPropagation(); //prevent document.addEventListener
-    }
-})
-//Delete the board when click in delete options
-const deleteGeneral = document.getElementById('delete-general');
-deleteGeneral.addEventListener('click', (event) => {
-    optionsBoard = hideOptions(optionsBoard);
-    //Show a message to confirm
-    if (confirm(`Are you sure that you want to delete the column "${boardName}"?`)) {
-        //Delete  the board
-        fetchJson('/deleteBoard', 'POST', { boardId })
-            .then(data => {
-                window.location.href = "./boards.html"; // Redirect to selected page
-            })
-            .catch(error => {
-                console.error("Error deleting the board: ", error);
-            })
-
-    }
-    event.stopPropagation(); //prevent document.addEventListener
-})
-
-
-//When changing the name of a text and click on enter save it, on esc cancel
-const inputToDelete = document.getElementById(`input-change-${textEditing}`);
-document.addEventListener('keydown', (event) => {
-    //If the key clicked is enter
-    if (event.key === "Enter") {
-        //Save if something is being edited
+    //When click in other place hide again
+    document.addEventListener('click', () => {
+        //If something is being editted save it 
         if (textEditing.startsWith('board-title')) {
             textEditing = returnToText(textEditing, boardId);
         }
@@ -1464,109 +1414,191 @@ document.addEventListener('keydown', (event) => {
             const propType = textEditing.replace('prop-type-', '');
             textEditing = returnToText(textEditing, propType, boardId, propertyColor);
         }
+        //Hide if something is open
+        hideAll();
+    });
+    //Delete the input value when the page refresh
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('search-input');
+        searchInput.value = null;
+    })
 
-    }
-    //Cancel if the key clicked is esc
-    else if (event.key === "Escape") {
-        //If something is being edited
-        if (textEditing != '') {
-            //Show the text
-            const textToReturn = document.getElementById(textEditing);
-            textToReturn.classList.remove('hidden');
-            //Remove the input
-            const inputToDelete = document.getElementById(`input-change-${textEditing}`);
-            inputToDelete.remove();
-            //Save that nothing is being edited
-            textEditing = '';
+    //Edit a text in board title when click in text
+    const textToInput = document.getElementById('board-title');
+    textToInput.addEventListener('click', (event) => {
+        //Hide if something is open
+        hideAll();
+        //Change it to input (save the what is being edit)
+        textEditing = addInputToChange('board-title', textEditing);
+        event.stopPropagation(); //prevent document.addEventListener
+
+    })
+    //Edit the board title text when click in edit options
+    const editGeneral = document.getElementById('edit-general');
+    const boardTitle = 'board-title';
+    editGeneral.addEventListener('click', (event) => {
+        if (boardTitle != textEditing) {
+            //Hide board options
+            optionsBoard = hideOptions(optionsBoard);
+            //Change it to input (save the what is being edit)
+            textEditing = addInputToChange(boardTitle, textEditing);
+            event.stopPropagation(); //prevent document.addEventListener
         }
-    }
-});
-
-//When back in Edit Card, close it
-const editCardBack = document.getElementById('edit-card-back');
-editCardBack.addEventListener('click', (event) => {
-    //If name is being edited save it
-    if (textEditing === 'card-edit-name') {
-        textEditing = returnToText(textEditing, editCardOpen, boardId);
-    }
-    //Hide the edit card
-    hideEditCards();
-});
-//When click in the trash in Edit Card, delete the card
-const deleteCard = document.getElementById('delete-card');
-deleteCard.addEventListener('click', (event) => {
-    //Show a message to confirm that thy want to delete it
-    const cardName = document.getElementById('card-edit-name').textContent;
-    if (confirm(`Are you sure that you want to delete the card ${cardName}?`)) {
-        //If there is a card being edited
-        if (editCardOpen != 'hidden') {
-            //Delete the card
-            const cardToDelete = document.getElementById(editCardOpen);
-            fetchJson('/deleteCard', 'POST', { cardId: editCardOpen, boardId: boardId })
+    })
+    //Delete the board when click in delete options
+    const deleteGeneral = document.getElementById('delete-general');
+    deleteGeneral.addEventListener('click', (event) => {
+        optionsBoard = hideOptions(optionsBoard);
+        //Show a message to confirm
+        if (confirm(`Are you sure that you want to delete the column "${boardName}"?`)) {
+            //Delete  the board
+            fetchJson('/deleteBoard', 'POST', { boardId })
                 .then(data => {
-                    //Hide the edit card and remove the card in the board
-                    hideEditCards();
-                    cardToDelete.remove();
+                    window.location.href = "./boards.html"; // Redirect to selected page
                 })
                 .catch(error => {
-                    console.error("Error deleting the card:", error);
+                    console.error("Error deleting the board: ", error);
                 })
 
         }
-    }
-});
+        event.stopPropagation(); //prevent document.addEventListener
+    })
+    //When changing the name of a text and click on enter save it, on esc cancel
+    const inputToDelete = document.getElementById(`input-change-${textEditing}`);
+    document.addEventListener('keydown', (event) => {
+        //If the key clicked is enter
+        if (event.key === "Enter") {
+            //Save if something is being edited
+            if (textEditing.startsWith('board-title')) {
+                textEditing = returnToText(textEditing, boardId);
+            }
+            else if (textEditing.startsWith('column-title-')) {
+                const columnId = textEditing.replace('column-title-', '');
+                textEditing = returnToText(textEditing, columnId);
+            }
+            else if (textEditing === 'card-edit-name') {
+                textEditing = returnToText(textEditing, editCardOpen, boardId);
+            }
+            else if (textEditing === 'property-name') {
+                textEditing = returnToText(textEditing, editOptionOpen, boardId);
+            }
+            else if (textEditing.startsWith('prop-type')) {
+                const propType = textEditing.replace('prop-type-', '');
+                textEditing = returnToText(textEditing, propType, boardId, propertyColor);
+            }
+
+        }
+        //Cancel if the key clicked is esc
+        else if (event.key === "Escape") {
+            //If something is being edited
+            if (textEditing != '') {
+                //Show the text
+                const textToReturn = document.getElementById(textEditing);
+                textToReturn.classList.remove('hidden');
+                //Remove the input
+                const inputToDelete = document.getElementById(`input-change-${textEditing}`);
+                inputToDelete.remove();
+                //Save that nothing is being edited
+                textEditing = '';
+            }
+        }
+    });
+    //When back in Edit Card, close it
+    const editCardBack = document.getElementById('edit-card-back');
+    editCardBack.addEventListener('click', (event) => {
+        //If name is being edited save it
+        if (textEditing === 'card-edit-name') {
+            textEditing = returnToText(textEditing, editCardOpen, boardId);
+        }
+        //Hide the edit card
+        hideEditCards();
+    });
+    //When click in the trash in Edit Card, delete the card
+    const deleteCard = document.getElementById('delete-card');
+    deleteCard.addEventListener('click', (event) => {
+        //Show a message to confirm that thy want to delete it
+        const cardName = document.getElementById('card-edit-name').textContent;
+        if (confirm(`Are you sure that you want to delete the card ${cardName}?`)) {
+            //If there is a card being edited
+            if (editCardOpen != 'hidden') {
+                //Delete the card
+                const cardToDelete = document.getElementById(editCardOpen);
+                fetchJson('/deleteCard', 'POST', { cardId: editCardOpen })
+                    .then(data => {
+                        //Hide the edit card and remove the card in the board
+                        hideEditCards();
+                        cardToDelete.remove();
+                    })
+                    .catch(error => {
+                        console.error("Error deleting the card:", error);
+                    })
+
+            }
+        }
+    });
+}
 
 //--- Create DOM ---
 
-//Show all columns of the board
-fetchJson('/getColumns', 'POST', { boardId: boardId })
-    .then(data => {
-        if (data.success != false) {
-            data.forEach((c, index) => {
-                const column = new Column({ boardId: boardId, columnId: c.column_id, name: c.name, order: index });
-                addColumn(column, index);
+//If user is not logged in don't show anything
+if (!username) {
+    document.body.innerHTML = `<h2>You're not logged in</h2>
+    <p>Please <a href="login.html" class="link">log in</a> to access this page.</p>`;
+    document.body.style = 'display: flex; flex-direction: column;'
+}
+//Display all the DOM
+else {
+    //Show all columns of the board
+    fetchJson('/getColumns', 'POST', { boardId: boardId })
+        .then(data => {
+            if (data.success != false) {
+                data.forEach((c, index) => {
+                    const column = new Column({ boardId: boardId, columnId: c.column_id, name: c.name, order: index });
+                    addColumn(column, index);
+                })
+            }
+            //Show a plus at the end of the boards
+            const columnId = 'new-column';
+            const boardColumn = document.createElement('div');
+            boardColumn.classList.add('column');
+            board.appendChild(boardColumn);
+            const plusEvent = document.createElement('div');
+            boardColumn.appendChild(plusEvent);
+            boardColumn.id = columnId;
+            plusEvent.id = 'new-column-plus';
+            const plusImage = document.createElement('img');
+            plusEvent.appendChild(plusImage);
+            plusImage.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1743961025/Icons/Black/plus_black.png";
+            //Show Options (to delete and edit)
+            showOptionsColumns('.column-options-icon');
+            //When clicking in plus a new column will be added
+            const newColumnDiv = document.getElementById('new-column-plus');
+            newColumnDiv.addEventListener('click', () => {
+                //The name of the column will be New Column
+                const newColumnName = 'New Column';
+                fetchJson('/insertColumn', 'POST', { newColumnName: newColumnName, boardId: boardId })
+                    .then(data => {
+                        //Save the column with the info
+                        const column = new Column({ boardId: boardId, columnId: data.columnId, name: data.columnName, order: columnIndex })
+                        //Update the index for columns
+                        columnIndex++;
+                        //Display the column
+                        addColumn(column, columnIndex);
+                    })
+                    .catch(error => {
+                        console.error("Error inserting the column: ", error);
+                    })
+
             })
-            //Wait and open card if passed by event
-            setTimeout(openCardToClick, 1000); 
-        }
-        //Show a plus at the end of the boards
-        const columnId = 'new-column';
-        const boardColumn = document.createElement('div');
-        boardColumn.classList.add('column');
-        board.appendChild(boardColumn);
-        const plusEvent = document.createElement('div');
-        boardColumn.appendChild(plusEvent);
-        boardColumn.id = columnId;
-        plusEvent.id = 'new-column-plus';
-        const plusImage = document.createElement('img');
-        plusEvent.appendChild(plusImage);
-        plusImage.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1743961025/Icons/Black/plus_black.png";
-        //Show Options (to delete and edit)
-        showOptionsColumns('.column-options-icon');
-        //When clicking in plus a new column will be added
-        const newColumnDiv = document.getElementById('new-column-plus');
-        newColumnDiv.addEventListener('click', () => {
-            //The name of the column will be New Column
-            const newColumnName = 'New Column';
-            fetchJson('/insertColumn', 'POST', { newColumnName: newColumnName, boardId: boardId })
-                .then(data => {
-                    //Save the column with the info
-                    const column = new Column({ boardId: boardId, columnId: data.columnId, name: data.columnName, order: columnIndex })
-                    //Update the index for columns
-                    columnIndex++;
-                    //Display the column
-                    addColumn(column, columnIndex);
-                })
-                .catch(error => {
-                    console.error("Error inserting the column: ", error);
-                })
-
         })
-    })
-    .catch(error => {
-        console.error("Error fetching columns data: ", error);
-    });
+        .catch(error => {
+            console.error("Error fetching columns data: ", error);
+        });
 
-//Search cards with the loupe
-showSearch("column", "card");
-
+    //Search cards with the loupe
+    showSearch("column", "card");
+    //Update the avatar image
+    setAvatar(username);
+    //Wait and open card if passed by event
+    setTimeout(openCardToClick, 1000);
+}

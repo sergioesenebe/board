@@ -171,6 +171,17 @@ header {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     cursor: pointer;
 }
+/*Link to open*/
+.link {
+    text-decoration: underline;
+    color: #8c6d5d;
+}
+
+/*Hover change cursor*/
+.link:hover {
+    cursor: pointer;
+    filter: brightness(60%);
+}
 
 /*Input when trying to change the text*/
 .input-change {

@@ -258,18 +258,6 @@ td.event-day {
     outline: none;
 }
 
-/*Link to open the event card*/
-#open-card-link {
-    text-decoration: underline;
-    color: #8c6d5d;
-}
-
-/*Hover change cursor*/
-#open-card-link:hover {
-    cursor: pointer;
-    filter: brightness(60%);
-}
-
 /*Div for open card and update*/
 #edit-event-buttons {
     display: flex;

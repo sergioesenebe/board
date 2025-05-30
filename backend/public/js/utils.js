@@ -34,7 +34,6 @@ export class CalendarEvent {
             });
     }
     update({ newName, newStartDate, newEndDate, newLocation }) {
-        console.log('newName:', newName);
         return fetchJson('/updateEvent', 'POST', { name: newName, startDate: newStartDate, endDate: newEndDate, location: newLocation, eventId: this.eventId })
             .then(data => {
                 this.name = newName;
@@ -79,6 +78,9 @@ export class Note {
         this.content = content;
     }
 }
+
+//--- Util Functions ---
+
 //Function to encrypt with SHA-256
 export async function hash(pass) {
     const encoder = new TextEncoder(); // Encodes the password as a byte array
@@ -101,6 +103,42 @@ export const fetchJson = (url, method, body) => {
         body: JSON.stringify(body),
     }).then(response => response.json());
 };
+//Insert After
+export function insertAfter(newNode, referenceNode) {
+    //If it has a parent
+    if (referenceNode.parentNode) {
+        //If it has next element
+        if (referenceNode.nextSibling) {
+            //Insert before next element
+            referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+        } else {
+            // If it hasn't a nex element insert as a child
+            referenceNode.parentNode.appendChild(newNode);
+        }
+    }
+}
+//Function to get avatar Avatar
+export function setAvatar(username) {
+    return fetchJson('/getAvatar', 'POST', { username })
+        .then(data => {
+            //Save the image url and add it as the src
+            const avatarsrc = data.image_url;
+            document.getElementById('avatar').src = avatarsrc;
+            //Return the avatar src
+            return (avatarsrc);
+        })
+        .catch(error => {
+            console.error('Error getting the avatar', error);
+        })
+}
+// Function to validate password based on requirements
+export const isPasswordValid = (password) => {
+    return password.length >= 8 && /\d/.test(password) && /[A-Z]/.test(password) && /[a-z]/.test(password);
+};
+
+
+//--- Boards ----
+
 //Function to add Boards
 export function addBoards(username, openBoards) {
     //if is usign the id boards or elements
@@ -111,7 +149,7 @@ export function addBoards(username, openBoards) {
     else if (document.getElementById('elements')) {
         divBoards = document.getElementById('elements');
     }
-
+    //Take boards
     fetchJson('/getBoards', 'POST', { username })
         .then(data => {
             if (data.length > 0) {
@@ -202,64 +240,82 @@ export function addBoards(username, openBoards) {
         });
 }
 //Function to display columns for boards
-export function addColumns(boardId, table, addData) {
+export async function addColumns(boardId, table, addData,) {
     const tr = document.createElement('tr');
     table.appendChild(tr);
-    fetchJson('/getColumns', 'POST', { boardId: boardId })
-        .then(data => {
-            if (data.success != false) {
-                data.forEach(c => {
-                    //Save the column info
-                    const column = new Column({ columnId: c.column_id, boardId: boardId, name: c.name, order: c.order });
-                    //Create the columns in the HTML
-                    const columnName = document.createElement('th');
-                    tr.appendChild(columnName);
-                    columnName.textContent = column.name;
-                    //Display cards as lines
-                    (async () => {
-                        await addCards(column.columnId, table, addData);
-                    })();
-                })
+    //Do it with try catch and for to allow await
+    try {
+        const data = await fetchJson('/getColumns', 'POST', { boardId: boardId })
+        if (data.success != false) {
+            for (let index = 0; index < data.length; index++) {
+                const c = data[index];
+                //Save the column info
+                const column = new Column({ columnId: c.column_id, boardId: boardId, name: c.name, order: c.order });
+                //Create the columns in the HTML
+                const columnName = document.createElement('th');
+                tr.appendChild(columnName);
+                columnName.textContent = column.name;
+                //Display cards as lines (async)
+                await addCards(column.columnId, table, addData, index);
             }
-
-        })
-        .catch(error => {
-            console.error("Error fetching columns data: ", error);
-        });
+        }
+    }
+    catch (error) {
+        console.error("Error fetching columns data: ", error);
+    };
 }
 //Function to add cards for boards
-function addCards(column, table, addData) {
-    fetchJson('/getCards', 'POST', { columnId: column })
-        .then(data => {
-            var i = 0;
-            if (data.success != false) {
-                data.forEach((card, index) => {
-                    var tr;
-                    const tableName = table.querySelector('h3').textContent;
-                    if (!document.getElementById(`tr-card-${tableName}-${index}`)) {
-                        tr = document.createElement('tr');
-                        table.appendChild(tr);
-                        tr.id = `tr-card-${tableName}-${index}`;
+async function addCards(column, table, addData, columnIndex) {
+    //Do it with try catch and for to allow await
+    try {
+        const data = await fetchJson('/getCards', 'POST', { columnId: column })
+        if (data.success != false) {
+            for (let index = 0; index < data.length; index++) {
+                const card = data[index];
+                var tr;
+                const tableName = table.querySelector('h3').textContent;
+                //Know if there are an element in the tr, if not, create it
+                if (!document.getElementById(`tr-card-${tableName}-${index}`)) {
+                    tr = document.createElement('tr');
+                    table.appendChild(tr);
+                    tr.id = `tr-card-${tableName}-${index}`;
+                    //Add white td at the begging (in case it has more last column)
+                    for (let i = 0; i < columnIndex; i++) {
+                        const td = document.createElement('td');
+                        tr.appendChild(td);
                     }
-                    else {
-                        tr = document.getElementById(`tr-card-${tableName}-${index}`);
+                }
+                //If exists, get it
+                else {
+                    tr = document.getElementById(`tr-card-${tableName}-${index}`);
+                    //Get number of columns
+                    const numberOfColumns = tr.children.length;
+                    //Add white td from the last column to actual (in case there are white spaces)
+                    for (let i = numberOfColumns; i < columnIndex; i++) {
+                        const td = document.createElement('td');
+                        tr.appendChild(td);
                     }
-                    const td = document.createElement('td');
-                    tr.appendChild(td);
-                    if (addData) {
-                        td.textContent = card.name;
-                    }
-                    else {
-                        td.classList.add('home-lit-event');
-                    }
-                });
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching cards data: ", error);
-        });
+                }
+                const td = document.createElement('td');
+                td.classList.add('card');
+                tr.appendChild(td);
+                if (addData) {
+                    td.textContent = card.name;
+                }
+                else {
+                    td.classList.add('home-lit-event');
+                }
+            };
+        }
+    }
+    catch (error) {
+        console.error("Error fetching cards data: ", error);
+    };
 
 }
+
+//--- Notes ---
+
 //Function to add Notes
 export function addNotes(username, openNotes) {
     let notesDiv;
@@ -374,6 +430,9 @@ export async function getBoardById(boardId) {
         return null;
     }
 }
+
+//--- Calendar ---
+
 //Function to add the calendar of this month
 export function generateCalendar(username, dateCalendar) {
     //Get month and year
@@ -475,6 +534,9 @@ export function openComponent(componentId, page, saveItem) {
     });
 
 }
+
+//--- Search, input and options ---
+
 //Get the input when writing and show just the elements that match.
 //If you want to search just for example the board don't add valuesClass, if you want to search the cards of a board add bouth parameters
 export function showSearch(tablesClass, valuesClass) {
@@ -739,37 +801,3 @@ function removeAndReturn(inputToDelete, textToReturn) {
         textToReturn.classList.remove('hidden');
     });
 }
-//Insert After
-export function insertAfter(newNode, referenceNode) {
-    //If it has a parent
-    if (referenceNode.parentNode) {
-        //If it has next element
-        if (referenceNode.nextSibling) {
-            //Insert before next element
-            referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-        } else {
-            // If it hasn't a nex element insert as a child
-            referenceNode.parentNode.appendChild(newNode);
-        }
-    }
-}
-//--- Common ----
-//Function to get avatar Avatar
-export function setAvatar(username) {
-    return fetchJson('/getAvatar', 'POST', { username })
-        .then(data => {
-            //Save the image url and add it as the src
-            const avatarsrc = data.image_url;
-            document.getElementById('avatar').src = avatarsrc;
-            //Return the avatar src
-            return (avatarsrc);
-        })
-        .catch(error => {
-            console.error('Error getting the avatar', error);
-        })
-}
-// Function to validate password based on requirements
-export const isPasswordValid = (password) => {
-    return password.length >= 8 && /\d/.test(password) && /[A-Z]/.test(password) && /[a-z]/.test(password);
-};
-

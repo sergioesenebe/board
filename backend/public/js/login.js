@@ -1,5 +1,17 @@
-//Import function hash
+
+//--- Imported functions ---
+
 import { hash } from './utils.js';
+
+//--- Event Listeners ---
+
+//Constant for the login button
+const submit = document.getElementById('logInBtn');
+//When click call the function login
+submit.addEventListener('click', login);
+
+//--- Functions ---
+
 //function to login
 async function login(event) {
     //Prevent default values
@@ -48,8 +60,4 @@ async function login(event) {
             });
     }
 }
-//Constant for the login button
-const submit = document.getElementById('logInBtn');
-//When click call the function login
-submit.addEventListener('click', login);
 

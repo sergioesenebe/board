@@ -30,7 +30,7 @@ app.post('/login', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the usernames and passwords from the body
   const { username, password } = req.body;
-
+  // Validate that the necessary data is provided
   if (!username || !password) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -44,7 +44,7 @@ app.post('/login', (req, res) => {
 
     // If the users are correct will return true
     if (results.length > 0) {
-      return res.status(200).json({ success: true });
+      return res.status(200).json({ success: true, message: "User logged in" });
     } else {
       return res.status(200).json({ success: false, message: 'Incorrect User or Password' });
     }
@@ -56,7 +56,7 @@ app.post('/checkUsername', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the username from the body
   const { username } = req.body;
-
+  // Validate that the necessary data is provided
   if (!username) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -70,7 +70,7 @@ app.post('/checkUsername', (req, res) => {
 
     // If the username doesn't exist will return true
     if (results.length == 0) {
-      return res.status(200).json({ success: true });
+      return res.status(200).json({ success: true, message: "Username doesn't exists" });
     } else {
       return res.status(200).json({ success: false, message: 'Username already exists' });
     }
@@ -79,9 +79,9 @@ app.post('/checkUsername', (req, res) => {
 /*Query to check if email exists for signup*/
 app.post('/checkEmail', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the email from the body
   const { email } = req.body;
-
+  // Validate that the necessary data is provided
   if (!email) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -95,7 +95,7 @@ app.post('/checkEmail', (req, res) => {
 
     // If the email doesn't exist will return true
     if (results.length == 0) {
-      return res.status(200).json({ success: true });
+      return res.status(200).json({ success: true, message: 'Email not used' });
     } else {
       return res.status(200).json({ success: false, message: 'Email already in use' });
     }
@@ -105,8 +105,9 @@ app.post('/checkEmail', (req, res) => {
 /*Query to insert a new user for signup*/
 app.post('/insertUser', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the user info from the body
+  // Takes the first_name, second_name, username, email, password and avatar info from the body
   const { first_name, second_name, username, email, password, avatar } = req.body;
+  // Validate that the necessary data is provided
   if (!first_name || !second_name || !username || !email || !password || !avatar) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -120,9 +121,9 @@ app.post('/insertUser', (req, res) => {
 
     // If the user is inserted will return true
     if (results.affectedRows > 0) {
-      return res.status(200).json({ success: true });
+      return res.status(200).json({ success: true, message: 'User created' });
     } else {
-      return res.status(200).json({ success: false, message: 'Board not inserted' });
+      return res.status(200).json({ success: false, message: 'User not created' });
     }
 
   });
@@ -132,7 +133,7 @@ app.post('/getUserFirstName', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the username from the body
   const { username } = req.body;
-
+  // Validate that the necessary data is provided
   if (!username) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -157,7 +158,7 @@ app.post('/getAvatar', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the username from the body
   const { username } = req.body;
-
+  // Validate that the necessary data is provided
   if (!username) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -173,7 +174,7 @@ app.post('/getAvatar', (req, res) => {
     if (results.length > 0) {
       return res.status(200).json({ image_url: results[0].image_url });
     } else {
-      return res.status(200).json({ success: false, message: 'Username not found' });
+      return res.status(200).json({ success: false, message: 'Avatar not found' });
     }
   });
 });
@@ -181,7 +182,7 @@ app.post('/getAvatar', (req, res) => {
 app.post('/getBoards', (req, res) => {
   // Takes the username from the body
   const { username } = req.body;
-
+  // Validate that the necessary data is provided
   if (!username) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -197,16 +198,16 @@ app.post('/getBoards', (req, res) => {
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Username not found' });
+      return res.status(200).json({ success: false, message: 'Boards not found' });
     }
   });
 });
 //Query to show the columns of a board
 app.post('/getColumns', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the board from the body
+  // Takes the board id from the body
   const { boardId } = req.body;
-
+  // Validate that the necessary data is provided
   if (!boardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -222,16 +223,16 @@ app.post('/getColumns', (req, res) => {
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Board not found' });
+      return res.status(200).json({ success: false, message: 'Columns not found' });
     }
   });
 });
 //Query to show number of cards
 app.post('/getCardsNumber', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the usernames and passwords from the body
+  // Takes the columnId and passwords from the body
   const { columnId } = req.body;
-
+  // Validate that the necessary data is provided
   if (!columnId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -247,7 +248,7 @@ app.post('/getCardsNumber', (req, res) => {
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Column not found' });
+      return res.status(200).json({ success: false, message: 'Cards not found' });
     }
   });
 });
@@ -256,7 +257,7 @@ app.post('/getCards', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the column id
   const { columnId } = req.body;
-
+  // Validate that the necessary data is provided
   if (!columnId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -272,7 +273,7 @@ app.post('/getCards', (req, res) => {
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Column not found' });
+      return res.status(200).json({ success: false, message: 'Cards not found' });
     }
   });
 });
@@ -281,7 +282,7 @@ app.post('/getCardContent', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the card
   const { cardId } = req.body;
-
+  // Validate that the necessary data is provided
   if (!cardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -297,15 +298,15 @@ app.post('/getCardContent', (req, res) => {
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Column not found' });
+      return res.status(200).json({ success: false, message: 'Content not found' });
     }
   });
 });
 //Query to get a board id by a card
 app.post('/getBoardByCard', (req, res) => {
-  // Takes the card
+  // Takes the card id
   const { cardId } = req.body;
-  //Return missing credentials if not card inserted
+  //Return missing credentials if not card provided
   if (!cardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -320,7 +321,7 @@ app.post('/getBoardByCard', (req, res) => {
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Card not found' });
+      return res.status(200).json({ success: false, message: 'Board id not found' });
     }
   });
 });
@@ -330,7 +331,7 @@ app.post('/getCardPropTypes', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the card id from the body
   const { cardId } = req.body;
-
+  // Validate that the necessary data is provided
   if (!cardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -346,7 +347,7 @@ app.post('/getCardPropTypes', (req, res) => {
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Card not found' });
+      return res.status(200).json({ success: false, message: 'Property types not found' });
     }
   });
 });
@@ -355,23 +356,21 @@ app.post('/getPropertiesAndTypes', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the card and board from the body
   const { cardId, boardId } = req.body;
-
+  // Validate that the necessary data is provided
   if (!cardId || !boardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
-
   // SELECT to show all properties of a board and card corresponding type
   db.query('SELECT P.name AS property_name, P.property_id AS property_id, COALESCE( MAX(CASE WHEN CPT.card_id IS NOT NULL THEN PT.name ELSE NULL END), NULL ) AS prop_type_name, COALESCE( MAX(CASE WHEN CPT.card_id IS NOT NULL THEN PT.prop_type_id ELSE NULL END), NULL ) AS prop_type_id FROM properties P LEFT JOIN prop_types PT ON P.property_id = PT.property_id LEFT JOIN card_prop_types CPT ON PT.prop_type_id = CPT.prop_type_id AND CPT.card_id = ? WHERE P.board_id = ? GROUP BY P.name, P.property_id; ', [cardId, boardId], (err, results) => {
     if (err) {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-
     // If there are properties return them
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Card not found' });
+      return res.status(200).json({ success: false, message: 'Properties and types not found' });
     }
   });
 });
@@ -380,11 +379,10 @@ app.post('/getPropTypes', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the property id from the body
   const { propertyId } = req.body;
-
+  // Validate that the necessary data is provided
   if (!propertyId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
-
   // SELECT to show properties of a card
   db.query('SELECT P.property_id, P.name AS property_name, PT.prop_type_id, PT.name AS prop_type_name FROM `properties` P, prop_types PT WHERE P.property_id = PT.property_id AND P.property_id=? ORDER BY prop_type_name', [propertyId], (err, results) => {
     if (err) {
@@ -396,18 +394,16 @@ app.post('/getPropTypes', (req, res) => {
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Card not found' });
+      return res.status(200).json({ success: false, message: 'Property Types not found' });
     }
   });
 });
-
-
 //Query to show the notes of a user
 app.post('/getNotes', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the username from the body
   const { username } = req.body;
-
+  // Validate that the necessary data is provided
   if (!username) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -423,7 +419,7 @@ app.post('/getNotes', (req, res) => {
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Username not found' });
+      return res.status(200).json({ success: false, message: 'Notes not found' });
     }
   });
 });
@@ -432,7 +428,7 @@ app.post('/getUpcomingEvent', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the username from the body
   const { username } = req.body;
-
+  // Validate that the necessary data is provided
   if (!username) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -458,7 +454,7 @@ app.post('/getLastUsedBoardLastColumn', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the username from the body
   const { username } = req.body;
-
+  // Validate that the necessary data is provided
   if (!username) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -474,7 +470,7 @@ app.post('/getLastUsedBoardLastColumn', (req, res) => {
     if (results.length > 0) {
       return res.status(200).json(results);
     } else {
-      return res.status(200).json({ success: false, message: 'Username not found' });
+      return res.status(200).json({ success: false, message: 'No User Board not found' });
     }
   });
 });
@@ -483,7 +479,7 @@ app.post('/getBoardById', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the board id from the body
   const { boardId } = req.body;
-
+  // Validate that the necessary data is provided
   if (!boardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -508,7 +504,7 @@ app.post('/updateBoardName', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the newName and board id from the body
   const { newName, boardId } = req.body;
-
+  // Validate that the necessary data is provided
   if (!newName || !boardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -522,7 +518,7 @@ app.post('/updateBoardName', (req, res) => {
 
     // If there is a change return true
     if (results.affectedRows > 0) {
-      return res.status(200).json(results);
+      return res.status(200).json({success: true, message: 'Board not found'});
     } else {
       return res.status(200).json({ success: false, message: 'Board not found' });
     }
@@ -533,7 +529,7 @@ app.post('/updateColumnName', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the new name and column id from the body
   const { newName, columnId } = req.body;
-
+  // Validate that the necessary data is provided
   if (!newName || !columnId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -546,20 +542,11 @@ app.post('/updateColumnName', (req, res) => {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-    //Update last updated board
-    db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [columnId], (err, results) => {
-      if (err) {
-        console.error('Error in the query:', err);
-        return res.status(500).json({ success: false, message: 'Error in the update time query' });
-      }
-
-    });
-
-    // If it's inserted return the results
+    // If it's inserted return true
     if (results.affectedRows > 0) {
-      return res.status(200).json(results);
+      return res.status(200).json({ success: false, message: 'Column name updated' });
     } else {
-      return res.status(200).json({ success: false, message: 'Column not found' });
+      return res.status(200).json({ success: false, message: 'Column name not updated' });
     }
   });
 
@@ -568,9 +555,9 @@ app.post('/updateColumnName', (req, res) => {
 app.post('/updateCardName', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the newname, card id and board id from the body
-  const { newName, cardId, boardId } = req.body;
-
-  if (!newName || !cardId || !boardId) {
+  const { newName, cardId } = req.body;
+  // Validate that the necessary data is provided
+  if (!newName || !cardId ) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
@@ -582,20 +569,12 @@ app.post('/updateCardName', (req, res) => {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-    //Update las updated board
-    db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ? ', [boardId], (err, results) => {
-      if (err) {
-        console.error('Error in the query:', err);
-        return res.status(500).json({ success: false, message: 'Error in the update time query' });
-      }
 
-    });
-
-    // If there is a insertion return results
+    // If there is a insertion return true
     if (results.affectedRows > 0) {
-      return res.status(200).json(results);
+      return res.status(200).json({ success: false, message: 'Card name updated' });
     } else {
-      return res.status(200).json({ success: false, message: 'Column not found' });
+      return res.status(200).json({ success: false, message: 'Card name not updated' });
     }
   });
 
@@ -606,7 +585,7 @@ app.post('/updateColumnOrderIncrease', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the usernames and passwords from the body
   const { columnId, newOrder } = req.body;
-
+  // Validate that the necessary data is provided
   if (!columnId || isNaN(newOrder)) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -624,27 +603,12 @@ app.post('/updateColumnOrderIncrease', (req, res) => {
         console.error('Error in the query:', err);
         return res.status(500).json({ success: false, message: 'Error in the dragging' });
       }
-      db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [columnId], (err, results) => {
-        if (err) {
-          console.error('Error in the query:', err);
-          return res.status(500).json({ success: false, message: 'Error in the update time query' });
-        }
-        //Update last updated board
-        db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [columnId], (err, results) => {
-          if (err) {
-            console.error('Error in the query:', err);
-            return res.status(500).json({ success: false, message: 'Error in the update time query' });
-          }
-
-        });
-      });
     })
-
-    // If there is more than one note will return true
+    // If column order updated
     if (results.affectedRows > 0) {
-      return res.status(200).json(results);
+      return res.status(200).json({ success: true, message: 'Column order updated' });
     } else {
-      return res.status(200).json({ success: false, message: 'Column not found' });
+      return res.status(200).json({ success: false, message: 'Column order not updated' });
     }
   });
 
@@ -655,7 +619,6 @@ app.post('/updateColumnOrderDecrease', (req, res) => {
 
   // Get values from the request body
   const { columnId, newOrder } = req.body;
-
   // Validate that the necessary data is provided
   if (!columnId || isNaN(newOrder)) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
@@ -674,19 +637,11 @@ app.post('/updateColumnOrderDecrease', (req, res) => {
         console.error('Error in the query:', err);
         return res.status(500).json({ success: false, message: 'Error in the dragging' });
       }
-      //Update last updated board
-      db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [columnId], (err, results) => {
-        if (err) {
-          console.error('Error in the query:', err);
-          return res.status(500).json({ success: false, message: 'Error in the update time query' });
-        }
-      });
-
       // Check if the update was successful
       if (results.affectedRows > 0) {
         return res.status(200).json({ success: true, message: 'Column order updated successfully', data: results });
       } else {
-        return res.status(404).json({ success: false, message: 'Column not found' });
+        return res.status(404).json({ success: false, message: 'Column order not updated' });
       }
     });
   });
@@ -695,9 +650,9 @@ app.post('/updateColumnOrderDecrease', (req, res) => {
 app.post('/updateCardOrderIncrease', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the board id, card id and new order from the body
-  const { boardId, cardId, newOrder } = req.body;
+  const { cardId, newOrder } = req.body;
 
-  if (!boardId || !cardId || isNaN(newOrder)) {
+  if ( !cardId || isNaN(newOrder)) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
   // Update the order of cards by decrementing the order of cards after the selected one
@@ -713,20 +668,13 @@ app.post('/updateCardOrderIncrease', (req, res) => {
         console.error('Error in the query:', err);
         return res.status(500).json({ success: false, message: 'Error in the dragging' });
       }
-      //Update last updated
-      db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?', [boardId], (err, results) => {
-        if (err) {
-          console.error('Error in the query:', err);
-          return res.status(500).json({ success: false, message: 'Error in the update time query' });
-        }
-      });
     })
 
     // If there is more than one note will return true
     if (results.affectedRows > 0) {
-      return res.status(200).json(results);
+      return res.status(200).json({ success: true, message: 'Card order updated' });
     } else {
-      return res.status(200).json({ success: false, message: 'Card not found' });
+      return res.status(200).json({ success: false, message: 'Card order not updated' });
     }
   });
 });
@@ -735,9 +683,9 @@ app.post('/updateCardOrderDecrease', (req, res) => {
   console.log('Body of the application:', req.body);
 
   // Get values from the request body
-  const { boardId, cardId, newOrder } = req.body;
+  const { cardId, newOrder } = req.body;
   // Validate that the necessary data is provided
-  if (!boardId || !cardId || isNaN(newOrder)) {
+  if ( !cardId || isNaN(newOrder)) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
   // Update the order of cards by incrementing the order of cards after the selected one
@@ -753,20 +701,12 @@ app.post('/updateCardOrderDecrease', (req, res) => {
         console.error('Error in the query:', err);
         return res.status(500).json({ success: false, message: 'Error in the dragging' });
       }
-      //Update last updated column
-      db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?', [boardId], (err, results) => {
-        if (err) {
-          console.error('Error in the query:', err);
-          return res.status(500).json({ success: false, message: 'Error in the update time query' });
-        }
-      });
-
 
       // Check if the update was successful
       if (results.affectedRows > 0) {
         return res.status(200).json({ success: true, message: 'Card order updated successfully', data: results });
       } else {
-        return res.status(404).json({ success: false, message: 'Card not found' });
+        return res.status(404).json({ success: false, message: 'Card order not updated' });
       }
     });
   });
@@ -801,21 +741,13 @@ app.post('/updateCardDifferentColumn', (req, res) => {
           console.error('Error in the query:', err);
           return res.status(500).json({ success: false, message: 'Error in the dragging' });
         }
-        //Update board last_updated
-        db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [newColumnId], (err, results) => {
-          if (err) {
-            console.error('Error in the query:', err);
-            return res.status(500).json({ success: false, message: 'Error in the update time query' });
-          }
-        });
-
       })
     })
-    // If there is cahange will return it
+    // If there is cahange will return true
     if (results.affectedRows > 0) {
-      return res.status(200).json(results);
+      return res.status(200).json({success: true, message: 'Card order updated successfully'});
     } else {
-      return res.status(200).json({ success: false, message: 'Column not found' });
+      return res.status(200).json({ success: false, message: 'Card order not updated' });
     }
   });
 });
@@ -829,8 +761,7 @@ app.post('/insertBoard', (req, res) => {
   //Generate the column_id with UUID v4
   const { v4: uuidv4 } = require('uuid');
   const newBoardId = uuidv4();
-
-
+  // Validate that the necessary data is provided
   if (!newBoardName || !newBoardId || !username) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -859,8 +790,7 @@ app.post('/insertColumn', (req, res) => {
   //Generate the column_id with UUID v4
   const { v4: uuidv4 } = require('uuid');
   const newColumnId = uuidv4();
-
-
+  // Validate that the necessary data is provided
   if (!newColumnName || !newColumnId || !boardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -871,19 +801,11 @@ app.post('/insertColumn', (req, res) => {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-    //Update the last_updated board
-    db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [newColumnId], (err, results) => {
-      if (err) {
-        console.error('Error in the query:', err);
-        return res.status(500).json({ success: false, message: 'Error in the update time query' });
-      }
-
-    });
     // If it is inserted will return the data
     if (results.affectedRows > 0) {
       return res.status(200).json({ columnId: newColumnId, columnName: newColumnName, boardId: boardId });
     } else {
-      return res.status(200).json({ success: false, message: 'Column not found' });
+      return res.status(200).json({ success: false, message: 'Column not inserted' });
     }
   });
 });
@@ -896,7 +818,7 @@ app.post('/insertCard', (req, res) => {
   //Generate the card_id with UUID v4
   const { v4: uuidv4 } = require('uuid');
   const newCardId = uuidv4();
-
+  // Validate that the necessary data is provided
   if (!newCardName || !newCardId || !columnId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -907,34 +829,25 @@ app.post('/insertCard', (req, res) => {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-    //Update the board last_updated to now
-    db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [columnId], (err, results) => {
-      if (err) {
-        console.error('Error in the query:', err);
-        return res.status(500).json({ success: false, message: 'Error in the update time query' });
-      }
-
-    });
-
     // If it is inserted return the data of the card
     if (results.affectedRows > 0) {
       return res.status(200).json({ cardId: newCardId, cardName: newCardName, columnId: columnId });
     } else {
-      return res.status(200).json({ success: false, message: 'Column not found' });
+      return res.status(200).json({ success: false, message: 'Card not inserted' });
     }
   });
 });
 //Insert Property
 app.post('/insertProperty', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the newPropertyName and boardId from the body
+  // Takes the newPropertyName from the body
   const { newPropertyName, boardId } = req.body;
 
   //Generate the property_id with UUID v4
   const { v4: uuidv4 } = require('uuid');
   const newPropertyId = uuidv4();
-
-  if (!newPropertyName || !newPropertyId || !boardId) {
+  // Validate that the necessary data is provided
+  if (!newPropertyName || !newPropertyId || !boardId ) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
@@ -944,15 +857,6 @@ app.post('/insertProperty', (req, res) => {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-    //Update the last_updated board
-    db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?', [boardId], (err, results) => {
-      if (err) {
-        console.error('Error in the query:', err);
-        return res.status(500).json({ success: false, message: 'Error in the update time query' });
-      }
-
-    });
-
     // If it is inserted return the property data
     if (results.affectedRows > 0) {
       return res.status(200).json({ property_id: newPropertyId, property_name: newPropertyName, board_id: boardId });
@@ -964,14 +868,14 @@ app.post('/insertProperty', (req, res) => {
 //Insert Property Type
 app.post('/insertPropType', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the newPropTypeName, propertyId and boardId from the body
-  const { newPropTypeName, propertyId, boardId } = req.body;
+  // Takes the newPropTypeName, propertyId from the body
+  const { newPropTypeName, propertyId } = req.body;
 
   //Generate the prop_type_id with UUID v4
   const { v4: uuidv4 } = require('uuid');
   const newPropTypeId = uuidv4();
-
-  if (!newPropTypeName || !newPropTypeId || !propertyId || !boardId) {
+  // Validate that the necessary data is provided
+  if (!newPropTypeName || !newPropTypeId || !propertyId ) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
@@ -981,15 +885,6 @@ app.post('/insertPropType', (req, res) => {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-    //Update last_updated column
-    db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?', [boardId], (err, results) => {
-      if (err) {
-        console.error('Error in the query:', err);
-        return res.status(500).json({ success: false, message: 'Error in the update time query' });
-      }
-
-    });
-
     // If there is more than one note will return true
     if (results.affectedRows > 0) {
       return res.status(200).json({ prop_type_id: newPropTypeId, prop_type_name: newPropTypeName, property_id: propertyId });
@@ -1004,6 +899,7 @@ app.post('/deleteBoard', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the username from the body
   const { boardId } = req.body;
+  // Validate that the necessary data is provided
   if (!boardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -1015,9 +911,9 @@ app.post('/deleteBoard', (req, res) => {
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
 
-    // If it is deleted return the results
+    // If it is deleted return the true
     if (results.affectedRows > 0) {
-      return res.status(200).json({ results });
+      return res.status(200).json({ success: true, message: 'Board deleted' });
     } else {
       return res.status(200).json({ success: false, message: 'Board not deleted' });
     }
@@ -1030,6 +926,7 @@ app.post('/deleteColumn', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the column id from the body
   const { columnId } = req.body;
+  // Validate that the necessary data is provided
   if (!columnId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -1045,17 +942,10 @@ app.post('/deleteColumn', (req, res) => {
         console.error('Error in the query:', err);
         return res.status(500).json({ success: false, message: 'Error in the Database' });
       }
-      //Update last_updated board
-      db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = (SELECT board_id FROM columns WHERE column_id=?)', [columnId], (err, results) => {
-        if (err) {
-          console.error('Error in the query:', err);
-          return res.status(500).json({ success: false, message: 'Error in the update time query' });
-        }
-      });
     });
-    // If it is deleted return the results
+    // If it is deleted return true
     if (results.affectedRows > 0) {
-      return res.status(200).json(results);
+      return res.status(200).json({success: true, message: 'Column deleted'});
     } else {
       return res.status(200).json({ success: false, message: 'Column not deleted' });
     }
@@ -1065,8 +955,9 @@ app.post('/deleteColumn', (req, res) => {
 app.post('/deleteCard', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the cardId and boardId from the body
-  const { cardId, boardId } = req.body;
-  if (!cardId || !boardId) {
+  const { cardId } = req.body;
+  // Validate that the necessary data is provided
+  if (!cardId ) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
   //Move the cards to the bottom after the column
@@ -1081,17 +972,10 @@ app.post('/deleteCard', (req, res) => {
         console.error('Error in the query:', err);
         return res.status(500).json({ success: false, message: 'Error in the Database' });
       }
-      //Update last_updated board
-      db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?;', [boardId], (err, results) => {
-        if (err) {
-          console.error('Error in the query:', err);
-          return res.status(500).json({ success: false, message: 'Error in the update time query' });
-        }
-      });
     });
-    // If it is deleted return the results
+    // If it is deleted return true
     if (results.affectedRows > 0) {
-      return res.status(200).json(results);
+      return res.status(200).json({ success: true, message: 'Card deleted' });
     } else {
       return res.status(200).json({ success: false, message: 'Card not deleted' });
     }
@@ -1101,9 +985,9 @@ app.post('/deleteCard', (req, res) => {
 app.post('/deleteProperty', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the propertyId and boardId from the body
-  const { propertyId, boardId } = req.body;
-
-  if (!propertyId || !boardId) {
+  const { propertyId } = req.body;
+  // Validate that the necessary data is provided
+  if (!propertyId ) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
   // Delete property with the id
@@ -1112,16 +996,9 @@ app.post('/deleteProperty', (req, res) => {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-    //Update last_updated board
-    db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?;', [boardId], (err, resultsUp) => {
-      if (err) {
-        console.error('Error in the query:', err);
-        return res.status(500).json({ success: false, message: 'Error in the update time query' });
-      }
-    });
-    // If it is deleted will return the results
+    // If it is deleted will return true
     if (results.affectedRows > 0) {
-      return res.status(200).json(results);
+      return res.status(200).json({ success: true, message: 'Property not deleted' });
     } else {
       return res.status(200).json({ success: false, message: 'Property not deleted' });
     }
@@ -1132,9 +1009,9 @@ app.post('/deleteProperty', (req, res) => {
 app.post('/deletePropType', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the propTypeId and boardId from the body
-  const { propTypeId, boardId } = req.body;
-
-  if (!propTypeId || !boardId) {
+  const { propTypeId } = req.body;
+  // Validate that the necessary data is provided
+  if (!propTypeId ) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
   // Delete property Type with the id
@@ -1143,18 +1020,11 @@ app.post('/deletePropType', (req, res) => {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-    //Update last_updated board
-    db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?;', [boardId], (err, resultsUp) => {
-      if (err) {
-        console.error('Error in the query:', err);
-        return res.status(500).json({ success: false, message: 'Error in the update time query' });
-      }
-    });
     // If it is deleted will return the results
     if (results.affectedRows > 0) {
-      return res.status(200).json(results);
+      return res.status(200).json({ success: false, message: 'Prop Type deleted' });
     } else {
-      return res.status(200).json({ success: false, message: 'Prop Type not found' });
+      return res.status(200).json({ success: false, message: 'Prop Type not deleted' });
     }
   });
 
@@ -1163,9 +1033,9 @@ app.post('/deletePropType', (req, res) => {
 app.post('/deletePropTypeCard', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the propTypeId, cardId and boardId from the body
-  const { propTypeId, cardId, boardId } = req.body;
-
-  if (!propTypeId || !cardId || !boardId) {
+  const { propTypeId, cardId } = req.body;
+  // Validate that the necessary data is provided
+  if (!propTypeId || !cardId ) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
   // Delete property Type from the card with bouth ids
@@ -1174,29 +1044,20 @@ app.post('/deletePropTypeCard', (req, res) => {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-    //Update last_updated board
-    db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?;', [boardId], (err, resultsUp) => {
-      if (err) {
-        console.error('Error in the query:', err);
-        return res.status(500).json({ success: false, message: 'Error in the update time query' });
-      }
       // If there is more than one note will return true
       if (results.affectedRows > 0) {
         return res.status(200).json(results);
       } else {
         return res.status(200).json({ success: false, message: 'Prop Type not deleted from the card' });
       }
-    });
-
   });
-
 });
 //Get event from cards
 app.post('/getEventFromCard', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the card id from the body
   const { cardId } = req.body;
-
+  // Validate that the necessary data is provided
   if (!cardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -1210,9 +1071,9 @@ app.post('/getEventFromCard', (req, res) => {
 
     // If the event doesn't exist will return false
     if (results.length > 0) {
-      return res.status(200).json(results);
+      return res.status(200).json( results );
     } else {
-      return res.status(200).json({ success: false, message: 'Event not found' });
+      return res.status(200).json({ success: false, message: 'Event from card not found' });
     }
   });
 });
@@ -1220,7 +1081,8 @@ app.post('/getEventFromCard', (req, res) => {
 app.post('/insertEventUser', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the username, eventName, startDate, endDate, cardId and boardId from the body
-  const { username, eventName, startDate, endDate, cardId, boardId } = req.body;
+  const { username, eventName, startDate, endDate, cardId } = req.body;
+  // Validate that the necessary data is provided
   if (!username || !eventName || !startDate || !endDate || !cardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -1233,14 +1095,6 @@ app.post('/insertEventUser', (req, res) => {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-    //Update last_updated
-    db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?', [boardId], (err, results) => {
-      if (err) {
-        console.error('Error in the query:', err);
-        return res.status(500).json({ success: false, message: 'Error inserting the event' });
-      }
-
-    });
     // If it is inserted will return the event id
     if (results.affectedRows > 0) {
       return res.status(200).json({ eventId: eventId });
@@ -1253,8 +1107,9 @@ app.post('/insertEventUser', (req, res) => {
 app.post('/updateEventDate', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the startDate, endDate, eventId and boardId from the body
-  const { startDate, endDate, eventId, boardId } = req.body;
-  if (!startDate || !endDate || !eventId, !boardId) {
+  const { startDate, endDate, eventId } = req.body;
+  // Validate that the necessary data is provided
+  if (!startDate || !endDate || !eventId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
@@ -1264,17 +1119,9 @@ app.post('/updateEventDate', (req, res) => {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-    //Update last_updated board
-    db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?', [boardId], (err, results) => {
-      if (err) {
-        console.error('Error in the query:', err);
-        return res.status(500).json({ success: false, message: 'Error inserting the event' });
-      }
-
-    });
     // If it is updated will return the results
     if (results.affectedRows > 0) {
-      return res.status(200).json(results);
+      return res.status(200).json({ success: true, message: 'Event not Updated' });
     } else {
       return res.status(200).json({ success: false, message: 'Event not Updated' });
     }
@@ -1285,9 +1132,9 @@ app.post('/updateEventDate', (req, res) => {
 app.post('/updateCardContent', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the cardId, content and boardId from the body
-  const { cardId, content, boardId } = req.body;
-
-  if (!cardId || !boardId) {
+  const { cardId, content } = req.body;
+  // Validate that the necessary data is provided
+  if (!cardId ) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
@@ -1297,18 +1144,9 @@ app.post('/updateCardContent', (req, res) => {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-    //Update last_updated
-    db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ? ', [boardId], (err, results) => {
-      if (err) {
-        console.error('Error in the query:', err);
-        return res.status(500).json({ success: false, message: 'Error in the update time query' });
-      }
-
-    });
-
-    // If it is updated will return the results
+    // If it is updated will return true
     if (results.affectedRows > 0) {
-      return res.status(200).json(results);
+      return res.status(200).json({ success: true, message: 'Card Updated' });
     } else {
       return res.status(200).json({ success: false, message: 'Card not Updated' });
     }
@@ -1318,10 +1156,10 @@ app.post('/updateCardContent', (req, res) => {
 //Query to insert Property Type for a property of a card
 app.post('/insertCardPropertyType', (req, res) => {
   console.log('Body of the application:', req.body);
-  // Takes the propTypeId, cardId and boardId from the body
-  const { propTypeId, cardId, boardId } = req.body;
-
-  if (!propTypeId || !cardId || !boardId) {
+  // Takes the propTypeId, cardId from the body
+  const { propTypeId, cardId } = req.body;
+  // Validate that the necessary data is provided
+  if (!propTypeId || !cardId ) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
@@ -1331,16 +1169,9 @@ app.post('/insertCardPropertyType', (req, res) => {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-    //Update last_updated
-    db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ? ', [boardId], (err, results) => {
-      if (err) {
-        console.error('Error in the query:', err);
-        return res.status(500).json({ success: false, message: 'Error in the update time query' });
-      }
-    });
     // If the username doesn't exist will return true
     if (results.affectedRows > 0) {
-      return res.status(200).json(results);
+      return res.status(200).json({ success: true, message: 'Property Type not updated' });
     } else {
       return res.status(200).json({ success: false, message: 'Property Type not updated' });
     }
@@ -1351,9 +1182,9 @@ app.post('/insertCardPropertyType', (req, res) => {
 app.post('/updateCardPropertyType', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the usernames and passwords from the body
-  const { oldPropTypeId, propTypeId, cardId, boardId } = req.body;
-
-  if (!oldPropTypeId || !propTypeId || !cardId || !boardId) {
+  const { oldPropTypeId, propTypeId, cardId } = req.body;
+  // Validate that the necessary data is provided
+  if (!oldPropTypeId || !propTypeId || !cardId ) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
@@ -1363,15 +1194,9 @@ app.post('/updateCardPropertyType', (req, res) => {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-    db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ? ', [boardId], (err, results) => {
-      if (err) {
-        console.error('Error in the query:', err);
-        return res.status(500).json({ success: false, message: 'Error in the update time query' });
-      }
-    });
     // If the username doesn't exist will return true
     if (results.affectedRows > 0) {
-      return res.status(200).json(results);
+      return res.status(200).json({ success: true, message: 'Property Type updated' });
     } else {
       return res.status(200).json({ success: false, message: 'Property Type not updated' });
     }
@@ -1380,9 +1205,9 @@ app.post('/updateCardPropertyType', (req, res) => {
 //Query to update Property Name for a property of a card
 app.post('/updatePropertyName', (req, res) => {
   console.log('Body of the application:', req.body);
-  const { newName, propertyId, boardId } = req.body;
-
-  if (!newName || !propertyId || !boardId) {
+  const { newName, propertyId } = req.body;
+  // Validate that the necessary data is provided
+  if (!newName || !propertyId ) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
   //Update property name with id
@@ -1391,26 +1216,18 @@ app.post('/updatePropertyName', (req, res) => {
       console.error('Error updating property:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-    //Update lats_updated board
-    db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?', [boardId], (err, boardResult) => {
-      if (err) {
-        console.error('Error updating board timestamp:', err);
-        return res.status(500).json({ success: false, message: 'Error in the update time query' });
-      }
-
       if (propResult.affectedRows > 0) {
         return res.status(200).json({ success: true, message: 'Property updated' });
       } else {
         return res.status(200).json({ success: false, message: 'Property not updated (no changes)' });
       }
-    });
   });
 });
 //Query to update Property Type Name
 app.post('/updatePropTypeName', (req, res) => {
-  const { newName, propTypeId, boardId } = req.body;
-
-  if (!newName || !propTypeId || !boardId) {
+  const { newName, propTypeId } = req.body;
+  // Validate that the necessary data is provided
+  if (!newName || !propTypeId ) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
   //Update prop_type name with the id
@@ -1419,13 +1236,7 @@ app.post('/updatePropTypeName', (req, res) => {
       console.error('Error updating property:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-    //Update last updtade board
-    db.query('UPDATE boards SET last_updated = NOW() WHERE board_id = ?', [boardId], (err, boardResult) => {
-      if (err) {
-        console.error('Error updating board timestamp:', err);
-        return res.status(500).json({ success: false, message: 'Error in the update time query' });
-      }
-    });
+    //Return result true if done
     if (propResult.affectedRows > 0) {
       return res.status(200).json({ success: true, message: 'Property Type updated' });
     } else {
@@ -1445,8 +1256,7 @@ app.post('/insertNote', (req, res) => {
   //Generate the note_id with UUID v4
   const { v4: uuidv4 } = require('uuid');
   const newNoteId = uuidv4();
-
-
+  // Validate that the necessary data is provided
   if (!newNoteName || !newNoteId || !username) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -1470,7 +1280,7 @@ app.post('/getNoteById', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the note id from the body
   const { noteId } = req.body;
-
+  // Validate that the necessary data is provided
   if (!noteId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -1495,7 +1305,7 @@ app.post('/updateNoteName', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the newName and board id from the bodyshow
   const { newName, noteId } = req.body;
-
+  // Validate that the necessary data is provided
   if (!newName || !noteId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -1520,6 +1330,7 @@ app.post('/deleteNote', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the username from the body
   const { noteId } = req.body;
+  // Validate that the necessary data is provided
   if (!noteId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -1545,7 +1356,7 @@ app.post('/updateNoteContent', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the cardId, content and boardId from the body
   const { noteId, content } = req.body;
-
+  // Validate that the necessary data is provided
   if (!noteId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -1572,7 +1383,7 @@ app.post('/getEventsByMonth', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the username, month and year from the body
   const { username, month, year } = req.body;
-
+  // Validate that the necessary data is provided
   if (!username || !month || !year) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -1601,8 +1412,7 @@ app.post('/insertEvent', (req, res) => {
   //Generate the event_id with UUID v4
   const { v4: uuidv4 } = require('uuid');
   const eventId = uuidv4();
-
-
+  // Validate that the necessary data is provided
   if (!name || !startDate || !endDate || !username || !eventId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -1626,6 +1436,7 @@ app.post('/deleteEvent', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the eventId from the body
   const { eventId } = req.body;
+  // Validate that the necessary data is provided
   if (!eventId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -1650,7 +1461,7 @@ app.post('/updateEvent', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the name, startDate, endDate, location an eventId from the body
   const { name, startDate, endDate, location, eventId } = req.body;
-
+  // Validate that the necessary data is provided
   if (!name || !startDate || !endDate || !eventId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -1677,7 +1488,7 @@ app.post('/getUserFromUserId', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the board from the body
   const { userId } = req.body;
-
+  // Validate that the necessary data is provided
   if (!userId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -1702,7 +1513,7 @@ app.post('/updateUser', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the firstName, secondName, newUsername, email, password and username from the body
   const { firstName, secondName, newUsername, email, username, avatar } = req.body;
-
+  // Validate that the necessary data is provided
   if (!username || !firstName || !secondName || !newUsername || !email || !avatar) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
@@ -1727,7 +1538,7 @@ app.post('/updateUserPassword', (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the password and username from the body
   const { password, username } = req.body;
-
+  // Validate that the necessary data is provided
   if (!username || !password) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
