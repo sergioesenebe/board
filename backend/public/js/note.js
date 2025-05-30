@@ -332,7 +332,7 @@ async function insertListInDOM(list, selectedElements, focusNode, endContainer) 
 
 }
 //Clean old elements when new inserted
-function cleanOldElements(selectedElements, nodeAtOffset, focusNode, selection) {
+function cleanOldElements(selectedElements, nodeAtOffset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, focusNode, selection) {
     //If there wher some elements selected
     if (selectedElements.length === 1) {
         //If it's an element without a parent (parent is note-content) delete it
