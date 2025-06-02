@@ -484,14 +484,20 @@ input[type="checkbox"]:checked {
 }
 
 ::-webkit-scrollbar-button {
-    display: none;
-}  
-::-webkit-scrollbar-track {
-    background: transparent;
-  }
-::-webkit-scrollbar-thumb {
-    border-radius: 10px;
+    display: none;   /* Bien, oculta los botones */
+    height: 0;       /* Mejor poner altura y ancho en 0 */
+    width: 0;
 }
+
+::-webkit-scrollbar-track {
+    background: transparent;  /* Fondo transparente OK */
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;     /* Esto funciona, pero sin color no se ve */
+    background-color: rgba(100, 100, 100, 0.5); /* Añade color para que se note */
+}
+
 
 
 /*The layout of the elements will be changed when the width is less than 1325px. So that each container occupies one row*/
