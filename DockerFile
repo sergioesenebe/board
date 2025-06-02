@@ -1,20 +1,20 @@
-# Dockerfile para backend (Node.js)
+# Dockerfile for backend (Node.js)
 FROM node:16
 
-# Establece directorio de trabajo dentro del contenedor
+# Directory
 WORKDIR /home/node/app
 
-# Copia package.json y package-lock.json para instalar dependencias
+# Copy package.json and package-lock.json for dependencies
 COPY package*.json ./
 
-# Instala las dependencias necesarias
+# Instal necessary dependencies
 RUN npm install express mysql2 uuid
 
-# Copia el resto del código de la app
+# Copy the code
 COPY . .
 
-# Expone el puerto que usa la app Node (8001 según tu docker-compose)
+# Expose port for Node
 EXPOSE 8001
 
-# Comando para arrancar la app
+# Start the app
 CMD ["npm", "start"]
