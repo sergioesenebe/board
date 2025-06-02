@@ -11,6 +11,7 @@ body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    scrollbar-gutter: stable;
 }
 
 /*Font of the whole page*/
@@ -482,12 +483,45 @@ input[type="checkbox"]:checked {
     filter: brightness(0.8);
 }
 
-/* Scrollbar  */
-::-webkit-scrollbar-track {
+
+/* Ocultar scrollbar por defecto (Chrome) */
+::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+  }
+  
+  /* Mostrar scrollbar solo al hacer hover sobre body o cualquier elemento */
+  body:hover::-webkit-scrollbar,
+  *:hover::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  /* Fondo del scroll (pista) */
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  /* Estilo del thumb (barra) */
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
     border-radius: 10px;
     box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3);
-    width: 6px;
-}
+  }
+  
+  /* Al hacer hover sobre el thumb */
+  body:hover::-webkit-scrollbar-thumb,
+  *:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.5);
+    box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.6);
+  }
+  
+  /* Eliminar flechitas en Chrome */
+  ::-webkit-scrollbar-button {
+    display: none;
+    height: 0;
+    width: 0;
+  }
 
 
 /*The layout of the elements will be changed when the width is less than 1325px. So that each container occupies one row*/
