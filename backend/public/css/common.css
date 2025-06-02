@@ -483,13 +483,17 @@ input[type="checkbox"]:checked {
     filter: brightness(0.8);
 }
 
-/* Scrollbar  */
-::-webkit-scrollbar-track {
-    border-radius: 10px;
-    box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3);
-    width: thin;
-}
-
+::-webkit-scrollbar-button {
+    display: none;
+    height: 0;
+    width: 0;
+  }
+  
+  /* Fondo transparente de la pista (track) */
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
 
 /*The layout of the elements will be changed when the width is less than 1325px. So that each container occupies one row*/
 @media (max-width: 1325px) {
