@@ -483,9 +483,13 @@ input[type="checkbox"]:checked {
     filter: brightness(0.8);
 }
 
-
+::-webkit-scrollbar-button {
+    display: none;
+}  
+::-webkit-scrollbar-track {
+    background: transparent;
+  }
 ::-webkit-scrollbar-thumb {
-    background-color: transparent;
     border-radius: 10px;
 }
 
