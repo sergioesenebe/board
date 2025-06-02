@@ -484,17 +484,17 @@ input[type="checkbox"]:checked {
 
 /* Scrollbar  */
 ::-webkit-scrollbar {
-    width: 12px;
+    width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #f0f0f0;
+    background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
     background-color: #888;
-    border-radius: 6px;
-    border: 3px solid #f0f0f0;
+    border-radius: 4px;
+    border: none;
     /* space as margin */
 }
 
