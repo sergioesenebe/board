@@ -217,10 +217,10 @@ function displayType(propType, propertyTypesDiv, AddOptions) {
         typeOpt.classList.add('type-options');
         //Add images for the pen and trash and add it to the div for options
         const pen = document.createElement('img');
-        pen.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1746096410/Icons/Gray/pen_gray.png";
+        pen.src = "/img/Icons/Gray/pen_gray.png";
         pen.classList.add('pen-prop-type', 'options-button');
         const trash = document.createElement('img');
-        trash.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1745771754/Icons/Other/trash_red.png"
+        trash.src = "/img/Icons/Other/trash_red.png"
         trash.classList.add('delete-prop-type', 'options-button');
         typeOpt.appendChild(pen);
         typeOpt.appendChild(trash);
@@ -238,7 +238,7 @@ function displayType(propType, propertyTypesDiv, AddOptions) {
 function displayEditingProperty(row, propertyId) {
     //Create an image to go back, add id and class back
     const editPropertyBack = document.createElement('img');
-    editPropertyBack.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1745322144/Icons/Black/back_black.png";
+    editPropertyBack.src = "/img/Icons/Black/back_black.png";
     editPropertyBack.id = 'edit-property-back';
     editPropertyBack.classList.add('back');
     //Inserted before the title of the card
@@ -251,8 +251,8 @@ function displayEditingProperty(row, propertyId) {
     const propertyTd = row.querySelector('td');
     const propertyName = propertyTd.textContent;
     //Show the name with a trash and a pen
-    editPropertyTitle.innerHTML = `<h3 id='property-name'>${propertyName}</h3><div style="display:flex"><img id="pen-property" width="30px" height="30px" src="https://res.cloudinary.com/drmjf3gno/image/upload/v1746096410/Icons/Gray/pen_gray.png"
-    class="options-button"><img id="delete-property" width="30px" height="30px" src="https://res.cloudinary.com/drmjf3gno/image/upload/v1745771754/Icons/Other/trash_red.png"
+    editPropertyTitle.innerHTML = `<h3 id='property-name'>${propertyName}</h3><div style="display:flex"><img id="pen-property" width="30px" height="30px" src="/img/Icons/Gray/pen_gray.png"
+    class="options-button"><img id="delete-property" width="30px" height="30px" src="/img/Icons/Other/trash_red.png"
     class="options-button"></div>`;
     //Set style to show title on the left and option on the right
     editPropertyTitle.style = "justify-content: space-between; display: flex; align-items: center";
@@ -917,7 +917,7 @@ function displayEvent(card) {
         })
 }
 //Add options to update event and open it
-function addEventButton(rowEvent, calEvent) {
+async function addEventButton(rowEvent, calEvent) {
     //Add a button to update it
     const updateEvent = document.createElement('td');
     rowEvent.appendChild(updateEvent);
@@ -937,8 +937,8 @@ function addEventButton(rowEvent, calEvent) {
         window.open('./calendar.html', '_self');
     })
     //When click in the Update button update it
-    document.getElementById('update-event').addEventListener('click', () => {
-        calEvent = updateEventUser(calEvent);
+    document.getElementById('update-event').addEventListener('click', async () => {
+        calEvent = await updateEventUser(calEvent);
     })
 }
 
@@ -1059,7 +1059,7 @@ function addColumn(column, index) {
     columnHead.id = `column-title-${columnId}`;
     //Add an icon for options in the column header with id with index
     const columnOptions = document.createElement('img');
-    columnOptions.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1745307219/Icons/Black/options_vert_black.png";
+    columnOptions.src = "/img/Icons/Black/options_vert_black.png";
     columnOptions.id = `options-icon-${index}`;
     columnOptions.classList.add('options-button');
     columnHeader.appendChild(columnOptions);
@@ -1142,12 +1142,12 @@ function addCards(columnId) {
             const plusEvent = document.createElement('div');
             divEvents.appendChild(plusEvent);
             const plusEventPadding = document.createElement('div');
-            plusEventPadding.classList.add('padding-card');
+            plusEventPadding.classList.add('padding-card', 'plus-card-button');
             plusEvent.appendChild(plusEventPadding);
             plusEvent.classList.add('card', "new-card-plus");
             const plusImage = document.createElement('img');
             plusEventPadding.appendChild(plusImage);
-            plusImage.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1743961025/Icons/Black/plus_black.png";
+            plusImage.src = "/img/Icons/Black/plus_black.png";
             //Allow move elements (it will be after or before depending of the heigh (Y))
             dragAndDrop(plusEvent, 'Y');
             //When clicking in plus a new card will be added
@@ -1210,7 +1210,7 @@ function addCard(card, index) {
     displayCardPropTypes(card, contentCard, cardText);
     //Add pen
     const cardPen = document.createElement('img');
-    cardPen.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1745768239/Icons/Black/pen_black.png";
+    cardPen.src = "/img/Icons/Black/pen_black.png";
     cardPen.id = `pen-icon-${card.columnId}-${index}`;
     cardPen.classList.add('pen-button');
     paddingCard.appendChild(cardPen);
@@ -1310,7 +1310,7 @@ function moveComponents(component, dragging, isAfter) {
 //--- Events ---
 
 //Function to update event            
-function updateEventUser(calEvent) {
+async function updateEventUser(calEvent) {
     //Save the id
     const eventId = calEvent.eventId;
     //Get value of input
@@ -1331,20 +1331,24 @@ function updateEventUser(calEvent) {
     const endDay = `${endDate.getFullYear()}-${pad(endDate.getMonth() + 1)}-${pad(endDate.getDate())}`;
     const endTime = `${pad(endDate.getHours())}:${pad(endDate.getMinutes())}:${pad(endDate.getSeconds())}`;
     endDate = `${endDay} ${endTime}`;
-    //Update the date
-    fetchJson('/updateEventDate', 'POST', { startDate, endDate, eventId, boardId })
-        .then(data => {
-            if (data.success !== false && !document.getElementById('success-message-event')) {
-                const successMessage = document.createElement('p');
-                successMessage.style = 'color: green; font-size: 12px';
-                successMessage.textContent = 'Event Updated';
-                successMessage.id = 'success-message-event'
-                document.getElementById('edit-card').insertBefore(successMessage, document.getElementById('line-edit-card'));
-                calEvent.startDate = startDate;
-                calEvent.endDate = endDate;
-                return calEvent;
-            }
-        })
+    //Update the date (with try to allow await)
+    try {
+        const data = await fetchJson('/updateEventDate', 'POST', { startDate, endDate, eventId, boardId })
+        if (data.success !== false && !document.getElementById('success-message-event')) {
+            const successMessage = document.createElement('p');
+            successMessage.style = 'color: green; font-size: 12px';
+            successMessage.textContent = 'Event Updated';
+            successMessage.id = 'success-message-event'
+            document.getElementById('edit-card').insertBefore(successMessage, document.getElementById('line-edit-card'));
+            calEvent.startDate = startDate;
+            calEvent.endDate = endDate;
+            return calEvent;
+        }
+
+    }
+    catch (error) {
+        console.error('Error updating the event: ', error);
+    }
 }
 
 //--- Event Listeners ---
@@ -1352,20 +1356,27 @@ if (username) {
     //When click search will be a input
     const searchDiv = document.getElementById('search');
     searchDiv.addEventListener('click', (event) => {
-        //Add the class search-focus(change color)
-        const searchInput = document.getElementById('search-input');
-        searchDiv.classList.add('search-focus');
-        //Display the input with transition
-        showElement(searchInput);
-        //Focus in the input (for writing)
-        searchInput.focus();
-        //Save the state of the search
-        search = 'display';
+        //If options board open wait 300ms
+        let time = 0;
+        if (optionsBoard != 'hidden') time = 300;
         //If something is open, close it
         optionsBoard = hideOptions(optionsBoard);
         hideColumnOptions();
         hideEditCards();
         hideEditOptions();
+        const searchInput = document.getElementById('search-input');
+        //Wait in case options board was open
+        setTimeout(() => {
+            //Add the class search-focus(change color)
+            searchDiv.classList.add('search-focus');
+            //Display the input with transition
+            showElement(searchInput);
+            //Focus in the input (for writing)
+            searchInput.focus();
+        }, time)
+
+        //Save the state of the search
+        search = 'display';
         event.stopPropagation(); //prevent document.addEventListener
     });
     //When click options for boards will show
@@ -1373,11 +1384,9 @@ if (username) {
     optionsGeneralIcon.addEventListener('click', (event) => {
         //If it's not open
         if (optionsBoard != 'display') {
-            //Show the option
-            const optionsGeneralDiv = document.getElementById('options-general');
-            showElement(optionsGeneralDiv);
-            //Save the state to display
-            optionsBoard = 'display';
+            //If search open wait 300ms
+            let time = 0;
+            if (search != 'hidden') time = 300;
             //If something is open, close it
             hideColumnOptions();
             search = hideSearch(search);
@@ -1386,6 +1395,14 @@ if (username) {
             if (textEditing != '') {
                 textEditing = returnToText(textEditing, boardId)
             }
+            //Wait in case search was open
+            setTimeout(() => {
+                //Show the option
+                const optionsGeneralDiv = document.getElementById('options-general');
+                showElement(optionsGeneralDiv);
+            }, time)
+            //Save the state to display
+            optionsBoard = 'display';
             event.stopPropagation(); //prevent document.addEventListener
         }
         //If it's open close it
@@ -1568,7 +1585,7 @@ else {
             plusEvent.id = 'new-column-plus';
             const plusImage = document.createElement('img');
             plusEvent.appendChild(plusImage);
-            plusImage.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1743961025/Icons/Black/plus_black.png";
+            plusImage.src = "/img/Icons/Black/plus_black.png";
             //Show Options (to delete and edit)
             showOptionsColumns('.column-options-icon');
             //When clicking in plus a new column will be added

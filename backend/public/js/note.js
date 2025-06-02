@@ -164,6 +164,7 @@ async function handleExistingList(element, list, newElement, checkList) {
 }
 //Adapt elements to take it
 async function adaptElements(element, focusNode, nodeAtOffset, content) {
+    console.log(element.nodeName === 'LI' && element.querySelector('input[type="checkbox"]') !== null && element.textContent == '');
     //If the id is not-content (all the note), there is a child and its a br
     if (element.id === 'note-content' && nodeAtOffset && nodeAtOffset.nodeName === 'BR') {
         //Selected as the focusNode
@@ -204,6 +205,11 @@ async function adaptElements(element, focusNode, nodeAtOffset, content) {
     //If is a element with parent and text save content 
     else if (element.id !== 'note-content') {
         content = element.innerHTML;
+    }
+    //If is an input (delete it)
+    else if (element.nodeName === 'LI' && element.querySelector('input[type="checkbox"]') !== null && element.textContent == '') {
+        console.log('check', element.textContent);
+        element.remove();
     }
     //Returned changed info
     return { element, focusNode, content }
@@ -264,25 +270,41 @@ function insertInDOM(newElement, list, element, selectedElements, startContainer
         //If there are more than one insert before the first element selected (parent)
         if (selectedElements.length > 1) {
             const startParent = startContainer.parentNode;
-            if (startParent.parentNode.nodeName === 'UL' || startParent.parentNode.nodeName === 'OL') {
-                document.getElementById('note-content').insertBefore(newElement, startParent.parentNode);
+            //Take the element closer to note-content 
+            const targetParent = startParent.closest('#note-content > *');
+            if ((startParent.parentNode.nodeName === 'UL' || startParent.parentNode.nodeName === 'OL') && targetParent) {
+                document.getElementById('note-content').insertBefore(newElement, targetParent);
             }
             else if (startParent instanceof DocumentFragment) {
-
-                document.getElementById('note-content').insertBefore(newElement, endContainer.parentNode.parentNode);
+                document.getElementById('note-content').insertBefore(newElement, targetParent);
             }
+            if (startParent.nodeName === 'UL' || startParent.nodeName === 'OL' && targetParent) {
+                document.getElementById('note-content').insertBefore(newElement, targetParent);
+            }
+            /*If there are an element close to note-content, insert before*/
+            else if (targetParent) {
+                document.getElementById('note-content').insertBefore(newElement, targetParent);
+            }
+            //If there aren't add it as a child
             else {
-                document.getElementById('note-content').insertBefore(newElement, startParent);
+                document.getElementById('note-content').appendChild(newElement);
             }
         }
         //If is just one element insert before
 
         else {
-            if (element.parentNode.nodeName === 'UL' || element.parentNode.nodeName === 'OL') {
-                document.getElementById('note-content').insertBefore(newElement, element.parentNode);
+            //Take the element closer to note-content 
+            const targetParent = element.closest('#note-content > *');
+            if ((element.parentNode.nodeName === 'UL' || element.parentNode.nodeName === 'OL') && targetParent) {
+                document.getElementById('note-content').insertBefore(newElement, targetParent);
             }
+            /*If there are an element close to note-content, insert before*/
+            else if (targetParent) {
+                document.getElementById('note-content').insertBefore(newElement, targetParent);
+            }
+            //If there aren't add it as a child
             else {
-                document.getElementById('note-content').insertBefore(newElement, element)
+                document.getElementById('note-content').appendChild(newElement);
             }
         }
 
@@ -309,30 +331,91 @@ async function insertListInDOM(list, selectedElements, focusNode, endContainer) 
             //Remove the new endParent (for the case we have created one)
             endParent.remove();
         }
-        //If last container selected parent  is a li get parent (ul) of the parent (li)
-        else if (endContainer.parentNode.nodeName === 'LI') {
-            endParent = endContainer.parentNode.parentNode;
+        //if its text
+        else if (endContainer.nodeType === Node.TEXT_NODE) {
+            endContainer = endContainer.parentNode;
+            const targetParent = endContainer.closest('#note-content > *');
             //Insert new element
-            insertAfter(list, endParent);
+            insertAfter(list, targetParent);
+            selectedElements.forEach(element => {
+                let el = element;
+                //If is text, take parent 
+                if (el.nodeType === Node.TEXT_NODE) {
+                    el = el.parentElement;
+                }
+                if (el.closest('li')) {
+                    const targetParent = el.closest('li');
+                    targetParent.innerHTML = '';
+                    targetParent.remove();
+                }
+                else element.remove();
+            })
         }
-        //if its another elemt take the parent (ex. div or h1)
-        else {
-            endParent = endContainer.parentNode;
+        //If has a parent insert before the parent
+        else if (endContainer.parentNode) {
+            const targetParent = endContainer.closest('#note-content > *');
             //Insert new element
-            insertAfter(list, endParent);
+            insertAfter(list, targetParent);
+            endContainer.remove();
+        }
+        else {
+            //Insert new element and remove it
+            document.getElementById('note-content').appendChild(list);
+            endContainer.remove();
         }
 
     }
     //If is just one element insert before
     else {
-        //If the focusNode element is a li take the parentNode
-        if (focusNode.nodeName === 'LI') insertAfter(list, focusNode.parentNode);
-        else insertAfter(list, focusNode);
+        if (focusNode.parentNode.id === 'note-content') {
+            //Create a div and replace by focusNode
+            const newDiv = document.createElement('div');
+            newDiv.textContent = focusNode.textContent;
+            document.getElementById('note-content').appendChild(newDiv);
+            //Remove element and newdiv will be the new element
+            //Add focus node text as div text
+            const endParent = newDiv;
+            //Insert new element
+            insertAfter(list, endParent);
+            //Remove the new endParent (for the case we have created one)
+            endParent.remove();
+        }
+        //if its text
+        else if (focusNode.nodeType === Node.TEXT_NODE) {
+            focusNode = focusNode.parentNode;
+            const targetParent = focusNode.closest('#note-content > *');
+            //Insert new element
+            insertAfter(list, targetParent);
+            selectedElements.forEach(element => {
+                let el = element;
+                //If is text, take parent 
+                if (el.nodeType === Node.TEXT_NODE) {
+                    el = el.parentElement;
+                }
+                if (el.closest('li')) {
+                    const targetParent = el.closest('li');
+                    targetParent.innerHTML = '';
+                    targetParent.remove();
+                }
+                else element.remove();
+            })
+        }
+        //If has a parent insert before the parent
+        else if (focusNode.parentNode) {
+            const targetParent = focusNode.closest('#note-content > *');
+            //Insert new element
+            insertAfter(list, targetParent);
+            focusNode.remove();
+        }
+        else {
+            //Insert new element and remove it
+            document.getElementById('note-content').appendChild(list);
+            focusNode.remove();
+        }
     }
-
 }
 //Clean old elements when new inserted
-function cleanOldElements(selectedElements, nodeAtOffset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, focusNode, selection) {
+function cleanOldElements(selectedElements, nodeAtOffset, focusNode, selection) {
     //If there wher some elements selected
     if (selectedElements.length === 1) {
         //If it's an element without a parent (parent is note-content) delete it
@@ -592,17 +675,20 @@ else {
                 //For each field
                 const fields = Array.from(todo.children)
                 fields.forEach(field => {
+
                     //Get the input
                     const input = field.querySelector('input');
                     //If field clicked and not selected add class selected, if selected, remove it
-                    input.addEventListener('click', () => {
-                        if (input.className === 'selected') input.classList.remove('selected');
-                        else input.className = 'selected';
-                    })
+                    if (input) {
+                        input.addEventListener('click', () => {
+                            if (input.className === 'selected') input.classList.remove('selected');
+                            else input.className = 'selected';
+                        })
 
-                    //If has class selected check it
-                    if (input.className === 'selected') {
-                        input.checked = true;
+                        //If has class selected check it
+                        if (input.className === 'selected') {
+                            input.checked = true;
+                        }
                     }
                 })
             })

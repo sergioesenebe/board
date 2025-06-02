@@ -69,7 +69,7 @@ function moveToClicked() {
     }, 500);
 }
 //open a event if passed by board
-async function openEventToClick() {
+function openEventToClick() {
     //If event Click has been saved
     if (eventToClick && monthToMove) {
         day.setMonth(monthToMove);
@@ -308,7 +308,7 @@ function displayEditEvent(calEvent) {
     eventsDiv.classList.remove('justify-space');
     //Add Back (class to know that is a button)
     const editCardBack = document.createElement('img');
-    editCardBack.src = 'https://res.cloudinary.com/drmjf3gno/image/upload/v1745322144/Icons/Black/back_black.png';
+    editCardBack.src = '/img/Icons/Black/back_black.png';
     editCardBack.classList.add('options-button');
     editEventHeader.appendChild(editCardBack);
     //Add Title
@@ -377,13 +377,13 @@ function addEventOptions(calEvent) {
     const startTime = startDate.split(' ', 2)[1];
     const endTime = endDate.split(' ', 2)[1];
     //Display name, start date, end Date and location with actual values
-    addRows(tableEventEdit, 'Name', `<input type='text' id='event-name' maxlength='500' value="${calEvent.name}">`);
+    addRows(tableEventEdit, 'Name', `<input type='text' id='event-name' maxlength='50' value="${calEvent.name}">`);
     addRows(tableEventEdit, 'Start Date', `<input type='time' id='event-start-time' value=${startTime}><input type='date' id='event-start-day' value=${calEvent.startDate}>`);
     addRows(tableEventEdit, 'End Date', `<input type='time' id='event-end-time' value=${endTime}><input type='date' id='event-end-day' value=${calEvent.endDate}>`);
     if (calEvent.location)
         addRows(tableEventEdit, 'Location', `<textarea rows = '3' type='date' id='event-location' maxlength='500'>${calEvent.location}</textarea>`);
     else
-        addRows(tableEventEdit, 'Location', `<textarea rows = '3' type='date' id='event-location' maxlength='500'></textarea>`);
+        addRows(tableEventEdit, 'Location', `<textarea rows = '3' type='date' id='event-location' maxlength='2048'></textarea>`);
     //Add link to open card if it has a Card in the table
     if (calEvent.cardId) {
         //Create a row
@@ -630,7 +630,7 @@ if (username) {
         moveToClicked();
         //If month is actual month scroll to today event
         if (day.getMonth() === actualDay.getMonth() && day.getFullYear() === actualDay.getFullYear()) {
-            moveToToday();
+            moveToDay(day);
         }
     })
 
@@ -651,7 +651,7 @@ if (username) {
         moveToClicked();
         //If month is actual month scroll to today event
         if (day.getMonth() === actualDay.getMonth() && day.getFullYear() === actualDay.getFullYear()) {
-            moveToToday();
+            moveToDay(day);
         }
     })
     //When plus is clicked create a new event
@@ -743,5 +743,7 @@ else {
     //Move to event clicked
     moveToClicked();
     //Wait and open card if passed by event
-    setTimeout(openEventToClick);
+    setTimeout(() => {
+        openEventToClick();
+    }, 300);
 }

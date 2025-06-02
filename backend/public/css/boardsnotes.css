@@ -55,7 +55,7 @@ header {
     border-radius: 20px;
     background-color: white;
     box-sizing: border-box;
-    padding: 15px;
+    padding: 20px;
     overflow: auto;
     /*Enables horizontal and vertical scrolling*/
 }
@@ -73,7 +73,7 @@ header {
 }
 /*td width*/
 .board td {
-    max-width: 200px;
+    width: 200px;
     word-wrap: break-word;
 }
 /*Limits the long of the rcolumns*/
@@ -100,7 +100,6 @@ header {
     position: relative;
     top: 50%;
     transform: translateY(-50%);
-
 }
 
 /*A container for the boards, configuring the size*/
@@ -120,9 +119,13 @@ header {
     border-radius: 20px;
     background-color: white;
     box-sizing: border-box;
-    padding: 15px;
-    overflow: auto;
-    /*Enables horizontal and vertical scrolling*/
+    padding: 20px;
+    /*Enables horizontal scrolling*/
+    overflow-y: auto;
+    /*But vertical add an intro*/
+    overflow-x: hidden;
+    white-space: normal;
+    word-wrap: break-word;
 }
 
 /*The last board is a plus to create a new one*/
@@ -136,7 +139,10 @@ header {
     top: 50%;
     transform: translateY(-50%);
 }
-
+/*Don't allow click in checkbox*/
+input[type="checkbox"] {
+    pointer-events: none;
+}
 
 /*The layout of the elements will be changed when the width is less than 1325px. So that each container occupies one row*/
 @media (max-width: 1325px) {

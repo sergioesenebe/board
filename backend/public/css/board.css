@@ -43,16 +43,11 @@
 
 /*Limit board title*/
 #board-title {
-    width: 100%;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
+    /*Define width, if bigger cut it with ...*/
+    max-width: 900px;
     overflow: hidden;
-    /* hide bigger than 3 lines */
-    -webkit-line-clamp: 2;
-    /* Cut long words */
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    word-break: break-word;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /*header will display the title on the left and the search and option on the right*/
@@ -125,14 +120,14 @@ header {
 
 /*Contract the board to show more natural when edit-card appear*/
 #board.contract {
-    width: 65%;
+    width: 60%;
 }
 
 /*Edit the card when pen is clicked, padding, radius and size*/
 #edit-card {
     background-color: white;
     border-radius: 20px;
-    width: 35%;
+    width: 40%;
     padding-top: 20px;
     padding-left: 60px;
     padding-right: 60px;
@@ -151,6 +146,15 @@ header {
 #edit-card-back-title img {
     width: 30px;
     height: 30px;
+}
+
+/*limit width to card edit name, if bigger cut it*/
+#card-edit-name {
+    max-width: 350px;
+    /*Break it if bigger*/
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 /*Column with all the events, flex and all the height*/
@@ -191,11 +195,13 @@ header {
 /*When the mouse is on the plus for columns*/
 #new-column-plus:hover {
     cursor: pointer;
+    background-color: #D5D0C6;
 }
 
 /*When the mouse is on the plus for cards*/
-.new-card-plus:hover {
+.plus-card-button:hover {
     cursor: pointer;
+    background-color: #D5D0C6;
 }
 
 /*Cards inside the columns, size, margin*/
@@ -227,7 +233,6 @@ header {
     display: flex;
     justify-content: space-between;
 }
-
 /*size and margin for the pen in the card (top right)*/
 .card-pen-icon {
     width: 30px;
@@ -271,13 +276,24 @@ header {
 .property-edit-card {
     border-radius: 20px;
     padding: 0 10px;
+    width: 150px;
+    /*Add block display and cut the div if longer*/
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
-
 /*Input to create an event, without border*/
 #table-edit-card input {
     border: none;
 }
-
+#table-edit-card td {
+    max-width: 200px;
+    /*Add block display and cut the div if longer*/
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 /*Don't change the border when focus*/
 #table-edit-card input:focus {
     border: none;
@@ -325,7 +341,7 @@ header {
 .property {
     flex: 0 0 auto;
     /* adapt to the container */
-    max-width: 200px;
+    max-width: 150px;
     height: auto;
     border-radius: 20px;
     padding-left: 5px;
@@ -364,11 +380,15 @@ header {
 
 /*Property type divs, heigh, border (color in js), margin and padding*/
 .type-div {
-    min-width: 200px;
-    max-width: 75%;
+    width: 200px;
     border-radius: 20px;
     padding: 0 5px;
     margin: 5px 0;
+    /*Add block display and cut the div if longer*/
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /*The layout of the elements will be changed when the width is less than 1325px. So that each container occupies one row*/
@@ -411,5 +431,10 @@ header {
         pointer-events: none;
         width: 100%;
         display: none;
+    }
+
+    /*Make title shorter*/
+    #board-title {
+        max-width: 500px;
     }
 }

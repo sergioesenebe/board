@@ -160,8 +160,9 @@ export function addBoards(username, openBoards) {
                     const title = document.createElement('h3');
                     divBoard.classList.add('board');
                     divBoards.appendChild(divBoard);
+                    divBoard.appendChild(title);
                     divBoard.appendChild(table);
-                    table.appendChild(title);
+                    table.classList.add('board-table');
                     //Save the object
                     const board = new Board({ boardId: b.board_id, name: b.name })
                     //Update div id and text
@@ -171,7 +172,7 @@ export function addBoards(username, openBoards) {
                     //if openBoards is true, will allow to open the components
                     if (openBoards) {
                         //Call the openComponent to allow go to page of board and save the id of the table
-                        openComponent(boardId, "./board.html", "boardId");
+                        openComponent(boardId, "./board.html", true, "boardId");
                     }
                     addColumns(boardId, table, openBoards);
                 });
@@ -189,7 +190,7 @@ export function addBoards(username, openBoards) {
                 //Create a plus at the end
                 const divBoard = document.createElement('div');
                 const boardPlus = document.createElement('img');
-                boardPlus.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1743961025/Icons/Black/plus_black.png";
+                boardPlus.src = "/img/Icons/Black/plus_black.png";
                 divBoards.appendChild(divBoard);
                 divBoard.appendChild(boardPlus);
                 divBoard.classList.add('board');
@@ -197,7 +198,7 @@ export function addBoards(username, openBoards) {
                 divBoard.id = boardId;
                 //Create a new board
                 //if openBoards is true, will allow to open the components
-                divBoard.classList.add('components-click');
+                divBoard.classList.add('white-components-click');
                 if (openBoards) {
                     divBoard.addEventListener('click', () => {
                         const newName = "New Board";
@@ -273,7 +274,7 @@ async function addCards(column, table, addData, columnIndex) {
             for (let index = 0; index < data.length; index++) {
                 const card = data[index];
                 var tr;
-                const tableName = table.querySelector('h3').textContent;
+                const tableName = table.parentNode.querySelector('h3').textContent;
                 //Know if there are an element in the tr, if not, create it
                 if (!document.getElementById(`tr-card-${tableName}-${index}`)) {
                     tr = document.createElement('tr');
@@ -372,7 +373,7 @@ export function addNotes(username, openNotes) {
                     //if openBoards is true, will allow to open the components
                     if (openNotes) {
                         //Call the openComponent to allow go to page of board and save the id of the table
-                        openComponent(noteId, "./note.html", "noteId");
+                        openComponent(noteId, "./note.html", true, "noteId");
                     }
                 });
             }
@@ -387,16 +388,16 @@ export function addNotes(username, openNotes) {
                 //Create a plus at the end
                 const divNote = document.createElement('div');
                 const notePlus = document.createElement('img');
-                notePlus.src = "https://res.cloudinary.com/drmjf3gno/image/upload/v1743961025/Icons/Black/plus_black.png";
+                notePlus.src = "/img/Icons/Black/plus_black.png";
                 notesDiv.appendChild(divNote);
                 divNote.appendChild(notePlus);
                 divNote.classList.add('note');
-                const noteId = "new-board";
+                const noteId = "new-note";
                 divNote.id = noteId;
 
                 //Create a new board
                 //if openBoards is true, will allow to open the components
-                divNote.classList.add('components-click');
+                divNote.classList.add('white-components-click');
                 if (notesDiv) {
                     divNote.addEventListener('click', () => {
                         const newName = "New Note";
@@ -522,10 +523,10 @@ export function addColorToEvents(username, day) {
 
 }
 //Function to open the components (notes, boards, etc.) if the user add the saveItem, the component will be saved in the local storage, with this name
-export function openComponent(componentId, page, saveItem) {
+export function openComponent(componentId, page, white, saveItem) {
     const component = document.getElementById(componentId);
-    component.classList.add('components-click');
-
+    if(white) component.classList.add('white-components-click');
+    else component.classList.add('components-click');
     component.addEventListener('click', () => {
         if (saveItem) {
             localStorage.setItem(saveItem, componentId);
@@ -666,10 +667,14 @@ export function addInputToChange(id, textEditing) {
     inputChange.style.borderRadius = styles.borderRadius;
     inputChange.style.margin = styles.margin;
     inputChange.style.padding = styles.padding;
-    //For prop-types also copy the width
+    //For prop-types also copy the width and remove the display (then add it)
     if (id.startsWith('prop-type')) {
         inputChange.style.width = styles.width;
+        textToInput.style.display = 'none';
     }
+    //Add maximum length
+    if (id === 'board-title' || id === 'card-edit-name' || id.startsWith('column-title-') || id === 'note-title') inputChange.maxLength = 50;
+    else if (id === 'property-name' || id.startsWith('prop-type-')) inputChange.maxLength = 30;
     //Add class and id
     inputChange.classList.add('input-change');
     inputChange.id = `input-change-${id}`;
@@ -769,6 +774,8 @@ export function returnToText(textEditing, change, id, propertyColor) {
                             property.textContent = newName;
                         }
                     })
+                    //Change display to show it
+                    textToReturn.style.display = 'block';
                     removeAndReturn(inputToDelete, textToReturn);
                 })
                 .catch(error => {

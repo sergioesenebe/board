@@ -49,6 +49,7 @@ header {
     display: flex;
     gap: 30px;
     align-items: center;
+    flex: 1;
 }
 
 /*Image size for search and options*/
@@ -149,15 +150,16 @@ header {
     min-width: 160px;
     padding: 0px;
 }
-
+/*Delete option in options, with red*/
 .delete-option {
     transition: background-color 0.5s, box-shadow 0.5s;
     margin: 0px;
     padding: 10px;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
+    color: rgb(240, 128, 128);
 }
-
+/*Edit option in options*/
 .edit-option {
     transition: background-color 0.5s, box-shadow 0.5s;
     margin: 0px;
@@ -165,12 +167,13 @@ header {
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
 }
-
+/*Change background when hover*/
 .options:hover {
     background-color: #e0e0e0;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     cursor: pointer;
 }
+
 /*Link to open*/
 .link {
     text-decoration: underline;
@@ -216,11 +219,16 @@ header {
     filter: brightness(90%);
     transition: all 0.3s ease;
 }
+/*All the components that could be clicked, with white color*/
+.white-components-click:hover {
+    cursor: pointer;
+    background-color: #D5D0C6;
+    transition: all 0.3s ease;
+}
 
 /* bar in the left */
 .options-bar {
     background-color: #D9D9D9;
-    border: 1px solid #D9D9D9;
     border-radius: 50px;
     width: fit-content;
     /*Make it as bigger as the elements*/
@@ -287,60 +295,60 @@ header {
 
 /*Button for home*/
 .button-home {
-    background-image: url("https://res.cloudinary.com/drmjf3gno/image/upload/v1743251615/Icons/Black/home_black.png");
+    background-image: url("/img/Icons/Black/home_black.png");
 }
 
 /*Button home, when mouse is hover*/
 .button-home:hover {
-    background-image: url("https://res.cloudinary.com/drmjf3gno/image/upload/v1743251687/Icons/Beige/home_beige.png");
+    background-image: url("/img/Icons/Beige/home_beige.png");
     background-color: #292C35;
     border-radius: 50px;
 }
 
 /*Button for board*/
 .button-board {
-    background-image: url("https://res.cloudinary.com/drmjf3gno/image/upload/v1743251615/Icons/Black/board_black.png");
+    background-image: url("/img/Icons/Black/board_black.png");
 }
 
 /*Button board, when mouse is hover*/
 .button-board:hover {
-    background-image: url("https://res.cloudinary.com/drmjf3gno/image/upload/v1743251687/Icons/Beige/board_beige.png");
+    background-image: url("/img/Icons/Beige/board_beige.png");
     background-color: #292C35;
     border-radius: 50px;
 }
 
 /*Button for calendar*/
 .button-notes {
-    background-image: url("https://res.cloudinary.com/drmjf3gno/image/upload/v1743429262/Icons/Black/notes_black.png");
+    background-image: url("/img/Icons/Black/notes_black.png");
 }
 
 /*Button calendar, when mouse is hover*/
 .button-notes:hover {
-    background-image: url("https://res.cloudinary.com/drmjf3gno/image/upload/v1743429268/Icons/Beige/notes_beige.png");
+    background-image: url("/img/Icons/Beige/notes_beige.png");
     background-color: #292C35;
     border-radius: 50px;
 }
 
 /*Button for calendar*/
 .button-calendar {
-    background-image: url("https://res.cloudinary.com/drmjf3gno/image/upload/v1743429262/Icons/Black/calendar_black.png");
+    background-image: url("/img/Icons/Black/calendar_black.png");
 }
 
 /*Button calendar, when mouse is hover*/
 .button-calendar:hover {
-    background-image: url("https://res.cloudinary.com/drmjf3gno/image/upload/v1743429268/Icons/Beige/calendar_beige.png");
+    background-image: url("/img/Icons/Beige/calendar_beige.png");
     background-color: #292C35;
     border-radius: 50px;
 }
 
 /*Button for calendar*/
 .buton-settings {
-    background-image: url("https://res.cloudinary.com/drmjf3gno/image/upload/v1743429262/Icons/Black/settings_black.png");
+    background-image: url("/img/Icons/Black/settings_black.png");
 }
 
 /*Button calendar, when mouse is hover*/
 .buton-settings:hover {
-    background-image: url("https://res.cloudinary.com/drmjf3gno/image/upload/v1743429269/Icons/Beige/settings_beige.png");
+    background-image: url("/img/Icons/Beige/settings_beige.png");
     background-color: #292C35;
     border-radius: 50px;
 }
@@ -350,7 +358,7 @@ header {
     border: none;
     cursor: pointer;
     background-color: #292C35;
-    background-image: url("https://res.cloudinary.com/drmjf3gno/image/upload/v1743251687/Icons/Beige/home_beige.png");
+    background-image: url("/img/Icons/Beige/home_beige.png");
     /* Styles the element with rounded corners and a centered, non-repeating background image scaled to 50% */
     border-radius: 50px;
     display: block;
@@ -365,7 +373,7 @@ header {
     border: none;
     cursor: pointer;
     background-color: #292C35;
-    background-image: url("https://res.cloudinary.com/drmjf3gno/image/upload/v1743251687/Icons/Beige/board_beige.png");
+    background-image: url("/img/Icons/Beige/board_beige.png");
     /* Styles the element with rounded corners and a centered, non-repeating background image scaled to 50% */
     border-radius: 50px;
     display: block;
@@ -379,7 +387,7 @@ header {
     border: none;
     cursor: pointer;
     background-color: #292C35;
-    background-image: url("https://res.cloudinary.com/drmjf3gno/image/upload/v1743429268/Icons/Beige/notes_beige.png");
+    background-image: url("/img/Icons/Beige/notes_beige.png");
     /* Styles the element with rounded corners and a centered, non-repeating background image scaled to 50% */
     border-radius: 50px;
     display: block;
@@ -393,7 +401,7 @@ header {
     border: none;
     cursor: pointer;
     background-color: #292C35;
-    background-image: url("https://res.cloudinary.com/drmjf3gno/image/upload/v1743429268/Icons/Beige/calendar_beige.png");
+    background-image: url("/img/Icons/Beige/calendar_beige.png");
     /* Styles the element with rounded corners and a centered, non-repeating background image scaled to 50% */
     border-radius: 50px;
     display: block;
@@ -407,7 +415,7 @@ header {
     border: none;
     cursor: pointer;
     background-color: #292C35;
-    background-image: url("https://res.cloudinary.com/drmjf3gno/image/upload/v1743429269/Icons/Beige/settings_beige.png");
+    background-image: url("/img/Icons/Beige/settings_beige.png");
     /* Styles the element with rounded corners and a centered, non-repeating background image scaled to 50% */
     border-radius: 50px;
     display: block;

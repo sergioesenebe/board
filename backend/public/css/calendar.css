@@ -159,7 +159,7 @@ td.event-day {
 
 /*Title and events will let space for the plus*/
 #header-and-events {
-    height: 70%;
+    height: calc(100% - 145px);
     width: 100%;
 }
 
@@ -188,7 +188,12 @@ td.event-day {
     background-color: #EDE7DC;
     border-radius: 20px;
 }
-
+/*Limit event name*/
+.event-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 /*End time of an event*/
 .end-time {
     font-size: 12px;
@@ -290,10 +295,10 @@ td.event-day {
     }
 
     /*Size of the elements*/
-    .calendar td {
+    /*.calendar td {
         height: 25px;
         width: 25px;
-    }
+    }*/
 
     /*Right and left will take 100%*/
     .right {

@@ -19,7 +19,7 @@ document.querySelectorAll('.signup-img-group img').forEach(img => {
     });
 });
 //Constant for the signup button
-const submit = document.getElementById('SignUpBtn');
+const submit = document.getElementById('create-account-button');
 //When click call the function signup
 submit.addEventListener('click', signup);
 
@@ -35,6 +35,13 @@ async function signup(event) {
     const username = document.getElementById('username').value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
+    //Get the p to show the message in case of error
+    const errorMessage = document.getElementById('error-message');
+    // Main function to handle user registration
+    if (areFieldsEmpty(first_name, second_name, username, email, password, avatar)) {
+        errorMessage.textContent = 'Please enter all the data';
+        return;
+    }
     // Check if the password meets the requirements
     if (!isPasswordValid(password)) {
         errorMessage.textContent = 'The password must have at least one number, one lowercase, one uppercase, and more than 8 characters';
@@ -42,13 +49,6 @@ async function signup(event) {
     }
     //Add a hash to save the password
     const hashPassword = await hash(password);
-    //Get the p to show the message in case of error
-    const errorMessage = document.getElementById('errorMessage');
-    // Main function to handle user registration
-    if (areFieldsEmpty(first_name, second_name, username, email, password, avatar)) {
-        errorMessage.textContent = 'Please enter all the data';
-        return;
-    }
     // Check if the username already exists
     fetchJson('/checkUsername', 'POST', { username })
         .then(data => {

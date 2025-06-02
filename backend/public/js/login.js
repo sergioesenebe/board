@@ -6,7 +6,7 @@ import { hash } from './utils.js';
 //--- Event Listeners ---
 
 //Constant for the login button
-const submit = document.getElementById('logInBtn');
+const submit = document.getElementById('login-button');
 //When click call the function login
 submit.addEventListener('click', login);
 
@@ -20,7 +20,7 @@ async function login(event) {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     //Get the p to show the message in case of error
-    const errorMessage = document.getElementById('errorMessage');
+    const errorMessage = document.getElementById('error-message');
     //Encrypt the password to check if its correct (in db has a hash)
     const hashPassword = await hash(password);
     console.log('hash',hashPassword);

@@ -78,28 +78,33 @@ body {
 }
 /*A border for the input when you are writting*/
 .login-form input:focus {
-    border-color: #2575fc;
+    border-color: #ccc;
     outline: none;
 }
-/*Style for the blue button*/
-.blue-login-button {
+
+/*Style for the button in login*/
+.login-button {
+    border: none;
+    border-radius: 10px;
+    background-color: #EDE7DC;
+    margin: 5px 0;
     width: 90%;
     padding: 10px;
-    background: #7DACFF;
-    color: white;
     font-size: 18px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-bottom: 20px;
     text-decoration: none;
+    color: black;
+    margin-bottom: 20px;
+    /*Display also the sign up (link) with same width*/
     display: block;
     text-align: center;
-    padding: 10px 0px;
 }
-/*The blue button will be darker if the mouse is hover*/
-.blue-login-button:hover {
-    background: #1a5bbf;
+
+/*Buttons in login when hover will not have border, change color and cursor*/
+.login-button:hover {
+    border: none;
+    outline: none;
+    background-color: #D6CFC1;
+    cursor: pointer;
 }
 /*The logo of the form is hidden unless for the mobile size*/
 .logo-form{
@@ -233,43 +238,36 @@ body {
 }
 /*A border for the input when you are writting*/
 .signup-form input:focus {
-    border-color: #2575fc;
+    border-color: #ccc;
     outline: none;
 }
-/*Style for the blue button*/
-.signup-blue-button {
+/*Button for the input*/
+.signup-button {
     width: 100%;
-    padding: 10px;
-    background: #7DACFF;
-    color: white;
-    font-size: 18px;
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-bottom: 20px;
-}
-/*The blue button will be darker if the mouse is hover*/
-.signup-blue-button:hover {
-    background: #1a5bbf;
-}
-/*Style for the gray button*/
-.signup-gray-button {
-    width: 100%;
+    border-radius: 10px;
+    background-color: #EDE7DC;
+    padding: 5px;
+    margin: 5px 0;
     padding: 10px;
-    background: #B9B9B9;
-    color: white;
     font-size: 18px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-bottom: 20px;
     text-decoration: none;
+    color: black;
+    margin-bottom: 20px;
+    /*Display also the sign up (link) with same width*/
+    display: block;
     text-align: center;
+
 }
-/*The gray button will be darker if the mouse is hover*/
-.signup-gray-button:hover {
-    background: gray;
+
+/*The blue button will be darker if the mouse is hover*/
+.signup-button:hover {
+    border: none;
+    outline: none;
+    background-color: #D6CFC1;
+    cursor: pointer;
 }
+
 /*Logo will be at the top right*/
 .signup-logo{
     position: absolute;

@@ -6,44 +6,44 @@
     <title>esenebe board - Sign Up</title>
     <link rel="stylesheet" href="css/authentication.css">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="icon" href="https://res.cloudinary.com/drmjf3gno/image/upload/v1743428301/Logos/esenebe_logo.png" />
+    <link rel="icon" href="/img/Logos/esenebe_logo.png" />
 </head>
 
 <body>
     <!-- Create a white box -->
     <div class="box">
         <img class="signup-logo"
-            src="https://res.cloudinary.com/drmjf3gno/image/upload/v1743427606/Logos/esenebe_board_logo.png">
+            src="/img/Logos/esenebe_board_logo.png">
         <!-- A form for getting the data to create a user-->
         <form class="signup-form">
             <img class="logo-form"
-                src="https://res.cloudinary.com/drmjf3gno/image/upload/v1743427606/Logos/esenebe_board_logo.png">
+                src="/img/Logos/esenebe_board_logo.png">
             <h1>Sign Up</h1>
             <div class="signup-field-group">
 
                 <div class="signup-field">
                     <label for="first_name">First Name</label>
-                    <input type="text" id="first_name" name="name" placeholder="Ex. John">
+                    <input type="text" id="first_name" name="name" placeholder="Ex. John" maxlength="20">
                 </div>
                 <div class="signup-field">
                     <label for="second_name">Surname</label>
-                    <input type="text" id="second_name" name="surname" placeholder="Ex. Doe">
+                    <input type="text" id="second_name" name="surname" placeholder="Ex. Doe" maxlength="20">
                 </div>
             </div>
             <div class="signup-field-group">
                 <div class="signup-field">
                     <label for="username">Username</label>
-                    <input type="text" id="username" name="username" placeholder="Ex. johndoe">
+                    <input type="text" id="username" name="username" placeholder="Ex. johndoe" maxlength="30">
                 </div>
                 <div class="signup-field">
                     <label for="email">Email</label>
-                    <input type="email" id="email" name="email" placeholder="Ex. johndoe@example.com">
+                    <input type="email" id="email" name="email" placeholder="Ex. johndoe@example.com" maxlength="100">
                 </div>
             </div>
             <div class="signup-field">
-                <label for="password">Password</label>
+                <label for="password" >Password</label>
                 <input type="password" id="password" name="password"
-                    placeholder="min 8 characters, one number, one lowercase and one uppercase">
+                    placeholder="min 8 characters, one number, one lowercase and one uppercase" maxlength="128">
             </div>
             <p>Select an Avatar Image</p>
             <div class="signup-img-group">
@@ -53,10 +53,10 @@
                     src="https://res.cloudinary.com/drmjf3gno/image/upload/v1743417676/Avatars/boy_avatar.jpg">
             </div>
             <div class="signup-field-group">
-                <button id="SignUpBtn" class="signup-blue-button" type="submit">Create account</button>
-                <a href="./login.html" class="signup-gray-button">Go Back</a>
+                <a href="./login.html" class="signup-button">Go Back</a>
+                <button id="create-account-button" class="signup-button" type="submit">Create account</button>
             </div>
-            <p id="errorMessage" style="color:#F08080; text-align: center;"></p>
+            <p id="error-message" style="color:#F08080; text-align: center;"></p>
         </form>
     </div>
     <script type="module" src="js/signup.js"></script>
