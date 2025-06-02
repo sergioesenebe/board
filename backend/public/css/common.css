@@ -484,12 +484,13 @@ input[type="checkbox"]:checked {
 
 /* Scrollbar  */
 ::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-track {
     background: transparent;
-    
+
 }
 
 ::-webkit-scrollbar-thumb {
@@ -497,8 +498,11 @@ input[type="checkbox"]:checked {
     border-radius: 4px;
     border: none;
     /* space as margin */
-    scroll-margin: 200px;
-    
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    background-clip: padding-box;
+
+
 }
 
 /* when mouse hover */
