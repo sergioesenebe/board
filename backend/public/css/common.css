@@ -150,6 +150,7 @@ header {
     min-width: 160px;
     padding: 0px;
 }
+
 /*Delete option in options, with red*/
 .delete-option {
     transition: background-color 0.5s, box-shadow 0.5s;
@@ -159,6 +160,7 @@ header {
     border-bottom-right-radius: 10px;
     color: rgb(240, 128, 128);
 }
+
 /*Edit option in options*/
 .edit-option {
     transition: background-color 0.5s, box-shadow 0.5s;
@@ -167,6 +169,7 @@ header {
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
 }
+
 /*Change background when hover*/
 .options:hover {
     background-color: #e0e0e0;
@@ -219,6 +222,7 @@ header {
     filter: brightness(90%);
     transition: all 0.3s ease;
 }
+
 /*All the components that could be clicked, with white color*/
 .white-components-click:hover {
     cursor: pointer;
@@ -476,6 +480,27 @@ input[type="checkbox"]:checked {
 .select-avatar.active {
     border: 2px solid #BFA177;
     filter: brightness(0.8);
+}
+
+/* Scrollbar  */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f0f0f0;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 6px;
+    border: 3px solid #f0f0f0;
+    /* space as margin */
+}
+
+/* when mouse hover */
+::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
 }
 
 
