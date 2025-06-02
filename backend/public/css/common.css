@@ -483,17 +483,22 @@ input[type="checkbox"]:checked {
     filter: brightness(0.8);
 }
 
-::-webkit-scrollbar-button {
-    display: none;
-    height: 0;
-    width: 0;
-  }
-  
-  /* Fondo transparente de la pista (track) */
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  
+#scrollbar5::-webkit-scrollbar {
+    background-color: #000;
+    width: 12px;
+    border-radius: 10px;
+}
+
+#scrollbar5::-webkit-scrollbar-track {
+    border-radius: 10px;
+    box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3);
+}
+
+#scrollbar5::-webkit-scrollbar-thumb {
+    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(.5, #a520ca), color-stop(1, #2681cc));
+    border-radius: 10px;
+}
+
 
 /*The layout of the elements will be changed when the width is less than 1325px. So that each container occupies one row*/
 @media (max-width: 1325px) {
