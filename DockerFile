@@ -1,14 +1,20 @@
-# Usa una imagen base con Apache y PHP
-FROM php:8.1-apache
+# Dockerfile para backend (Node.js)
+FROM node:16
 
-# Instala extensiones de PHP necesarias para tu proyecto
-RUN docker-php-ext-install mysqli pdo pdo_mysql
+# Establece directorio de trabajo dentro del contenedor
+WORKDIR /home/node/app
 
-# Copia el código de tu proyecto al contenedor
-COPY . /var/www/html/
+# Copia package.json y package-lock.json para instalar dependencias
+COPY package*.json ./
 
-# Expon el puerto 80 (Apache)
-EXPOSE 80
+# Instala las dependencias necesarias
+RUN npm install express mysql2 uuid
 
-# Comando para iniciar Apache
-CMD ["apache2-foreground"]
+# Copia el resto del código de la app
+COPY . .
+
+# Expone el puerto que usa la app Node (8001 según tu docker-compose)
+EXPOSE 8001
+
+# Comando para arrancar la app
+CMD ["npm", "start"]
