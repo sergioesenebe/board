@@ -113,5 +113,6 @@ input:focus {
     /*Update body height to fit with mobile*/
     body {
         height: 100dvh;
+        overflow: auto
     }
 }
