@@ -1,0 +1,308 @@
+/*Font size for all the page*/
+* {
+    font-family: Arial, sans-serif;
+    box-sizing: border-box;
+}
+/*everithing will be centered and there will be a background color*/
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to right, #e5dbc0, #d6c2a1);
+    overflow: hidden;
+}
+/*A box for the 90% of the content and centered with a min-heigh*/
+.box {
+    width: 90%;
+    height: 90vh;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border-radius: 40px;
+    position: relative;
+    display: flex;
+}
+/*
+
+    LOG IN
+
+*/
+/*The content will be separated into two*/
+.left{
+    width: 50%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.right{
+    width: 50%;
+    height: 100vh;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+/*The login form will fill almost all the widht, except when it is greater than 400px*/
+.login-form {
+    width: 90%;
+    max-width: 400px;
+}
+/*Style for h2 inside the form*/
+.login-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+/*Field of the form, label and input*/
+.login-field {
+    margin-bottom: 15px;
+}
+/*Style for the label*/
+.login-form label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+/*Style for the input*/
+.login-form input {
+    width: 90%;
+    padding: 10px;
+
+    font-size: 16px;
+    border: none;
+    border-bottom: 2px solid #ccc;
+
+}
+/*A border for the input when you are writting*/
+.login-form input:focus {
+    border-color: #ccc;
+    outline: none;
+}
+
+/*Style for the button in login*/
+.login-button {
+    border: none;
+    border-radius: 10px;
+    background-color: #EDE7DC;
+    margin: 5px 0;
+    width: 90%;
+    padding: 10px;
+    font-size: 18px;
+    text-decoration: none;
+    color: black;
+    margin-bottom: 20px;
+    /*Display also the sign up (link) with same width*/
+    display: block;
+    text-align: center;
+}
+
+/*Buttons in login when hover will not have border, change color and cursor*/
+.login-button:hover {
+    border: none;
+    outline: none;
+    background-color: #D6CFC1;
+    cursor: pointer;
+}
+/*The logo of the form is hidden unless for the mobile size*/
+.logo-form{
+    display: none;
+    width: 200px;
+}
+/*Logo will be at the top right*/
+.logo-left{
+    position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 200px;
+}
+/*Background image in the right*/
+.right img{
+    width: 70%;
+    height: 80vh;
+    border-radius: 40px;
+    min-height: 300px; /*prevent the image from being smaller than the text*/
+}
+/*Text inside the right image*/
+.inside-image {
+    position: absolute;
+    padding-left: 15%;
+    padding-right: 15%;
+    color: white;
+  }    
+/*The layout of the elements will be changed when the width is less than 480px. So that each container occupies one row*/
+@media (max-width: 1325px) {
+    /*Login form will have a white background*/
+    .login-form {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        width: 95%;
+        padding: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    /*blue-button will be smaller*/
+    .login-blue-button {
+        font-size: 16px;
+    }
+    /*left container will fit all the page*/
+    .left{
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    /*right container will disappears*/
+    .right{
+        width: 0;
+        display: none;
+    }
+    /*Box will have the same background color than the body*/
+    .box {
+        width: 100%;
+        height: 100vh;
+        border-radius: 0;
+        background: linear-gradient(to right, #e5dbc0, #d6c2a1);
+    }
+    /*The logo in the left will deissapear*/
+    .logo-left{
+        display: none;
+    }
+    /*The logo will appear at the top of the form*/
+    .logo-form{
+        display: flex;
+        margin: 0 auto;
+    }
+}
+/*
+
+    SIGN UP
+
+*/
+/*The sign up form will fill almost all the widht, except when it is greater than 800px*/
+.signup-form {
+    max-width: 800px;
+    width: 90%;
+    box-sizing: border-box;
+    padding: 20px;
+    padding-top: 50px;
+    height: 100%;
+}
+/*Style for h2 inside the form*/
+.signup-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+/*Style for p inside the form*/
+.signup-form p {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+/*Field of the form, label and input*/
+.signup-field {
+    margin-bottom: 15px;
+    display: flex;
+
+    width: 100%;
+    justify-content: center;
+    flex-direction: column;
+}
+/*A container for the avatar images, will be center and with a gap*/
+.signup-img-group{
+    margin-bottom: 15px;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    gap: 5%;
+}
+/*Some fields will be group in the same row*/
+.signup-field-group {
+    display:flex;
+    align-items: center;
+    gap: 20px;
+}
+/*Style for the label*/
+.signup-form label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+/*Style for the input*/
+.signup-form input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-bottom: 2px solid #ccc;
+
+}
+/*A border for the input when you are writting*/
+.signup-form input:focus {
+    border-color: #ccc;
+    outline: none;
+}
+/*Button for the input*/
+.signup-button {
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    background-color: #EDE7DC;
+    padding: 5px;
+    margin: 5px 0;
+    padding: 10px;
+    font-size: 18px;
+    text-decoration: none;
+    color: black;
+    margin-bottom: 20px;
+    /*Display also the sign up (link) with same width*/
+    display: block;
+    text-align: center;
+
+}
+
+/*The blue button will be darker if the mouse is hover*/
+.signup-button:hover {
+    border: none;
+    outline: none;
+    background-color: #D6CFC1;
+    cursor: pointer;
+}
+
+/*Logo will be at the top right*/
+.signup-logo{
+    position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 200px;
+}
+
+/*Images of the checkbox*/
+.signup-img-group img {
+    width: 25%;
+    box-sizing: border-box;
+    cursor: pointer;
+    border-radius: 100px;
+    overflow: hidden;
+    display: block;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/*The layout of the elements will be changed when the width is less than 480px. So that each container occupies one row*/
+@media (max-width: 1325px) {
+    /*Sign Up form will have a white background*/
+    .signup-form {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        width: 95%;
+        padding: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        
+    }
+    /*The logo in the left will deissapear*/
+    .signup-logo{
+        display: none;
+    }
+}

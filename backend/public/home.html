@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<!--  -->
+
+<head>
+    <meta charset="utf8">
+    <title>esenebe board - Home</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="icon" href="/img/Logos/esenebe_logo.png" />
+</head>
+
+<body>
+    <div class="home-half-content">
+        <div class="half-bar">
+            <img class="icon"
+                src="/img/Logos/esenebe_logo.png">
+            <div class="options-bar">
+                <button class="button-home-selected" title="Home"></button>
+                <a href="./boards.html"><button class="button-not-selected button-board" title="Boards"></button></a>
+                <a href="./notes.html"><button class="button-not-selected button-notes" title="Notes"></button></a>
+                <a href="./calendar.html"><button class="button-not-selected button-calendar" title="Calendar"></button></a>
+            </div>
+            <div class="profile-bar">
+                <a href="./settings.html"><button class="button-not-selected buton-settings" title="Settings"></button></a>
+                <img id="avatar">
+            </div>
+        </div>
+        <header>
+            <h1 id="hello"></h1>
+        </header>
+        <div id="half-board" class="components-click">
+            <h2>Your Boards</h2>
+            <div id="boards">
+                <p id="no-boards"></p>
+            </div>
+        </div>
+        <div id="half-calendar" class="components-click">
+            <div id="calendar-header"><h2>Your Calendar</h2><span id="calendar-month"></span></div>
+            <table id="calendar-table">
+                <tbody id="tbody">
+                    <tr>
+                        <th>M</th>
+                        <th>T</th>
+                        <th>W</th>
+                        <th>T</th>
+                        <th>F</th>
+                        <th>S</th>
+                        <th>S</th>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="calendar-legend">
+                <div style="background-color: lightsalmon;"></div>Today
+                <div style="background-color: lightgoldenrodyellow;"></div>Event
+            </div>
+        </div>
+        <div id="half-task" class="components-click">
+            <h2 id="board-name"></h2>
+            <span id="task-name" style="float:left; font-size:25px"></span>
+            <span id="percentage" style="float:right; font-size:25px"></span>
+            </br><span id="line"><span id="orange-line">
+        </div>
+        <div id="half-event" class="components-click">
+            <h2>Upcoming Event</h2>
+            <span id="event-name" style="font-size: 20px"></span><br />
+            <span id="event-date"></span>
+        </div>
+
+        <div id="half-notes" class="components-click">
+            <h1>Your Notes</h1>
+            <div id="notes">
+                <p id="no-notes"></p>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="js/home.js"></script>
+</body>
+
+</html>

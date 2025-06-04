@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<!--  -->
+
+<head>
+    <meta charset="utf8">
+    <title>esenebe board - Calendar</title>
+    <link rel="stylesheet" href="./css/calendar.css">
+    <link rel="stylesheet" href="./css/common.css">
+    <link rel="icon" href="/img/Logos/esenebe_logo.png" />
+</head>
+
+<body>
+    <div id="calendar-half-content">
+        <div class="half-bar">
+            <img class="icon"
+                src="/img/Logos/esenebe_logo.png">
+            <div class="options-bar">
+                <a href="./home.html"><button class="button-not-selected button-home" title="Home"></button></a>
+                <a href="./boards.html"><button class="button-not-selected button-board" title="Boards"></button></a>
+                <a href="./notes.html"><button class="button-not-selected button-notes" title="Notes"></button></a>
+                <a href="./calendar.html"><button class="button-calendar-selected" title="Calendar"></button></a>
+            </div>
+            <div class="profile-bar">
+                <a href="./settings.html"><button class="button-not-selected buton-settings"
+                        title="Settings"></button></a>
+                <img id="avatar">
+            </div>
+        </div>
+        <header>
+            <div id="back-and-title">
+                <a href="./home.html"><img class="back"
+                        src="/img/Icons/Black/back_black.png"></a>
+                <h1>Your Calendar</h1>
+            </div>
+        </header>
+        <div class="box">
+            <div class="calendar">
+                <div id="calendar-header">
+                    <img class="options-button" width="30px" id="previous-month"
+                        src="/img/Icons/Black/back_black.png">
+                    <h3 id="calendar-date"></h3>
+                    <img class="options-button" width="30px" id="next-month"
+                        src="/img/Icons/Black/next_black.png">
+                </div>
+                <table id="tbody">
+                    <tr>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wed</th>
+                        <th>Thu</th>
+                        <th>Fri</th>
+                        <th>Sat</th>
+                        <th>Sun</th>
+                    </tr>
+                </table>
+                <div id="calendar-legend">
+                    <div style="background-color: lightsalmon;"></div>Today
+                    <div style="background-color: lightgoldenrodyellow;"></div>Event
+                </div>
+            </div>
+            <div class="right">
+                <div id="events" class="justify-space">
+                    <div id="header-and-events">
+                        <div id="title-and-seach">
+                            <h1>Your events</h1>
+                            <div id="search">
+                                <input type="text" id="search-input" class="fade fade-out" placeholder="Search..."
+                                    style="display: none;">
+                                <img id="search-icon" class="options-button" width="40px" height="40px"
+                                    src="/img/Icons/Black/search_black.png">
+                            </div>
+                        </div>
+                        <div id="events-by-day">
+                        </div>
+                    </div>
+                    <div id="plus-event" class="white-button">
+                        <img height="25px"
+                            src="/img/Icons/Black/plus_black.png">
+                    </div>
+
+                </div>
+            </div>
+            <script type="module" src="js/calendar.js"></script>
+</body>
+
+</html>

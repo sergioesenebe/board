@@ -1,0 +1,440 @@
+/*Configuring size and order of the containers and the resize to one line*/
+.board-half-content {
+    height: 90%;
+    width: 90%;
+    display: grid;
+    justify-content: center;
+    /*Center the elements*/
+    /*Divide the page in 4 (one for the bar) will be the same as home (don't move the content)*/
+    grid-template-columns: 10% 30% 30% 30%;
+    grid-template-rows: 1.2fr 10fr;
+    grid-template-areas:
+        "bar header header header"
+        "bar board board board";
+    gap: 20px;
+}
+
+/*Cut if the titles are to longs*/
+.column h2 {
+    width: 250px;
+    /* It couldn't be greater */
+    white-space: nowrap;
+    /* do not let the text go down the line */
+    overflow: hidden;
+    /* hide the text that is outgoing */
+    text-overflow: ellipsis;
+    /* Show "..." */
+
+}
+
+/*Cut if its bigger than 3 lines*/
+.content-card span {
+    height: auto;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    /* hide bigger than 3 lines */
+    -webkit-line-clamp: 3;
+    /* Cut long words */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+/*Limit board title*/
+#board-title {
+    /*Define width, if bigger cut it with ...*/
+    max-width: 900px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/*header will display the title on the left and the search and option on the right*/
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+/*Options for the columns*/
+.options-column {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    padding: 0px;
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+/*Class for the title of the column and the options*/
+.column-header {
+    display: flex;
+    align-items: center;
+    width: 280px;
+    min-height: 60px;
+    /*Allow Dropping in the gap*/
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/*Column options size*/
+.column-header img {
+    width: 30px;
+    height: 30px;
+}
+
+/*Content will display the board and the edit card*/
+#content {
+    grid-area: board;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    /*Enables horizontal scrolling*/
+    overflow-x: auto;
+    gap: 50px;
+
+}
+
+/*A container for the boards, configuring the size*/
+#board {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    border-radius: 20px;
+    background-color: white;
+    /*Enables horizontal scrolling*/
+    overflow-x: auto;
+    padding-top: 20px;
+    padding-left: 60px;
+    padding-right: 60px;
+    /*Enable a transitions (when edit-card appear)*/
+    transition: width 0.4s ease;
+}
+
+/*Contract the board to show more natural when edit-card appear*/
+#board.contract {
+    width: 60%;
+}
+
+/*Edit the card when pen is clicked, padding, radius and size*/
+#edit-card {
+    background-color: white;
+    border-radius: 20px;
+    width: 40%;
+    padding-top: 20px;
+    padding-left: 60px;
+    padding-right: 60px;
+    /*If it's bigger*/
+    overflow-x: auto;
+}
+
+/*Div to group the back and title together*/
+#edit-card-back-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/*Size for the img in title (back)*/
+#edit-card-back-title img {
+    width: 30px;
+    height: 30px;
+}
+
+/*limit width to card edit name, if bigger cut it*/
+#card-edit-name {
+    max-width: 350px;
+    /*Break it if bigger*/
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+/*Column with all the events, flex and all the height*/
+.column {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+    display: flex;
+}
+
+/*The plus column*/
+#new-column div {
+    height: 30px;
+    width: 250px;
+    /*align in the center*/
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: #EDE7DC;
+    border-radius: 20px;
+    margin: 15px;
+}
+
+/*The plus column*/
+#new-column img {
+    height: 20px;
+    width: auto;
+    /*align in the center*/
+    display: block;
+    position: relative;
+    margin-bottom: 0;
+    padding: 0;
+
+}
+
+/*When the mouse is on the plus for columns*/
+#new-column-plus:hover {
+    cursor: pointer;
+    background-color: #D5D0C6;
+}
+
+/*When the mouse is on the plus for cards*/
+.plus-card-button:hover {
+    cursor: pointer;
+    background-color: #D5D0C6;
+}
+
+/*Cards inside the columns, size, margin*/
+.cards {
+    /* adapt to the container */
+    width: 250px;
+    background-color: #EDE7DC;
+    padding: 10px;
+    border-radius: 20px;
+    height: 100vh;
+    /*Enables horizontal scrolling*/
+    overflow-y: auto;
+    margin-bottom: 20%;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+/*card, padding to allow drag and drop*/
+.card {
+    padding: 10px 0px;
+}
+
+/*Content Card*/
+/*Events*/
+.padding-card {
+    height: fit-content;
+    background-color: white;
+    border-radius: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+/*size and margin for the pen in the card (top right)*/
+.card-pen-icon {
+    width: 30px;
+    height: 30px;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+/*cards content (properties and text)*/
+.content-card {
+    padding: 20px;
+    padding-right: 0px;
+}
+
+/*Name of the card and trash*/
+#header-edit-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center
+}
+
+/*Input for the card when edditing*/
+#card-content-textarea {
+    border: none;
+    width: 100%;
+    resize: none;
+}
+
+/*Editing the content will don't have border or similar*/
+#card-content-textarea:focus {
+    border: none;
+    outline: none;
+}
+
+/*Table with properties and prop types, sapace between them (horizontal)*/
+#table-edit-card {
+    border-spacing: 0 10px;
+}
+
+/*ppadding for the properties in edit card and border (color set in js)*/
+.property-edit-card {
+    border-radius: 20px;
+    padding: 0 10px;
+    width: 150px;
+    /*Add block display and cut the div if longer*/
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/*Input to create an event, without border*/
+#table-edit-card input {
+    border: none;
+}
+#table-edit-card td {
+    max-width: 200px;
+    /*Add block display and cut the div if longer*/
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/*Don't change the border when focus*/
+#table-edit-card input:focus {
+    border: none;
+    outline: none;
+}
+
+/*Button for the input*/
+#edit-card button {
+    border: none;
+    border-radius: 10px;
+    background-color: #EDE7DC;
+    padding: 5px;
+    margin: 5px 0;
+}
+
+/*Buttons in edit card when hover will not have border, change color and cursor*/
+#edit-card button:hover {
+    border: none;
+    outline: none;
+    background-color: #D6CFC1;
+    cursor: pointer;
+}
+
+/*The plus event*/
+.new-card-plus img {
+    height: 20px;
+    width: auto;
+    /*align in the center*/
+    margin: auto;
+    margin-bottom: 0;
+    padding: 0;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/*Properties in the card will be flex and with some gap*/
+.properties {
+    display: flex;
+    max-width: 100%;
+    gap: 1%;
+    flex-wrap: wrap;
+}
+
+/*Property of the card*/
+.property {
+    flex: 0 0 auto;
+    /* adapt to the container */
+    max-width: 150px;
+    height: auto;
+    border-radius: 20px;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-bottom: 10px;
+    overflow-x: auto;
+    white-space: nowrap;
+    /* do not let the text go down the line */
+    overflow: hidden;
+    /* hide the text that is outgoing */
+    text-overflow: ellipsis;
+    /* Show "..." */
+}
+
+/*Type Option (trash and pen)*/
+.typeOpt {
+    display: flex;
+}
+
+/*Types Option aligned*/
+.type-and-options {
+    display: flex;
+    align-items: center;
+}
+
+/*Images for trash and pen in the property type*/
+.type-and-options img {
+    width: 25px;
+    height: 25px;
+}
+
+/*Trash and pen in the editcard*/
+#edit-delete-card {
+    display: flex;
+}
+
+/*Property type divs, heigh, border (color in js), margin and padding*/
+.type-div {
+    width: 200px;
+    border-radius: 20px;
+    padding: 0 5px;
+    margin: 5px 0;
+    /*Add block display and cut the div if longer*/
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/*The layout of the elements will be changed when the width is less than 1325px. So that each container occupies one row*/
+@media (max-width: 1325px) {
+    .board-half-content {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr 20fr;
+        grid-template-areas:
+            "bar"
+            "header"
+            "board";
+        width: 100%;
+        height: 100%;
+        padding: 5%;
+    }
+
+    /*Edit card change width and height*/
+    #edit-card {
+        width: 100%;
+        height: 100%;
+    }
+
+    /*Content will be in column*/
+    #content {
+        flex-direction: column;
+    }
+
+    /*Board change width and height*/
+    #board {
+        width: 100%;
+        max-height: 100%;
+        opacity: 1;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    /*Contract will change to hide the board*/
+    #board.contract {
+        opacity: 0;
+        pointer-events: none;
+        width: 100%;
+        display: none;
+    }
+
+    /*Make title shorter*/
+    #board-title {
+        max-width: 500px;
+    }
+}

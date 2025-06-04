@@ -1,0 +1,183 @@
+/*Configuring size and order of the containers and the resize to one line*/
+.elements-half-content {
+    height: 90%;
+    width: 90%;
+    display: grid;
+    justify-content: center;
+    /*Center the elements*/
+    /*Divide the page in 4 (one for the bar) and the other three to put two containers, 
+        one will occupy twice as much space. The header will occupy the three holes*/
+    grid-template-columns: 10% 30% 30% 30%;
+    grid-template-rows: 1.2fr 10fr;
+    grid-template-areas:
+        "bar header header header"
+        "bar elements elements elements";
+    gap: 20px;
+}
+
+/*header will display the title on the left and the search and option on the right*/
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/*A container for the boards, configuring the size*/
+#elements {
+    grid-area: elements;
+    gap: 5%;
+    box-sizing: border-box;
+    max-width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 30px;
+    /*Allow y scroll*/
+    overflow-y: auto;
+    padding-bottom: 40px;
+}
+
+/*Tables of the boards font style and bordercolor*/
+#elements th {
+    font-weight: normal;
+    text-decoration: underline;
+}
+
+/*Board info in table (space)*/
+#elements table {
+    border-spacing: 10px;
+}
+
+/*Board container*/
+.board {
+    width: 45%;
+    height: 300px;
+    border-radius: 20px;
+    background-color: white;
+    box-sizing: border-box;
+    padding: 20px;
+    overflow: auto;
+    /*Enables horizontal and vertical scrolling*/
+}
+
+/*Tables of the boards font style and bordercolor*/
+.board th {
+    font-weight: normal;
+    text-decoration: underline;
+    min-width: 100px;
+    max-width: 200px;
+    white-space: nowrap;
+    /* allows line breaks */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/*td width*/
+.board td {
+    width: 200px;
+    word-wrap: break-word;
+}
+/*Limits the long of the rcolumns*/
+.card {
+    /* cut long words */
+    word-break: break-word;
+    white-space: nowrap;
+    /* allows line breaks */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /*Background*/
+    background-color: #EDE7DC;
+    border-radius: 20px;
+    padding: 5px;
+}
+
+/*The last board is a plus to create a new one*/
+.board img {
+    width: auto;
+    height: 60%;
+    /*align in the center*/
+    margin: auto;
+    display: block;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/*A container for the boards, configuring the size*/
+.notes {
+    grid-area: notes;
+    gap: 5%;
+    box-sizing: border-box;
+    max-width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/*Board container*/
+.note {
+    width: 45%;
+    height: 300px;
+    border-radius: 20px;
+    background-color: white;
+    box-sizing: border-box;
+    padding: 20px;
+    /*Enables horizontal scrolling*/
+    overflow-y: auto;
+    /*But vertical add an intro*/
+    overflow-x: hidden;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+/*The last board is a plus to create a new one*/
+.note img {
+    width: auto;
+    height: 60%;
+    /*align in the center*/
+    margin: auto;
+    display: block;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+/*Don't allow click in checkbox*/
+input[type="checkbox"] {
+    pointer-events: none;
+}
+
+/*The layout of the elements will be changed when the width is less than 1325px. So that each container occupies one row*/
+@media (max-width: 1325px) {
+    .elements-half-content {
+        grid-template-columns: 1fr;
+        grid-template-rows: min-content min-content min-content;
+        grid-template-areas:
+            "bar"
+            "header"
+            "elements";
+        width: 100%;
+        height: 100%;
+        padding: 5%;
+        max-height: auto;
+    }
+
+    /*Change gap in the boards*/
+    #elements {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        gap: 20px;
+        align-items: center;
+        overflow-x: auto;
+        width: 100%;
+    }
+
+    /*Board will be with all the width and 30% of height as maximum*/
+    .board {
+        width: 100%;
+        max-height: 30%;
+    }
+
+    .note {
+        width: 100%;
+        max-height: 30%;
+    }
+}

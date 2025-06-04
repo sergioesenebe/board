@@ -1,0 +1,20 @@
+# Dockerfile for backend (Node.js)
+FROM node:16
+
+# Directory
+WORKDIR /home/node/app
+
+# Copy package.json and package-lock.json for dependencies
+COPY package*.json ./
+
+# Instal necessary dependencies
+RUN npm install express mysql2 uuid
+
+# Copy the code
+COPY . .
+
+# Expose port for Node
+EXPOSE 8001
+
+# Start the app
+CMD ["npm", "start"]

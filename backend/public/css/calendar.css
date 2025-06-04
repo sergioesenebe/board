@@ -1,0 +1,329 @@
+/*Configuring size and order of the containers and the resize to one line*/
+#calendar-half-content {
+    height: 90%;
+    width: 90%;
+    display: grid;
+    justify-content: center;
+    /*Center the elements*/
+    /*Divide the page in 4 (one for the bar) will be the same as home (don't move the content)*/
+    grid-template-columns: 10% 30% 30% 30%;
+    grid-template-rows: 1.2fr 10fr;
+    grid-template-areas:
+        "bar header header header"
+        "bar box box box";
+    gap: 20px;
+}
+
+/*header will display the title on the left and the search and option on the right*/
+header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/*A container for the notes and actions*/
+.box {
+    grid-area: box;
+    border-radius: 20px;
+    padding: 60px;
+    background-color: white;
+    /*Enables horizontal scrolling*/
+    overflow: auto;
+    width: 100%;
+    box-sizing: border-box;
+    gap: 5%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    background-color: white;
+    /*Enables horizontal scrolling*/
+    overflow-x: auto;
+    flex-direction: row;
+}
+
+/*half box for the calendar*/
+.calendar {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+/*Calendar header will have arrows to move months left and right and title in the middle */
+#calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 320px;
+    flex-wrap: wrap;
+}
+
+/*Name of the days*/
+.calendar th {
+    border-bottom: 1px solid gray;
+    color: gray;
+}
+
+/*Size of the table*/
+.calendar table {
+    text-align: center;
+    /* set space between rows and columns */
+    border-collapse: separate;
+    border-spacing: 15px 10px;
+}
+
+/*Size of the elements*/
+.calendar td {
+    height: 35px;
+    width: 35px;
+    /*To apply brightness when hover*/
+    background-color: white;
+    border-radius: 20px;
+}
+
+/*When hover add a shadow and change cursor*/
+.day-button:hover {
+    cursor: pointer;
+    filter: brightness(90%);
+    transition: all 0.3s ease;
+}
+
+/*Red for a calentar day (Today)*/
+td.today-day {
+    background-color: lightsalmon;
+    border-radius: 100%;
+    color: black;
+}
+
+/*Yellow for a calendar day (Event)*/
+td.event-day {
+    background-color: lightgoldenrodyellow;
+    border-radius: 100%;
+    height: 20px;
+    min-width: 20px;
+    width: auto;
+    color: black;
+}
+
+/*Event in calendar add cursor*/
+.clikcable-day:hover {
+    cursor: pointer;
+    filter: brightness(90%);
+}
+
+/* Half of the board for the events */
+.right {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/*Events display*/
+#events {
+    background-color: #EDE7DC;
+    border-radius: 20px;
+    width: 90%;
+    height: 90%;
+    padding: 20px;
+    box-sizing: border-box;
+    /*Display the events by column*/
+    display: flex;
+    flex-direction: column;
+    /*Allow scroll*/
+    overflow-y: auto;
+}
+
+/*Justify items with space (ex. one top other center and other bottom)*/
+.justify-space {
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+
+}
+
+/*Allow scrolling y in events*/
+#events-by-day {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+    display: flex;
+    overflow-y: auto;
+}
+
+/*Title and events will let space for the plus*/
+#header-and-events {
+    height: calc(100% - 145px);
+    width: 100%;
+}
+
+/*Title and loup (left and right)*/
+#title-and-seach {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/*Event in events*/
+.event {
+    /*Show content in a row, center*/
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 20px;
+    align-items: left;
+    justify-content: left;
+    gap: 20px;
+    width: 100%;
+    /*Add color to change brightness when hover*/
+    background-color: #EDE7DC;
+    border-radius: 20px;
+}
+/*Limit event name*/
+.event-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/*End time of an event*/
+.end-time {
+    font-size: 12px;
+}
+
+/*Event plus to add an event, plus at center*/
+#plus-event {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+/*When editing a event*/
+#edit-event-header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+#edit-event-header img {
+    width: 40px;
+    height: 40px;
+}
+
+/*Table will have spaces*/
+#table-event-edit {
+    border-spacing: 10px 10px;
+}
+
+/*Input to edit an event, just bottom border and with all pasible*/
+#events input {
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    background-color: transparent;
+    border-color: white;
+    font-size: 16px;
+    width: 100%;
+}
+
+/*Don't change the border when focus*/
+#events input:focus {
+    outline: none;
+}
+
+/*Display both input in one line*/
+.input-row {
+    display: flex;
+    flex-direction: row;
+}
+
+/*Same for text area, won't be resizable also*/
+#events textarea {
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    background-color: transparent;
+    border-color: white;
+    font-size: 16px;
+    width: 100%;
+    resize: none;
+}
+
+/*Don't show the outline*/
+#events textarea:focus {
+    outline: none;
+}
+
+/*Div for open card and update*/
+#edit-event-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/*The layout of the elements will be changed when the width is less than 1325px. So that each container occupies one row*/
+@media (max-width: 1325px) {
+    #calendar-half-content {
+        grid-template-columns: 1fr;
+        grid-template-rows: min-content min-content min-content;
+        grid-template-areas:
+            "bar"
+            "header"
+            "box";
+        width: 100%;
+        height: 100%;
+        padding: 5%;
+        max-height: auto;
+        /* el espacio que quieras */
+        box-sizing: border-box;
+        overflow-y: auto;
+
+    }
+
+    /*Change sizes*/
+    .calendar table {
+        border-spacing: 10px 5px;
+    }
+
+    /*Size of the elements*/
+    /*.calendar td {
+        height: 25px;
+        width: 25px;
+    }*/
+
+    /*Right and left will take 100%*/
+    .right {
+        width: 60%;
+    }
+
+    #events {
+        height: 400px;
+        width: 100%;
+    }
+
+    .calendar {
+        width: 100%;
+        height: min-content;
+    }
+
+    /*show elements inside the box ordered by column*/
+    .box {
+        display: flex;
+        flex-direction: column-reverse;
+        gap: 40px;
+        align-items: center;
+        overflow-x: auto;
+        width: 100%;
+        margin: 0;
+        padding: 40px;
+    }
+}

@@ -1,0 +1,114 @@
+/*Configuring size and order of the containers and the resize to one line*/
+.half-content {
+    height: 90%;
+    width: 90%;
+    display: grid;
+    justify-content: center;
+    /*Center the elements*/
+    /*Divide the page in 4 (one for the bar) will be the same as home (don't move the content)*/
+    grid-template-columns: 10% 30% 30% 30%;
+    grid-template-rows: 1.2fr 10fr;
+    grid-template-areas:
+        "bar header header header"
+        "bar box box box";
+    gap: 20px;
+}
+
+/*A container for the notes and actions*/
+.box {
+    grid-area: box;
+    border-radius: 20px;
+    padding: 20px 60px;
+    padding-bottom: 20px;
+    background-color: white;
+    /*Enables horizontal scrolling*/
+    overflow: auto;
+    width: 100%;
+    box-sizing: border-box;
+    height: 100%;
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+    border-radius: 20px;
+    background-color: white;
+    /*Enables horizontal scrolling*/
+    overflow-y: auto;
+    flex-direction: column;
+    grid-template-columns: 200px 200px;
+
+}
+/*header will display the title on the left and the search and option on the right*/
+header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+
+/*Style of the avatar*/
+.change-data-table img {
+    margin-top: 20px;
+    width: 100px;
+    height: auto;
+    display: block;
+    border-radius: 100px;
+}
+/*Style of the table*/
+.change-data-table {
+    width: fit-content;
+    display: inline-block;
+}
+.change-data-table td {
+    padding-right: 20px;
+}
+
+/*Style for the input*/
+input {
+    width: 500px;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-bottom: 2px solid #ccc;
+    font-size: 16px;
+}
+/*A border for the input when you are writting*/
+input:focus {
+    outline: none;
+}
+
+/*Button white*/
+.settings-button {
+    border: none;
+    border-radius: 10px;
+    padding: 5px;
+    margin: 5px 0;
+    background-color: #EDE7DC;
+    width: 75px;
+}
+
+/*Buttons white when hover will not have border, change color (beige with 90%brightness) and cursor*/
+.settings-button:hover {
+    border: none;
+    outline: none;
+    filter: brightness(90%);
+    cursor: pointer;
+}
+
+/*The layout of the elements will be changed when the width is less than 1325px. So that each container occupies one row*/
+@media (max-width: 1325px) {
+    .half-content {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr 20fr;
+        grid-template-areas:
+            "bar"
+            "header"
+            "box";
+        width: 100%;
+        height: 100%;
+        padding: 5%;
+    }
+
+    .box {
+        width: 100%;
+    }
+}

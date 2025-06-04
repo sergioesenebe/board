@@ -1,0 +1,540 @@
+/*Align the box in the center and we set the background to white*/
+body {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    /* All the screen */
+    width: 100%;
+    background-color: #EDE7DC;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/*Font of the whole page*/
+* {
+    font-family: Arial, sans-serif;
+    box-sizing: border-box;
+}
+
+/*Title margins*/
+h2 {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+h3 {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+
+
+/*We define the grid-areas, backgroudncolors, padding, border, paddings and alignment for some of the containers*/
+header {
+    grid-area: header;
+}
+
+/*Id for the search and options*/
+#title-options {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+/*Id for the search and options*/
+#back-and-title {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    flex: 1;
+}
+
+/*Image size for search and options*/
+.options-button {
+    border-radius: 20px;
+    padding: 5px;
+}
+
+/*Button white*/
+.white-button {
+    border: none;
+    border-radius: 10px;
+    padding: 5px;
+    margin: 5px 0;
+    background-color: white;
+}
+
+/*Buttons white when hover will not have border, change color (beige with 90%brightness) and cursor*/
+.white-button:hover {
+    border: none;
+    outline: none;
+    background-color: #D5D0C6;
+    cursor: pointer;
+}
+
+/*Image size for go back*/
+.back {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+}
+
+/*Padding and border for the div to search*/
+#search {
+    padding: 5px 10px;
+    border-radius: 20px;
+    display: flex;
+    transition: background-color 0.4s ease;
+}
+
+/*Confiture the mouse hover for search and options icon*/
+.options-button:hover {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.back:hover {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/*Remove brders and define size on input search*/
+#search-input {
+    font-size: 16px;
+    border: none;
+    transition: opacity 0.4s;
+    background-color: transparent;
+}
+
+/*Remove brders on focus on input search*/
+#search-input:focus {
+    outline: none;
+}
+
+/*when click on the search*/
+.search-focus {
+    background-color: white;
+    width: auto;
+    display: flex;
+    transition: 0.4s;
+}
+
+/*Explain colors in calendar change color of the text, align and gap. Width same as header*/
+#calendar-legend {
+    display: flex;
+    align-items: center;
+    color: #6E6E6E;
+    gap: 20px;
+    width: 320px;
+}
+
+/*Color to show, size and border*/
+#calendar-legend div {
+    height: 10px;
+    width: 10px;
+    border-radius: 100%;
+}
+
+/*Options for the board*/
+#options-general {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    min-width: 160px;
+    padding: 0px;
+}
+
+/*Delete option in options, with red*/
+.delete-option {
+    transition: background-color 0.5s, box-shadow 0.5s;
+    margin: 0px;
+    padding: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    color: rgb(240, 128, 128);
+}
+
+/*Edit option in options*/
+.edit-option {
+    transition: background-color 0.5s, box-shadow 0.5s;
+    margin: 0px;
+    padding: 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+/*Change background when hover*/
+.options:hover {
+    background-color: #e0e0e0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+/*Link to open*/
+.link {
+    text-decoration: underline;
+    color: #8c6d5d;
+}
+
+/*Hover change cursor*/
+.link:hover {
+    cursor: pointer;
+    filter: brightness(60%);
+}
+
+/*Input when trying to change the text*/
+.input-change {
+    background-color: transparent;
+    border: none;
+    width: 100%;
+}
+
+.input-change:focus {
+    box-shadow: none;
+    outline: none;
+    border: none;
+}
+
+/*When component is dragable change cursor and opacity*/
+[draggable="true"] {
+    cursor: grab;
+    opacity: 0.9;
+    transition: all 0.2s ease;
+}
+
+.half-bar {
+    grid-area: bar;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/*All the components that could be clicked*/
+.components-click:hover {
+    cursor: pointer;
+    filter: brightness(90%);
+    transition: all 0.3s ease;
+}
+
+/*All the components that could be clicked, with white color*/
+.white-components-click:hover {
+    cursor: pointer;
+    background-color: #D5D0C6;
+    transition: all 0.3s ease;
+}
+
+/* bar in the left */
+.options-bar {
+    background-color: #D9D9D9;
+    border-radius: 50px;
+    width: fit-content;
+    /*Make it as bigger as the elements*/
+}
+
+/*Bar for settings and user*/
+.profile-bar {
+    background-color: #D9D9D9;
+    border-radius: 50px;
+    border: none;
+    width: fit-content;
+    padding: 0;
+    margin: 0;
+    /*Make it as bigger as the elements*/
+}
+
+.profile-bar img {
+    border-radius: 50px;
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: block;
+
+    /*Make it as bigger as the elements*/
+}
+
+/* Size of the images on the bar */
+.half-bar img {
+    width: 100px;
+    aspect-ratio: 1 / 1;
+    border-radius: 50px;
+}
+
+/* Size of the buttons */
+.half-bar button {
+    width: 100px;
+    height: 100px;
+    aspect-ratio: 1 /bar bar 1;
+}
+
+/*Configuration for buttons bar*/
+.button-not-selected {
+    border: none;
+    cursor: pointer;
+    background: none;
+    background-size: cover;
+    display: block;
+    background-size: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/*Configuration for buttons when mouse is hover*/
+.button-not-selected:hover {
+    border: none;
+    cursor: pointer;
+    border-radius: 50px;
+    /* Styles the element with rounded corners and a centered, non-repeating background image scaled to 50% */
+    display: block;
+    background-size: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/*Button for home*/
+.button-home {
+    background-image: url("/img/Icons/Black/home_black.png");
+}
+
+/*Button home, when mouse is hover*/
+.button-home:hover {
+    background-image: url("/img/Icons/Beige/home_beige.png");
+    background-color: #292C35;
+    border-radius: 50px;
+}
+
+/*Button for board*/
+.button-board {
+    background-image: url("/img/Icons/Black/board_black.png");
+}
+
+/*Button board, when mouse is hover*/
+.button-board:hover {
+    background-image: url("/img/Icons/Beige/board_beige.png");
+    background-color: #292C35;
+    border-radius: 50px;
+}
+
+/*Button for calendar*/
+.button-notes {
+    background-image: url("/img/Icons/Black/notes_black.png");
+}
+
+/*Button calendar, when mouse is hover*/
+.button-notes:hover {
+    background-image: url("/img/Icons/Beige/notes_beige.png");
+    background-color: #292C35;
+    border-radius: 50px;
+}
+
+/*Button for calendar*/
+.button-calendar {
+    background-image: url("/img/Icons/Black/calendar_black.png");
+}
+
+/*Button calendar, when mouse is hover*/
+.button-calendar:hover {
+    background-image: url("/img/Icons/Beige/calendar_beige.png");
+    background-color: #292C35;
+    border-radius: 50px;
+}
+
+/*Button for calendar*/
+.buton-settings {
+    background-image: url("/img/Icons/Black/settings_black.png");
+}
+
+/*Button calendar, when mouse is hover*/
+.buton-settings:hover {
+    background-image: url("/img/Icons/Beige/settings_beige.png");
+    background-color: #292C35;
+    border-radius: 50px;
+}
+
+/*Button home is selected*/
+.button-home-selected {
+    border: none;
+    cursor: pointer;
+    background-color: #292C35;
+    background-image: url("/img/Icons/Beige/home_beige.png");
+    /* Styles the element with rounded corners and a centered, non-repeating background image scaled to 50% */
+    border-radius: 50px;
+    display: block;
+    background-size: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+    /*Align the box in the center and we set the background to white*/
+}
+
+/*Button board is selected*/
+.button-board-selected {
+    border: none;
+    cursor: pointer;
+    background-color: #292C35;
+    background-image: url("/img/Icons/Beige/board_beige.png");
+    /* Styles the element with rounded corners and a centered, non-repeating background image scaled to 50% */
+    border-radius: 50px;
+    display: block;
+    background-size: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/*Button notes is selected*/
+.button-notes-elected {
+    border: none;
+    cursor: pointer;
+    background-color: #292C35;
+    background-image: url("/img/Icons/Beige/notes_beige.png");
+    /* Styles the element with rounded corners and a centered, non-repeating background image scaled to 50% */
+    border-radius: 50px;
+    display: block;
+    background-size: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/*Button calendar is selected*/
+.button-calendar-selected {
+    border: none;
+    cursor: pointer;
+    background-color: #292C35;
+    background-image: url("/img/Icons/Beige/calendar_beige.png");
+    /* Styles the element with rounded corners and a centered, non-repeating background image scaled to 50% */
+    border-radius: 50px;
+    display: block;
+    background-size: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/*Button settings selected*/
+.buton-settings-selected {
+    border: none;
+    cursor: pointer;
+    background-color: #292C35;
+    background-image: url("/img/Icons/Beige/settings_beige.png");
+    /* Styles the element with rounded corners and a centered, non-repeating background image scaled to 50% */
+    border-radius: 50px;
+    display: block;
+    background-size: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+
+/*To hide elements*/
+.hidden {
+    display: none;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/*Element with opacity 1*/
+.fade {
+    opacity: 1;
+    transition: 0.5s;
+}
+
+/*Element dissapear with transition*/
+.fade.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/*Check list style, remove margin and list points*/
+.check-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+/*Change cursor when hover*/
+input[type="checkbox"]:hover {
+    cursor: pointer;
+}
+
+/*Change color when selected*/
+input[type="checkbox"]:checked {
+    accent-color: #d0f0c0;
+}
+
+/*Label will have a border when they are hover and checked*/
+.select-avatar {
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border 0.3s;
+}
+
+.select-avatar:hover {
+    border: 2px solid #BFA177;
+    filter: brightness(0.8);
+}
+
+.select-avatar.active {
+    border: 2px solid #BFA177;
+    filter: brightness(0.8);
+}
+
+::-webkit-scrollbar-button {
+    display: none;
+    height: 0;
+    width: 0;
+}
+
+
+/* Scrollbar size */
+*::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+/*Margin in scrollbar and background color*/
+*::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    margin: 15px;
+    border-radius: 4px;
+}
+/*Color of the line and radius*/
+*::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 4px;
+}
+/*Don't show buttons*/
+*::-webkit-scrollbar-button {
+    display: none;
+    height: 0;
+    width: 0;
+}
+
+
+/*The layout of the elements will be changed when the width is less than 1325px. So that each container occupies one row*/
+@media (max-width: 1325px) {
+
+    /*Display the bar centered*/
+    .options-bar {
+        background-color: #D9D9D9;
+        border-radius: 50px;
+        max-width: fit-content;
+        display: flex;
+    }
+
+    .half-bar {
+        grid-area: bar;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: none;
+        flex-direction: row;
+    }
+
+    /*Hide the image of the profile*/
+    .profile-bar img {
+        display: none;
+    }
+}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<!--  -->
+
+<head>
+    <meta charset="utf8">
+    <title>esenebe board - Board</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/board.css">
+    <link rel="icon" href="/img/Logos/esenebe_logo.png" />
+</head>
+
+<body>
+    <div class="board-half-content">
+        <div class="half-bar">
+            <img class="icon"
+                src="/img/Logos/esenebe_logo.png">
+            <div class="options-bar">
+                <a href="./home.html"><button class="button-not-selected button-home" title="Home"></button></a>
+                <a href="boards.html"><button class="button-board-selected" title="Boards"></button></a>
+                <a href="./notes.html"><button class="button-not-selected button-notes" title="Notes"></button></a>
+                <a href="./calendar.html"><button class="button-not-selected button-calendar" title="Calendar"></button></a>
+            </div>
+            <div class="profile-bar">
+                <a href="./settings.html"><button class="button-not-selected buton-settings" title="Settings"></button></a>
+                <img id="avatar">
+            </div>
+        </div>
+        <header>
+            <div id="back-and-title">
+                <a href="./boards.html"><img class="back"
+                        src="/img/Icons/Black/back_black.png"></a>
+                <h1 id="board-title"></h1>
+            </div>
+
+            <div id="title-options">
+                <div id="options-general" class="fade fade-out" style="display: none;">
+                    <p id="edit-general" class="edit-option options">Edit</p>
+                    <p id="delete-general" class="delete-option options">Delete</p>
+                </div>
+                <div id="search">
+                    <input type="text" id="search-input" class="fade fade-out" placeholder="Search..." style="display: none;">
+                    <img id="search-icon" class="options-button" width="40px" height="40px"
+                        src="/img/Icons/Black/search_black.png">
+                </div>
+                <img id="options-icon" class="options-button" width="40px" height="40px"
+                    src="/img/Icons/Black/options_black.png">
+
+            </div>
+
+        </header>
+        <div id="content">
+            <div id="board">
+            </div>
+            <div id="edit-card" class="fade fade-out" style="display: none;">
+                <div id="header-edit-card">
+                    <div id="edit-card-back-title">
+                        <img id="edit-card-back" class="back"
+                            src="/img/Icons/Black/back_black.png"></a>
+                        <h2 id="card-edit-name"></h2>
+                    </div>
+                    <div id="edit-delete-card">
+                        <img id="pen-card"
+                            src="/img/Icons/Gray/pen_gray.png"
+                            width="40px" height="40px" class="options-button">
+                        <img id="delete-card"
+                            src="/img/Icons/Other/trash_red.png"
+                            width="40px" height="40px" class="options-button">
+
+                    </div>
+                </div>
+                <div id="line-edit-card" style="height: 1px;background-color: #D9D9D9; margin: 20px 0;"></div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="js/board.js"></script>
+</body>
+
+</html>

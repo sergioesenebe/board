@@ -1,0 +1,278 @@
+/*Configuring size and order of the containers and the resize to one line*/
+.home-half-content {
+    height: 90%;
+    width: 90%;
+    display: grid;
+    justify-content: center;
+    /*Center the elements*/
+    /*Divide the page in 4 (one for the bar) and the other three to put two containers, 
+        one will occupy twice as much space. The header will occupy the three holes*/
+    grid-template-columns: 10% 30% 30% 30%;
+    grid-template-rows: 4fr 20fr 10fr 10fr;
+    grid-template-areas:
+        "bar header header header"
+        "bar halfboard halfboard halfcalendar"
+        "bar halftask halfnotes halfnotes"
+        "bar halfevent halfnotes halfnotes";
+    gap: 20px;
+}
+
+/*Tables of the boards font style and bordercolor*/
+#half-board th {
+    font-weight: normal;
+    text-decoration: underline;
+    max-width: 100px;
+    min-width: 100px;
+    white-space: nowrap;
+    /* allows line breaks */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/*Table for the board info (space)*/
+#half-board table {
+    border-spacing: 10px;
+}
+
+/*This will be a representation of the events like ellipses*/
+.home-lit-event {
+    border-radius: 20px;
+    background-color: white;
+    height: 5px;
+    width: 100px;
+
+}
+
+/*A container for the boards, configuring the size*/
+#boards {
+    gap: 25px;
+    overflow-x: auto;
+    /*Enables horizontal scrolling*/
+    box-sizing: border-box;
+    height: 70%;
+    padding-bottom: 10px;
+    margin-right: 25px;
+    display: flex;
+    max-width: 100%;
+}
+
+/*Board container*/
+.board {
+    min-width: 45%;
+    max-width: 45%;
+    border-radius: 20px;
+    background-color: #EDE7DC;
+    box-sizing: border-box;
+    padding: 15px;
+    overflow: auto;
+    /*Enables horizontal and vertical scrolling*/
+}
+
+/*Div for board, border and color*/
+#half-board {
+    grid-area: halfboard;
+    background: #DBCCB7;
+    padding: 20px;
+    border-radius: 20px;
+}
+
+/*Div for calendar, border and color, center with flex*/
+#half-calendar {
+    grid-area: halfcalendar;
+    background: #C3C3C3;
+    padding: 20px;
+    border-radius: 20px;
+    /*We center the content*/
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+}
+
+
+/*Red for a calentar day (Today)*/
+.red-day {
+    background-color: red;
+    border-radius: 100%;
+    height: 20px;
+    min-width: 20px;
+    width: auto;
+}
+
+/*task percentage div, border and color*/
+#half-task {
+    grid-area: halftask;
+    background: #D9D9D9;
+    padding: 20px;
+    border-radius: 20px;
+}
+
+/*Div for events, border and color*/
+#half-event {
+    grid-area: halfevent;
+    background: #D9D9D9;
+    padding: 20px;
+    border-radius: 20px;
+}
+
+/*Div for notes, border and color*/
+#half-notes {
+    grid-area: halfnotes;
+    background: #DBCCB7;
+    padding: 20px;
+    border-radius: 20px;
+}
+
+/*table with board info (space between)*/
+#half-board table {
+    border-spacing: 10px;
+}
+
+/*This will be a representation of the events like ellipses*/
+.home-lit-event {
+    border-radius: 20px;
+    background-color: white;
+    height: 5px;
+
+}
+
+/*Div for text Your Calendar and Month, will be in extrems*/
+#calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 320px;
+    flex-wrap: wrap;
+}
+
+/*Table for the calendar*/
+#half-calendar table {
+    display: flex;
+    flex-wrap: wrap;
+    /* set space between rows and columns */
+    border-collapse: separate;
+    border-spacing: 15px 10px;
+}
+
+/*elements of the table align center and size*/
+#half-calendar td {
+    height: 25px;
+    width: 25px;
+    text-align: center;
+}
+
+
+/*Red for a calentar day (Today)*/
+.today-day {
+    background-color: lightsalmon;
+    border-radius: 100%;
+    color: black;
+}
+
+/*Yellow for a calendar day (Event)*/
+.event-day {
+    background-color: lightgoldenrodyellow;
+    border-radius: 100%;
+    height: 20px;
+    min-width: 20px;
+    width: auto;
+    color: black;
+}
+
+/*A container for the notes, configuring the size*/
+#notes {
+    display: flex;
+    gap: 25px;
+    overflow-x: auto;
+    /*Enables horizontal scrolling*/
+    box-sizing: border-box;
+    height: 70%;
+    padding-bottom: 10px;
+    margin-right: 20px;
+}
+
+/*Note container*/
+.note {
+    min-width: 45%;
+    max-width: 45%;
+    border-radius: 20px;
+    background-color: #EDE7DC;
+    box-sizing: border-box;
+    padding: 5px 15px;
+    /*Enables horizontal scrolling*/
+    overflow-y: auto;
+    /*But vertical add an intro*/
+    overflow-x: hidden;
+    white-space: normal;
+    word-wrap: break-word;
+    
+}
+
+/*Don't allow click in checkbox*/
+input[type="checkbox"] {
+    pointer-events: none;
+}
+
+/*Two lines for the Task percentage, black base and orange for the percentage*/
+#line {
+    width: 100%;
+    height: 3px;
+    background-color: black;
+    border: none;
+    display: flex;
+}
+
+/*Line orange for the percentage, width in js*/
+#orange-line {
+    height: 3px;
+    background-color: lightsalmon;
+    border: none;
+    display: flex;
+}
+
+/*When it is smaller*/
+@media (max-width: 1325px) {
+    .home-half-content {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: min-content min-content min-content min-content min-content;
+        grid-template-areas:
+            "bar bar"
+            "header header"
+            "halfboard halfboard"
+            "halftask halfcalendar"
+            "halfevent halfcalendar"
+            "halfnotes halfnotes";
+        width: 100%;
+        height: 100%;
+        padding: 5%;
+        max-height: auto;
+        overflow-y: auto;
+    }
+
+    /*change elements of the table size*/
+    #half-calendar td {
+        height: 25px;
+        width: 25px;
+    }
+
+    /*Change calendar header and legend size*/
+    #calendar-header {
+        width: 250px;
+    }
+
+    #calendar-legend {
+        width: 250px;
+    }
+    /*Change notes and boards size*/
+    #notes {
+        height: 200px;
+    }
+    #boards {
+        height: 200px;
+    }
+    #half-notes {
+        height: min-content;
+    }
+}

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<!--  -->
+
+<head>
+    <meta charset="utf8">
+    <title>esenebe board - Note</title>
+    <link rel="stylesheet" href="./css/common.css">
+    <link rel="stylesheet" href="./css/note.css">
+    <link rel="icon" href="/img/Logos/esenebe_logo.png" />
+</head>
+
+<div class="note-half-content">
+    <div class="half-bar">
+        <img class="icon" src="/img/Logos/esenebe_logo.png">
+        <div class="options-bar">
+            <a href="./home.html"><button class="button-not-selected button-home" title="Home"></button></a>
+            <a href="./boards.html"><button class="button-not-selected button-board" title="Boards"></button></a>
+            <button class="button-notes-elected button-notes" title="Notes"></button></a>
+            <a href="./calendar.html"><button class="button-not-selected button-calendar" title="Calendar"></button></a>
+        </div>
+        <div class="profile-bar">
+            <a href="./settings.html"><button class="button-not-selected buton-settings" title="Settings"></button></a>
+            <img id="avatar">
+        </div>
+    </div>
+    <header>
+        <div id="back-and-title">
+            <a href="./notes.html"><img class="back"
+                    src="/img/Icons/Black/back_black.png"></a>
+            <h1 id="note-title"></h1>
+        </div>
+        <div id="title-options">
+            <div id="options-general" class="fade fade-out" style="display: none;">
+                <p id="edit-general" class="edit-option options">Edit</p>
+                <p id="delete-general" class="delete-option options">Delete</p>
+            </div>
+            <img id="options-icon" class="options-button" width="40px" height="40px"
+                src="/img/Icons/Black/options_black.png">
+
+        </div>
+
+    </header>
+    <div id="content">
+        <div id="note">
+            <div contenteditable='true' id='note-content' rows="10" placeholder="Add text..."></div>
+            <div id="text-options">
+                <button id="add-normal-text">Normal Text</button>
+                <button id="add-heading">Heading</button>
+                <button id="add-list">List</button>
+                <button id="add-order-list">Order List</button>
+                <button id="add-to-do-list">To Do List</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="module" src="js/note.js"></script>
+</body>
+
+</html>
