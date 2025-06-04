@@ -222,6 +222,9 @@ header {
 /*card, padding to allow drag and drop*/
 .card {
     padding: 10px 0px;
+    /*Allow dragable on mobiles*/
+    touch-action: none;
+    user-select: none;
 }
 
 /*Content Card*/
@@ -233,6 +236,7 @@ header {
     display: flex;
     justify-content: space-between;
 }
+
 /*size and margin for the pen in the card (top right)*/
 .card-pen-icon {
     width: 30px;
@@ -283,10 +287,12 @@ header {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
 /*Input to create an event, without border*/
 #table-edit-card input {
     border: none;
 }
+
 #table-edit-card td {
     max-width: 200px;
     /*Add block display and cut the div if longer*/
@@ -294,6 +300,7 @@ header {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
 /*Don't change the border when focus*/
 #table-edit-card input:focus {
     border: none;
@@ -404,10 +411,12 @@ header {
         height: 100%;
         padding: 5%;
     }
+
     /*Update body height to fit with mobile*/
     body {
         height: 100dvh;
     }
+
     /*Edit card change width and height*/
     #edit-card {
         width: 100%;
