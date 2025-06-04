@@ -162,12 +162,7 @@ header {
     height: 100%;
     display: flex;
     flex-direction: column;
-    user-select: none;
-    display: flex;
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none; /* IE 10 and IE 11 */
-    user-select: none; /* Standard syntax */
-  
+    display: flex;  
 }
 
 /*The plus column*/
@@ -226,13 +221,6 @@ header {
 /*card, padding to allow drag and drop*/
 .card {
     padding: 10px 0px;
-    /*Allow dragable on mobiles*/
-    touch-action: none;
-    user-select: none;
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none; /* IE 10 and IE 11 */
-    user-select: none; /* Standard syntax */
-  
 }
 
 /*Content Card*/
@@ -243,13 +231,6 @@ header {
     border-radius: 20px;
     display: flex;
     justify-content: space-between;
-    /*Allow dragable on mobiles*/
-    touch-action: none;
-    user-select: none;
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none; /* IE 10 and IE 11 */
-    user-select: none; /* Standard syntax */
-  
 }
 
 /*size and margin for the pen in the card (top right)*/
@@ -263,14 +244,7 @@ header {
 /*cards content (properties and text)*/
 .content-card {
     padding: 20px;
-    padding-right: 0px;
-    /*Allow dragable on mobiles*/
-    touch-action: none;
-    user-select: none;
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none; /* IE 10 and IE 11 */
-    user-select: none; /* Standard syntax */
-  
+    padding-right: 0px;  
 }
 
 /*Name of the card and trash*/
@@ -363,14 +337,7 @@ header {
     display: flex;
     max-width: 100%;
     gap: 1%;
-    flex-wrap: wrap;
-    /*Allow dragable on mobiles*/
-    touch-action: none;
-    user-select: none;
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none; /* IE 10 and IE 11 */
-    user-select: none; /* Standard syntax */
-  
+    flex-wrap: wrap;  
 }
 
 /*Property of the card*/
@@ -390,13 +357,6 @@ header {
     /* hide the text that is outgoing */
     text-overflow: ellipsis;
     /* Show "..." */
-    /*Allow dragable on mobiles*/
-    touch-action: none;
-    user-select: none;
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none; /* IE 10 and IE 11 */
-    user-select: none; /* Standard syntax */
-  
 }
 
 /*Type Option (trash and pen)*/
