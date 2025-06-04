@@ -340,10 +340,11 @@ body {
         display: none;
     }
 
-    /*Update body height to fit with mobile*/
+    /*Update height and width to fit with mobile*/
     .signup-form {
         height: 80dvh;
         overflow: auto;
+        max-width: 600px;
     }
 
     /*Show any input in one line*/

@@ -164,6 +164,10 @@ header {
     flex-direction: column;
     user-select: none;
     display: flex;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+  
 }
 
 /*The plus column*/
@@ -225,6 +229,10 @@ header {
     /*Allow dragable on mobiles*/
     touch-action: none;
     user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+  
 }
 
 /*Content Card*/
@@ -238,6 +246,10 @@ header {
     /*Allow dragable on mobiles*/
     touch-action: none;
     user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+  
 }
 
 /*size and margin for the pen in the card (top right)*/
@@ -255,6 +267,10 @@ header {
     /*Allow dragable on mobiles*/
     touch-action: none;
     user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+  
 }
 
 /*Name of the card and trash*/
@@ -351,6 +367,10 @@ header {
     /*Allow dragable on mobiles*/
     touch-action: none;
     user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+  
 }
 
 /*Property of the card*/
@@ -373,6 +393,10 @@ header {
     /*Allow dragable on mobiles*/
     touch-action: none;
     user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+  
 }
 
 /*Type Option (trash and pen)*/
