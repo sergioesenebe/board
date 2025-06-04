@@ -340,6 +340,11 @@ function displayEditEvent(calEvent) {
         endDate = formatToDB(endDate);
         //Save old event
         const oldEvent = new CalendarEvent(calEvent);
+        //If empty show an alert
+        if (inputName == '' || !inputStartTime || !inputStartDay || !inputEndTime || !inputEndDay) {
+            alert('Please add a correct time and date');
+            return;
+        };
         //Update Event
         calEvent.update({ newName: inputName, newStartDate: startDate, newEndDate: endDate, newLocation: textAreaLocation })
             .then(() => {
@@ -350,6 +355,29 @@ function displayEditEvent(calEvent) {
                 console.error('Error Updating the Event', error);
             })
 
+    })
+    //When update start time, update end time + 1
+    document.getElementById('event-start-time').addEventListener('input', () => {
+        //Get new time
+        let newStartTime = document.getElementById('event-start-time').value;
+        //Take hours and increase by 1
+        let hours = newStartTime.split(':', 2)[0];
+        hours = parseInt(hours) + 1;
+        //Take the mins
+        let mins = newStartTime.split(':', 2)[1];
+        //Convert into string with 2 numbers
+        hours = String(hours).padStart(2, '0');
+        mins =String(mins).padStart(2, '0');
+        //Create the new time for the end and assigned to its value
+        let newEndTime = `${hours}:${mins}`;
+        document.getElementById('event-end-time').value = newEndTime;
+    })
+    //When update start date, update end date
+    document.getElementById('event-start-day').addEventListener('input', () => {
+        //Get new time
+        let newStartDay = document.getElementById('event-start-day').value;
+        //Assign to end date
+        document.getElementById('event-end-day').value = newStartDay;
     })
     //When click on delete (edit event) delete it
     document.getElementById('delete-event-button').addEventListener('click', () => {

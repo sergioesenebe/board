@@ -117,4 +117,8 @@ header {
     #note-title {
         max-width: 500px;
     }
+    /*Update body height to fit with mobile*/
+    body {
+        height: 100dvh;
+    }
 }

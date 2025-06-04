@@ -107,8 +107,11 @@ input:focus {
         height: 100%;
         padding: 5%;
     }
-
     .box {
         width: 100%;
+    }
+    /*Update body height to fit with mobile*/
+    body {
+        height: 100dvh;
     }
 }

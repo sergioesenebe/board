@@ -404,7 +404,10 @@ header {
         height: 100%;
         padding: 5%;
     }
-
+    /*Update body height to fit with mobile*/
+    body {
+        height: 100dvh;
+    }
     /*Edit card change width and height*/
     #edit-card {
         width: 100%;
