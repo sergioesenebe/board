@@ -235,6 +235,9 @@ header {
     border-radius: 20px;
     display: flex;
     justify-content: space-between;
+    /*Allow dragable on mobiles*/
+    touch-action: none;
+    user-select: none;
 }
 
 /*size and margin for the pen in the card (top right)*/
@@ -249,6 +252,9 @@ header {
 .content-card {
     padding: 20px;
     padding-right: 0px;
+    /*Allow dragable on mobiles*/
+    touch-action: none;
+    user-select: none;
 }
 
 /*Name of the card and trash*/
@@ -342,6 +348,9 @@ header {
     max-width: 100%;
     gap: 1%;
     flex-wrap: wrap;
+    /*Allow dragable on mobiles*/
+    touch-action: none;
+    user-select: none;
 }
 
 /*Property of the card*/
@@ -361,6 +370,9 @@ header {
     /* hide the text that is outgoing */
     text-overflow: ellipsis;
     /* Show "..." */
+    /*Allow dragable on mobiles*/
+    touch-action: none;
+    user-select: none;
 }
 
 /*Type Option (trash and pen)*/
