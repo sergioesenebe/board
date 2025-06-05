@@ -163,6 +163,9 @@ header {
     display: flex;
     flex-direction: column;
     display: flex;  
+    /*Avoid move or scroll, for dragging in mobile*/
+    touch-action: none;
+    user-select: none;
 }
 
 /*The plus column*/
@@ -221,6 +224,9 @@ header {
 /*card, padding to allow drag and drop*/
 .card {
     padding: 10px 0px;
+    /*Avoid move or scroll, for dragging in mobile*/
+    touch-action: none;
+    user-select: none;
 }
 
 /*Content Card*/
@@ -231,6 +237,9 @@ header {
     border-radius: 20px;
     display: flex;
     justify-content: space-between;
+    /*Avoid move or scroll, for dragging in mobile*/
+    touch-action: none;
+    user-select: none;
 }
 
 /*size and margin for the pen in the card (top right)*/
@@ -338,6 +347,9 @@ header {
     max-width: 100%;
     gap: 1%;
     flex-wrap: wrap;  
+    /*Avoid move or scroll, for dragging in mobile*/
+    touch-action: none;
+    user-select: none;
 }
 
 /*Property of the card*/
@@ -357,6 +369,9 @@ header {
     /* hide the text that is outgoing */
     text-overflow: ellipsis;
     /* Show "..." */
+    /*Avoid move or scroll, for dragging in mobile*/
+    touch-action: none;
+    user-select: none;
 }
 
 /*Type Option (trash and pen)*/

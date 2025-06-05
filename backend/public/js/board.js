@@ -433,6 +433,58 @@ function dragAndDrop(component, position) {
         }
     })
 }
+/*Function to allow moving components in mobile*/
+function enableTouchDrag(component, position) {
+    //Allow to move cards between columns
+    let className = component.className;
+    if (className == 'column') {
+        component.addEventListener('dragover', (event) => {
+            event.preventDefault();
+        });
+    }
+    //Allow start moving a component
+    component.addEventListener('touchstart', (event) => {
+        //Hide all option open
+        hideAll();
+        //Component that is moving is the component that get the listener
+        dragging = component;
+        //Allow the visual effect of moving
+        event.dataTransfer.effectAllowed = 'move';
+        //In case the browser take the column instead of the column-header, take the header
+        if (dragging.className == 'column') {
+            dragging = dragging.querySelector('.column-header');
+        }
+    })
+    //Allow drop the component
+    component.addEventListener('touchmove', (event) => {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "move";
+    })
+    //Manage the drop
+    component.addEventListener('touchend', (event) => {
+        event.preventDefault();
+        //Dragging & component must be different
+        if (dragging && dragging !== component) {
+            //In case the browser take the column instead of the column-header, take the header
+            if (dragging.className == 'column-header' && component.className == 'column') {
+                component = component.querySelector('.column-header');
+            }
+            //Knowing if its dropped after or before
+            const rect = component.getBoundingClientRect();
+            let isAfter;
+            //In case of columns the difference will be split it in left or right
+            if (position.toLowerCase() === 'x') {
+                isAfter = event.clientX > rect.left + rect.width / 2;
+            }
+            //In case of cards the difference will be split it in top or bottom
+            else if (position.toLowerCase() === 'y') {
+                isAfter = event.clientY > rect.top + rect.height / 2;
+
+            }
+            //Call the function to move the components
+            moveComponents(component, dragging, isAfter)
+        }
+    })}
 //Function to get the click in the property and show options to edit it
 //Edit property when editting cards
 function rowClickEvent(row, property, cardId) {
@@ -1074,7 +1126,11 @@ function addColumn(column, index) {
     options.style.display = 'none';
     //Columns could be move to order them
     columnHeader.draggable = true;
-    dragAndDrop(columnHeader, 'X');
+    if ('ontouchstart' in window) {
+        enableTouchDrag(columnHeader, 'X');
+    } else {
+        dragAndDrop(columnHeader, 'X');
+    }
     //Options edit and delete
     const editOption = document.createElement('p');
     //When the button edit click, the title will be an input to edit it
@@ -1149,7 +1205,11 @@ function addCards(columnId) {
             plusEventPadding.appendChild(plusImage);
             plusImage.src = "/img/Icons/Black/plus_black.png";
             //Allow move elements (it will be after or before depending of the heigh (Y))
-            dragAndDrop(plusEvent, 'Y');
+            if ('ontouchstart' in window) {
+                enableTouchDrag(plusEvent, 'Y');
+            } else {
+                dragAndDrop(plusEvent, 'Y');
+            }
             //When clicking in plus a new card will be added
             plusEvent.addEventListener('click', () => {
                 //Add a card to the column with name 'New Card'
@@ -1203,7 +1263,12 @@ function addCard(card, index) {
     //Allow Move cards
     divCard.draggable = true;
     //Allow move elements (it will be after or before depending of the heigh (Y))
-    dragAndDrop(divCard, 'Y'); 3
+    if ('ontouchstart' in window) {
+        enableTouchDrag(divCard, 'Y');
+    } else {
+        dragAndDrop(divCard, 'Y');
+    }
+    
     //Create a span for the name
     const cardText = document.createElement('span');
     //Search all the properties
