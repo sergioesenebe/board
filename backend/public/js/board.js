@@ -439,15 +439,6 @@ function dragAndDrop(component, position) {
 function enableTouchDrag(component, position) {
     //If it's a plus return
     if (component.classList.contains('new-card-plus') || component.id === 'new-column-plus') return;
-    //If it's different from card o column, check if it could be a card
-    if (component.className !== 'card' && component.className !== 'column' || component.className !== 'column-header') {
-        const cardTarget = component.closest('.card');
-        if (cardTarget) component = cardTarget;
-        else {
-            document.removeEventListener('touchend', onTouchEnd);
-            return;
-        }
-    }
 
     let startX, startY;
     let draggingElement = null;
@@ -476,7 +467,17 @@ function enableTouchDrag(component, position) {
             } else if (position.toLowerCase() === 'y') {
                 isAfter = touch.clientY > rect.top + rect.height / 2;
             }
-
+            //If it's different from card o column, check if it could be a card
+            if (target.className !== 'card' && target.className !== 'column' || target.className !== 'column-header') {
+                const cardTarget = target.closest('.card');
+                if (cardTarget) target = cardTarget;
+                else {
+                    document.removeEventListener('touchend', onTouchEnd);
+                    return;
+                }
+            }
+            console.log('target', target);
+            console.log('dragging', dragging);
             // 🔁 Aquí movemos realmente el componente en el DOM
             moveComponents(target, dragging, isAfter);
         }
@@ -1332,8 +1333,6 @@ function moveComponents(component, dragging, isAfter) {
     const isCard = (dragging.classList.contains('card') && component.classList.contains('card'));
     //If it's not a column or a card, return
     if (!isColumn && !isCard) {
-        console.log('component', component);
-        console.log('dragging', dragging);
         return;
     }
     //create variables that will be used
