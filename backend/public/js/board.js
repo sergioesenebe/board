@@ -465,6 +465,7 @@ function enableTouchDrag(component, position) {
     }, { passive: false });
 
     document.addEventListener('touchend touchcancel', (e) => {
+        alert('touchend');
         e.preventDefault();
 
         // Encuentra el elemento en la posición final
