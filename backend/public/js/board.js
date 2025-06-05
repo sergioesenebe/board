@@ -437,11 +437,12 @@ function dragAndDrop(component, position) {
 }
 /*Function to allow moving components in mobile*/
 function enableTouchDrag(component, position) {
+    //If it's a plus return
+    if (component.classList.contains('new-card-plus') || component.id === 'new-column-plus') return;
     let startX, startY;
     let draggingElement = null;
     let dragging = null;
 
-    // Declaramos la función una vez
     function onTouchEnd(e) {
         e.preventDefault();
 
@@ -451,13 +452,12 @@ function enableTouchDrag(component, position) {
         if (dragging && droppedElement && dragging !== droppedElement) {
             let target = droppedElement;
 
-            if (
-                dragging.classList.contains('column-header') &&
-                target.classList.contains('column')
-            ) {
+            // Caso: estamos soltando en una columna, y el dragging es un header
+            if (dragging.className === 'column-header' && target.className === 'column') {
                 target = target.querySelector('.column-header');
             }
 
+            // Verificar posición relativa
             const rect = target.getBoundingClientRect();
             let isAfter = false;
 
@@ -467,6 +467,7 @@ function enableTouchDrag(component, position) {
                 isAfter = touch.clientY > rect.top + rect.height / 2;
             }
 
+            // 🔁 Aquí movemos realmente el componente en el DOM
             moveComponents(target, dragging, isAfter);
         }
 
@@ -477,7 +478,6 @@ function enableTouchDrag(component, position) {
 
         dragging = null;
 
-        // ✅ Se elimina al final del gesto
         document.removeEventListener('touchend', onTouchEnd);
     }
 
@@ -489,10 +489,11 @@ function enableTouchDrag(component, position) {
         startX = touch.clientX;
         startY = touch.clientY;
 
-        dragging = component.classList.contains('column')
+        dragging = component.className === 'column'
             ? component.querySelector('.column-header')
             : component;
 
+        // Clon visual
         draggingElement = dragging.cloneNode(true);
         draggingElement.style.position = 'absolute';
         draggingElement.style.pointerEvents = 'none';
@@ -501,7 +502,6 @@ function enableTouchDrag(component, position) {
         draggingElement.style.top = `${touch.clientY}px`;
         document.body.appendChild(draggingElement);
 
-        // ✅ Se añade cada vez que se toca
         document.addEventListener('touchend', onTouchEnd, { passive: false });
     }, { passive: false });
 
@@ -514,7 +514,6 @@ function enableTouchDrag(component, position) {
         }
     }, { passive: false });
 }
-
 
 //Function to get the click in the property and show options to edit it
 //Edit property when editting cards
