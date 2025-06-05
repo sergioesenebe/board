@@ -438,37 +438,11 @@ function enableTouchDrag(component, position) {
     let startX, startY;
     let draggingElement = null;
 
-    component.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        hideAll();
+    function onTouchEnd(e) {
+        alert('touchend');  // ✅ Ahora solo se mostrará una vez por ciclo
 
-        const touch = e.touches[0];
-        startX = touch.clientX;
-        startY = touch.clientY;
-
-        dragging = component.className === 'column'
-            ? component.querySelector('.column-header')
-            : component;
-
-        draggingElement = dragging.cloneNode(true);
-        draggingElement.style.position = 'absolute';
-        draggingElement.style.pointerEvents = 'none';
-        draggingElement.style.opacity = 0.7;
-        document.body.appendChild(draggingElement);
-    }, { passive: false });
-
-    component.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        const touch = e.touches[0];
-        draggingElement.style.left = touch.clientX + 'px';
-        draggingElement.style.top = touch.clientY + 'px';
-    }, { passive: false });
-
-    document.addEventListener('touchend', (e) => {
-        alert('touchend');
         e.preventDefault();
 
-        // Encuentra el elemento en la posición final
         const touch = e.changedTouches[0];
         const droppedElement = document.elementFromPoint(touch.clientX, touch.clientY);
 
@@ -495,9 +469,41 @@ function enableTouchDrag(component, position) {
         }
 
         dragging = null;
+
+        // ✅ Importante: elimina el listener correctamente
         document.removeEventListener('touchend', onTouchEnd);
+    }
+
+    component.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        hideAll();
+
+        const touch = e.touches[0];
+        startX = touch.clientX;
+        startY = touch.clientY;
+
+        dragging = component.className === 'column'
+            ? component.querySelector('.column-header')
+            : component;
+
+        draggingElement = dragging.cloneNode(true);
+        draggingElement.style.position = 'absolute';
+        draggingElement.style.pointerEvents = 'none';
+        draggingElement.style.opacity = 0.7;
+        document.body.appendChild(draggingElement);
+
+        // ✅ Solo se añade aquí para cada ciclo de drag
+        document.addEventListener('touchend', onTouchEnd, { passive: false });
+    }, { passive: false });
+
+    component.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        draggingElement.style.left = touch.clientX + 'px';
+        draggingElement.style.top = touch.clientY + 'px';
     }, { passive: false });
 }
+
 //Function to get the click in the property and show options to edit it
 //Edit property when editting cards
 function rowClickEvent(row, property, cardId) {
