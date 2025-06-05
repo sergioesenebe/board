@@ -447,26 +447,17 @@ function enableTouchDrag(component, position) {
         e.preventDefault();
 
         const touch = e.changedTouches[0];
-
-        // 👇 Ocultamos temporalmente el clon para que no interfiera con elementFromPoint
-        if (draggingElement) draggingElement.style.display = 'none';
-
         const droppedElement = document.elementFromPoint(touch.clientX, touch.clientY);
-
-        if (draggingElement) draggingElement.style.display = '';
-
-        let moved = false;
 
         if (dragging && droppedElement && dragging !== droppedElement) {
             let target = droppedElement;
 
-            if (
-                dragging.classList.contains('column-header') &&
-                target.classList.contains('column')
-            ) {
+            // Caso: estamos soltando en una columna, y el dragging es un header
+            if (dragging.className === 'column-header' && target.className === 'column') {
                 target = target.querySelector('.column-header');
             }
 
+            // Verificar posición relativa
             const rect = target.getBoundingClientRect();
             let isAfter = false;
 
@@ -476,12 +467,10 @@ function enableTouchDrag(component, position) {
                 isAfter = touch.clientY > rect.top + rect.height / 2;
             }
 
-            // ✅ Intenta mover y marca como movido
+            // 🔁 Aquí movemos realmente el componente en el DOM
             moveComponents(target, dragging, isAfter);
-            moved = true;
         }
 
-        // ✅ Limpieza obligatoria
         if (draggingElement) {
             draggingElement.remove();
             draggingElement = null;
@@ -489,14 +478,9 @@ function enableTouchDrag(component, position) {
 
         dragging = null;
 
-        // ✅ Quitamos el listener (solo 1 vez por drag)
         document.removeEventListener('touchend', onTouchEnd);
-
-        // ✅ Si no se movió, puedes poner un log o alguna acción extra si quieres
-        if (!moved) {
-            console.log("El clon se soltó en lugar no válido.");
-        }
     }
+
     component.addEventListener('touchstart', (e) => {
         e.preventDefault();
         hideAll();
