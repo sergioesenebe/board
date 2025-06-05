@@ -478,6 +478,7 @@ function enableTouchDrag(component, position) {
 
         dragging = null;
 
+        document.removeEventListener('touchend', onTouchEnd);
     }
 
     component.addEventListener('touchstart', (e) => {
