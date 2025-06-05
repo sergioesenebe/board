@@ -440,7 +440,7 @@ function enableTouchDrag(component, position) {
     //If it's a plus return
     if (component.classList.contains('new-card-plus') || component.id === 'new-column-plus') return;
     //If it's different from card o column, check if it could be a card
-    if (component.className !== 'card') {
+    if (component.className !== 'card' && component.className !== 'column' || component.className !== 'column-header') {
         const cardTarget = droppedElement.closest('.card');
         if (cardTarget) component = cardTarget;
         else {
