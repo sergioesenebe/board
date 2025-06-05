@@ -495,6 +495,7 @@ function enableTouchDrag(component, position) {
         }
 
         dragging = null;
+        document.removeEventListener('touchend', onTouchEnd);
     }, { passive: false });
 }
 //Function to get the click in the property and show options to edit it
