@@ -435,56 +435,67 @@ function dragAndDrop(component, position) {
 }
 /*Function to allow moving components in mobile*/
 function enableTouchDrag(component, position) {
-    //Allow to move cards between columns
-    let className = component.className;
-    if (className == 'column') {
-        component.addEventListener('dragover', (event) => {
-            event.preventDefault();
-        });
-    }
-    //Allow start moving a component
-    component.addEventListener('touchstart', (event) => {
-        //Hide all option open
-        hideAll();
-        //Component that is moving is the component that get the listener
-        dragging = component;
-        //Allow the visual effect of moving
-        event.dataTransfer.effectAllowed = 'move';
-        //In case the browser take the column instead of the column-header, take the header
-        if (dragging.className == 'column') {
-            dragging = dragging.querySelector('.column-header');
-        }
-    })
-    //Allow drop the component
-    component.addEventListener('touchmove', (event) => {
-        event.preventDefault();
-        event.dataTransfer.dropEffect = "move";
-    })
-    //Manage the drop
-    component.addEventListener('touchend', (event) => {
-        event.preventDefault();
-        //Dragging & component must be different
-        if (dragging && dragging !== component) {
-            //In case the browser take the column instead of the column-header, take the header
-            if (dragging.className == 'column-header' && component.className == 'column') {
-                component = component.querySelector('.column-header');
-            }
-            //Knowing if its dropped after or before
-            const rect = component.getBoundingClientRect();
-            let isAfter;
-            //In case of columns the difference will be split it in left or right
-            if (position.toLowerCase() === 'x') {
-                isAfter = event.clientX > rect.left + rect.width / 2;
-            }
-            //In case of cards the difference will be split it in top or bottom
-            else if (position.toLowerCase() === 'y') {
-                isAfter = event.clientY > rect.top + rect.height / 2;
+    let startX, startY;
+    let draggingElement = null;
 
+    component.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        hideAll();
+
+        const touch = e.touches[0];
+        startX = touch.clientX;
+        startY = touch.clientY;
+
+        dragging = component.className === 'column'
+            ? component.querySelector('.column-header')
+            : component;
+
+        draggingElement = dragging.cloneNode(true);
+        draggingElement.style.position = 'absolute';
+        draggingElement.style.pointerEvents = 'none';
+        draggingElement.style.opacity = 0.7;
+        document.body.appendChild(draggingElement);
+    }, { passive: false });
+
+    component.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        draggingElement.style.left = touch.clientX + 'px';
+        draggingElement.style.top = touch.clientY + 'px';
+    }, { passive: false });
+
+    component.addEventListener('touchend', (e) => {
+        e.preventDefault();
+
+        // Encuentra el elemento en la posición final
+        const touch = e.changedTouches[0];
+        const droppedElement = document.elementFromPoint(touch.clientX, touch.clientY);
+
+        if (dragging && droppedElement && dragging !== droppedElement) {
+            let target = droppedElement;
+            if (dragging.className === 'column-header' && target.className === 'column') {
+                target = target.querySelector('.column-header');
             }
-            //Call the function to move the components
-            moveComponents(component, dragging, isAfter)
+
+            const rect = target.getBoundingClientRect();
+            let isAfter = false;
+            if (position.toLowerCase() === 'x') {
+                isAfter = touch.clientX > rect.left + rect.width / 2;
+            } else if (position.toLowerCase() === 'y') {
+                isAfter = touch.clientY > rect.top + rect.height / 2;
+            }
+
+            moveComponents(target, dragging, isAfter);
         }
-    })}
+
+        if (draggingElement) {
+            draggingElement.remove();
+            draggingElement = null;
+        }
+
+        dragging = null;
+    }, { passive: false });
+}
 //Function to get the click in the property and show options to edit it
 //Edit property when editting cards
 function rowClickEvent(row, property, cardId) {
@@ -1268,7 +1279,7 @@ function addCard(card, index) {
     } else {
         dragAndDrop(divCard, 'Y');
     }
-    
+
     //Create a span for the name
     const cardText = document.createElement('span');
     //Search all the properties
