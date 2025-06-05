@@ -382,6 +382,8 @@ function openCardToClick() {
 
 //Function to allow moving components
 function dragAndDrop(component, position) {
+    //If it's a plus return
+    if (component.classList.contains('new-card-plus') || component.id === 'new-column-plus') return;
     //Allow to move cards between columns
     let className = component.className;
     if (className == 'column') {
@@ -433,6 +435,102 @@ function dragAndDrop(component, position) {
         }
     })
 }
+//Function to allow moving components in mobile
+function enableTouchDrag(component, position) {
+    //If it's a plus return
+    if (component.classList.contains('new-card-plus') || component.id === 'new-column-plus') return;
+    //Initialize 
+    let startX, startY;
+    let draggingElement = null;
+    let dragging = null;
+    //Function when touch end
+    function onTouchEnd(e) {
+        //Prevent default
+        e.preventDefault();
+        //Get the dropped element
+        const touch = e.changedTouches[0];
+        const droppedElement = document.elementFromPoint(touch.clientX, touch.clientY);
+        //If dragging and dropped element different
+        if (dragging && droppedElement && dragging !== droppedElement) {
+            let target = droppedElement;
+            //If dragging is a column header and target is a column, take the target column header
+            if (dragging.className === 'column-header' && target.className === 'column') {
+                target = target.querySelector('.column-header');
+            }
+
+            // Verify position by the width or the height (is after or not (before))
+            const rect = target.getBoundingClientRect();
+            let isAfter = false;
+            if (position.toLowerCase() === 'x') {
+                isAfter = touch.clientX > rect.left + rect.width / 2;
+            } else if (position.toLowerCase() === 'y') {
+                isAfter = touch.clientY > rect.top + rect.height / 2;
+            }
+            //If it's different from card or column, check if it could be a card
+            if (target.className !== 'card' && target.className !== 'column' && target.className !== 'column-header') {
+                const cardTarget = target.closest('.card');
+                if (cardTarget) target = cardTarget;
+                //If not remove dragging element and the eventlistener
+                else {
+                    if (draggingElement) {
+                        draggingElement.remove();
+                        draggingElement = null;
+                    }
+                    dragging = null;
+                    document.removeEventListener('touchend', onTouchEnd);
+                    return;
+                }
+            }
+            // Move the component to new dragging place
+            moveComponents(target, dragging, isAfter);
+        }
+        //If there is a dragging element remove it
+        if (draggingElement) {
+            draggingElement.remove();
+            draggingElement = null;
+        }
+        dragging = null;
+        //Remove the event listener
+        document.removeEventListener('touchend', onTouchEnd);
+    }
+    //Start when touch the component
+    component.addEventListener('touchstart', (e) => {
+        //Prevent default
+        e.preventDefault();
+        hideAll();
+
+        const touch = e.touches[0];
+        startX = touch.clientX;
+        startY = touch.clientY;
+        //If it's a column, select the column header for the column, else the component
+        if (component.className === 'column')
+            dragging = component.querySelector('.column-header')
+        else dragging = component;
+        // Make a visual clon
+        draggingElement = dragging.cloneNode(true);
+        draggingElement.style.position = 'absolute';
+        draggingElement.style.pointerEvents = 'none';
+        draggingElement.style.opacity = 0.7;
+        draggingElement.style.left = `${touch.clientX}px`;
+        draggingElement.style.top = `${touch.clientY}px`;
+        document.body.appendChild(draggingElement);
+        //Allow event listener touchend
+        document.addEventListener('touchend', onTouchEnd, { passive: false });
+    }, { passive: false });
+    //Allow moving
+    component.addEventListener('touchmove', (e) => {
+        //Prevent default
+        e.preventDefault();
+        //Get the touch
+        const touch = e.touches[0];
+        //Move it
+        if (draggingElement) {
+            draggingElement.style.left = `${touch.clientX}px`;
+            draggingElement.style.top = `${touch.clientY}px`;
+        }
+    }, { passive: false });
+}
+
 //Function to get the click in the property and show options to edit it
 //Edit property when editting cards
 function rowClickEvent(row, property, cardId) {
@@ -1074,7 +1172,11 @@ function addColumn(column, index) {
     options.style.display = 'none';
     //Columns could be move to order them
     columnHeader.draggable = true;
-    dragAndDrop(columnHeader, 'X');
+    if ('ontouchstart' in window) {
+        enableTouchDrag(columnHeader, 'X');
+    } else {
+        dragAndDrop(columnHeader, 'X');
+    }
     //Options edit and delete
     const editOption = document.createElement('p');
     //When the button edit click, the title will be an input to edit it
@@ -1149,7 +1251,11 @@ function addCards(columnId) {
             plusEventPadding.appendChild(plusImage);
             plusImage.src = "/img/Icons/Black/plus_black.png";
             //Allow move elements (it will be after or before depending of the heigh (Y))
-            dragAndDrop(plusEvent, 'Y');
+            if ('ontouchstart' in window) {
+                enableTouchDrag(plusEvent, 'Y');
+            } else {
+                dragAndDrop(plusEvent, 'Y');
+            }
             //When clicking in plus a new card will be added
             plusEvent.addEventListener('click', () => {
                 //Add a card to the column with name 'New Card'
@@ -1203,7 +1309,12 @@ function addCard(card, index) {
     //Allow Move cards
     divCard.draggable = true;
     //Allow move elements (it will be after or before depending of the heigh (Y))
-    dragAndDrop(divCard, 'Y'); 3
+    if ('ontouchstart' in window) {
+        enableTouchDrag(divCard, 'Y');
+    } else {
+        dragAndDrop(divCard, 'Y');
+    }
+
     //Create a span for the name
     const cardText = document.createElement('span');
     //Search all the properties
@@ -1225,6 +1336,10 @@ function moveComponents(component, dragging, isAfter) {
     //Know the type of the components
     const isColumn = (dragging.classList.contains('column-header') && component.classList.contains('column-header'));
     const isCard = (dragging.classList.contains('card') && component.classList.contains('card'));
+    //If it's not a column or a card, return
+    if (!isColumn && !isCard) {
+        return;
+    }
     //create variables that will be used
     let draggingId = dragging.id;
     let components, apiURL, newColumnId, oldColumnId, values, differentColumn;

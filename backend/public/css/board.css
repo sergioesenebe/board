@@ -162,7 +162,12 @@ header {
     height: 100%;
     display: flex;
     flex-direction: column;
-    display: flex;  
+    display: flex;
+    /*Avoid move or scroll, for dragging in mobile*/
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 
 /*The plus column*/
@@ -221,6 +226,11 @@ header {
 /*card, padding to allow drag and drop*/
 .card {
     padding: 10px 0px;
+    /*Avoid move or scroll, for dragging in mobile*/
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 
 /*Content Card*/
@@ -231,6 +241,11 @@ header {
     border-radius: 20px;
     display: flex;
     justify-content: space-between;
+    /*Avoid move or scroll, for dragging in mobile*/
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 
 /*size and margin for the pen in the card (top right)*/
@@ -244,7 +259,7 @@ header {
 /*cards content (properties and text)*/
 .content-card {
     padding: 20px;
-    padding-right: 0px;  
+    padding-right: 0px;
 }
 
 /*Name of the card and trash*/
@@ -337,7 +352,12 @@ header {
     display: flex;
     max-width: 100%;
     gap: 1%;
-    flex-wrap: wrap;  
+    flex-wrap: wrap;
+    /*Avoid move or scroll, for dragging in mobile*/
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 
 /*Property of the card*/
@@ -357,6 +377,11 @@ header {
     /* hide the text that is outgoing */
     text-overflow: ellipsis;
     /* Show "..." */
+    /*Avoid move or scroll, for dragging in mobile*/
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 
 /*Type Option (trash and pen)*/
