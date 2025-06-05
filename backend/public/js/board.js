@@ -383,7 +383,7 @@ function openCardToClick() {
 //Function to allow moving components
 function dragAndDrop(component, position) {
     //If it's a plus return
-    if (component.className.contains('new-card-plus') || component.className.contains('new-column-plus')) return;
+    if (component.classList.contains('new-card-plus') || component.id === 'new-column-plus') return;
     //Allow to move cards between columns
     let className = component.className;
     if (className == 'column') {
@@ -436,7 +436,9 @@ function dragAndDrop(component, position) {
     })
 }
 /*Function to allow moving components in mobile*/
-function enableTouchDrag(component, position) { 
+function enableTouchDrag(component, position) {
+    //If it's a plus return
+    if (component.classList.contains('new-card-plus') || component.id === 'new-column-plus') return;
     let startX, startY;
     let draggingElement = null;
     let dragging = null;
@@ -476,7 +478,6 @@ function enableTouchDrag(component, position) {
 
         dragging = null;
 
-        document.removeEventListener('touchend', onTouchEnd);
     }
 
     component.addEventListener('touchstart', (e) => {
