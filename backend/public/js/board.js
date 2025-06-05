@@ -464,7 +464,7 @@ function enableTouchDrag(component, position) {
         draggingElement.style.top = touch.clientY + 'px';
     }, { passive: false });
 
-    document.addEventListener('touchend touchcancel', (e) => {
+    document.addEventListener('touchend', (e) => {
         alert('touchend');
         e.preventDefault();
 
