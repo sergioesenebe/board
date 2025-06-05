@@ -342,7 +342,7 @@ body {
 
     /*Update height and width to fit with mobile*/
     .signup-form {
-        height: 80dvh;
+        height: min-content;
         overflow: auto;
         max-width: 600px;
     }
