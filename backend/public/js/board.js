@@ -434,13 +434,12 @@ function dragAndDrop(component, position) {
     })
 }
 /*Function to allow moving components in mobile*/
-function enableTouchDrag(component, position) {
+function enableTouchDrag(component, position) { 
     let startX, startY;
     let draggingElement = null;
+    let dragging = null;
 
     function onTouchEnd(e) {
-        alert('touchend');  // ✅ Ahora solo se mostrará una vez por ciclo
-
         e.preventDefault();
 
         const touch = e.changedTouches[0];
@@ -448,18 +447,23 @@ function enableTouchDrag(component, position) {
 
         if (dragging && droppedElement && dragging !== droppedElement) {
             let target = droppedElement;
+
+            // Caso: estamos soltando en una columna, y el dragging es un header
             if (dragging.className === 'column-header' && target.className === 'column') {
                 target = target.querySelector('.column-header');
             }
 
+            // Verificar posición relativa
             const rect = target.getBoundingClientRect();
             let isAfter = false;
+
             if (position.toLowerCase() === 'x') {
                 isAfter = touch.clientX > rect.left + rect.width / 2;
             } else if (position.toLowerCase() === 'y') {
                 isAfter = touch.clientY > rect.top + rect.height / 2;
             }
 
+            // 🔁 Aquí movemos realmente el componente en el DOM
             moveComponents(target, dragging, isAfter);
         }
 
@@ -470,7 +474,6 @@ function enableTouchDrag(component, position) {
 
         dragging = null;
 
-        // ✅ Importante: elimina el listener correctamente
         document.removeEventListener('touchend', onTouchEnd);
     }
 
@@ -486,21 +489,25 @@ function enableTouchDrag(component, position) {
             ? component.querySelector('.column-header')
             : component;
 
+        // Clon visual
         draggingElement = dragging.cloneNode(true);
         draggingElement.style.position = 'absolute';
         draggingElement.style.pointerEvents = 'none';
         draggingElement.style.opacity = 0.7;
+        draggingElement.style.left = `${touch.clientX}px`;
+        draggingElement.style.top = `${touch.clientY}px`;
         document.body.appendChild(draggingElement);
 
-        // ✅ Solo se añade aquí para cada ciclo de drag
         document.addEventListener('touchend', onTouchEnd, { passive: false });
     }, { passive: false });
 
     component.addEventListener('touchmove', (e) => {
         e.preventDefault();
         const touch = e.touches[0];
-        draggingElement.style.left = touch.clientX + 'px';
-        draggingElement.style.top = touch.clientY + 'px';
+        if (draggingElement) {
+            draggingElement.style.left = `${touch.clientX}px`;
+            draggingElement.style.top = `${touch.clientY}px`;
+        }
     }, { passive: false });
 }
 
