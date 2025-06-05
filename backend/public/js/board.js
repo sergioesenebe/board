@@ -1321,7 +1321,8 @@ function moveComponents(component, dragging, isAfter) {
     const isColumn = (dragging.classList.contains('column-header') && component.classList.contains('column-header'));
     const isCard = (dragging.classList.contains('card') && component.classList.contains('card'));
     if (!isColumn && !isCard) {
-        console.warn("Elemento no movible: no es columna ni tarjeta.");
+        console.log('component', component);
+        console.log('dragging', dragging);
         return;
     }    
     //create variables that will be used
