@@ -470,7 +470,7 @@ function enableTouchDrag(component, position) {
             console.log('targetbefore', target);
             console.log('draggingbefore', dragging);
             //If it's different from card o column, check if it could be a card
-            if (target.className !== 'card' && (target.className !== 'column' || target.className !== 'column-header')) {
+            if (target.className !== 'card' || target.className !== 'column' || target.className !== 'column-header') {
                 const cardTarget = target.closest('.card');
                 if (cardTarget) target = cardTarget;
                 else {
