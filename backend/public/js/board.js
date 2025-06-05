@@ -1320,6 +1320,10 @@ function moveComponents(component, dragging, isAfter) {
     //Know the type of the components
     const isColumn = (dragging.classList.contains('column-header') && component.classList.contains('column-header'));
     const isCard = (dragging.classList.contains('card') && component.classList.contains('card'));
+    if (!isColumn && !isCard) {
+        console.warn("Elemento no movible: no es columna ni tarjeta.");
+        return;
+    }    
     //create variables that will be used
     let draggingId = dragging.id;
     let components, apiURL, newColumnId, oldColumnId, values, differentColumn;
