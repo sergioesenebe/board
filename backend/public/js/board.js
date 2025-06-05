@@ -441,7 +441,7 @@ function enableTouchDrag(component, position) {
     if (component.classList.contains('new-card-plus') || component.id === 'new-column-plus') return;
     //If it's different from card o column, check if it could be a card
     if (component.className !== 'card' && component.className !== 'column' || component.className !== 'column-header') {
-        const cardTarget = droppedElement.closest('.card');
+        const cardTarget = component.closest('.card');
         if (cardTarget) component = cardTarget;
         else {
             document.removeEventListener('touchend', onTouchEnd);
