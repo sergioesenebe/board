@@ -467,7 +467,7 @@ function enableTouchDrag(component, position) {
             } else if (position.toLowerCase() === 'y') {
                 isAfter = touch.clientY > rect.top + rect.height / 2;
             }
-            console.log('targetbefore', target);
+            console.log('targetbefore', target.className);
             console.log('draggingbefore', dragging);
             //If it's different from card o column, check if it could be a card
             if (target.className !== 'card' || target.className !== 'column' || target.className !== 'column-header') {
