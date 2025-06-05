@@ -382,6 +382,8 @@ function openCardToClick() {
 
 //Function to allow moving components
 function dragAndDrop(component, position) {
+    //If it's a plus return
+    if (component.className.contains('new-card-plus') || component.className.contains('new-column-plus')) return;
     //Allow to move cards between columns
     let className = component.className;
     if (className == 'column') {
