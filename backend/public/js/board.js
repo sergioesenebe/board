@@ -439,6 +439,16 @@ function dragAndDrop(component, position) {
 function enableTouchDrag(component, position) {
     //If it's a plus return
     if (component.classList.contains('new-card-plus') || component.id === 'new-column-plus') return;
+    //If it's different from card o column, check if it could be a card
+    if (component.className !== 'card') {
+        const cardTarget = droppedElement.closest('.card');
+        if (cardTarget) component = cardTarget;
+        else {
+            document.removeEventListener('touchend', onTouchEnd);
+            return;
+        }
+    }
+
     let startX, startY;
     let draggingElement = null;
     let dragging = null;
@@ -1320,11 +1330,12 @@ function moveComponents(component, dragging, isAfter) {
     //Know the type of the components
     const isColumn = (dragging.classList.contains('column-header') && component.classList.contains('column-header'));
     const isCard = (dragging.classList.contains('card') && component.classList.contains('card'));
+    //If it's not a column or a card, return
     if (!isColumn && !isCard) {
         console.log('component', component);
         console.log('dragging', dragging);
         return;
-    }    
+    }
     //create variables that will be used
     let draggingId = dragging.id;
     let components, apiURL, newColumnId, oldColumnId, values, differentColumn;
