@@ -382,33 +382,6 @@ function openCardToClick() {
 
 //Function to allow moving components
 function dragAndDrop(component, position) {
-    //Allow to move cards between columns
-    let className = component.className;
-    if (className == 'column') {
-        component.addEventListener('dragover', (event) => {
-            event.preventDefault();
-        });
-    }
-    //Allow start moving a component
-    component.addEventListener('dragstart', (event) => {
-        //Hide all option open
-        hideAll();
-        //If it's a plus, pen or options return
-        if (component.classList.contains('new-card-plus') || component.id === 'new-column-plus') return;
-        //Component that is moving is the component that get the listener
-        dragging = component;
-        //Allow the visual effect of moving
-        event.dataTransfer.effectAllowed = 'move';
-        //In case the browser take the column instead of the column-header, take the header
-        if (dragging.className == 'column') {
-            dragging = dragging.querySelector('.column-header');
-        }
-    })
-    //Allow drop the component
-    component.addEventListener('dragover', (event) => {
-        event.preventDefault();
-        event.dataTransfer.dropEffect = "move";
-    })
     //Manage the drop
     component.addEventListener('drop', (event) => {
         event.preventDefault();
@@ -433,6 +406,34 @@ function dragAndDrop(component, position) {
             //Call the function to move the components
             moveComponents(component, dragging, isAfter)
         }
+    })
+    //If it's a plus, is not a card or a column, return
+    if (component.classList.contains('new-card-plus') || !component.classList.contains('card') || !component.closest('.card')
+        || !component.classList.contains('column-header') || !component.closest('.column-header')) return;
+    //Allow to move cards between columns
+    let className = component.className;
+    if (className == 'column') {
+        component.addEventListener('dragover', (event) => {
+            event.preventDefault();
+        });
+    }
+    //Allow start moving a component
+    component.addEventListener('dragstart', (event) => {
+        //Hide all option open
+        hideAll();
+        //Component that is moving is the component that get the listener
+        dragging = component;
+        //Allow the visual effect of moving
+        event.dataTransfer.effectAllowed = 'move';
+        //In case the browser take the column instead of the column-header, take the header
+        if (dragging.className == 'column') {
+            dragging = dragging.querySelector('.column-header');
+        }
+    })
+    //Allow drop the component
+    component.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "move";
     })
 }
 //Function to allow moving components in mobile
@@ -1338,7 +1339,6 @@ function moveComponents(component, dragging, isAfter) {
     const isCard = (dragging.classList.contains('card') && component.classList.contains('card'));
     //If it's not a column or a card, return
     if (!isColumn && !isCard) {
-        console.log('aaaaaa')
         return;
     }
     //create variables that will be used
