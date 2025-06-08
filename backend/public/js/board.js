@@ -385,6 +385,9 @@ function dragAndDrop(component, position) {
     //Manage the drop
     component.addEventListener('drop', (event) => {
         event.preventDefault();
+        //If it's a plus, is not a card or a column, return
+        if (component.classList.contains('new-card-plus') || !component.classList.contains('card') || !component.closest('.card')
+            || !component.classList.contains('column-header') || !component.closest('.column-header')) return;
         //Dragging & component must be different
         if (dragging && dragging !== component) {
             //In case the browser take the column instead of the column-header, take the header
@@ -407,9 +410,6 @@ function dragAndDrop(component, position) {
             moveComponents(component, dragging, isAfter)
         }
     })
-    //If it's a plus, is not a card or a column, return
-    if (component.classList.contains('new-card-plus') || !component.classList.contains('card') || !component.closest('.card')
-        || !component.classList.contains('column-header') || !component.closest('.column-header')) return;
     //Allow to move cards between columns
     let className = component.className;
     if (className == 'column') {
@@ -421,6 +421,9 @@ function dragAndDrop(component, position) {
     component.addEventListener('dragstart', (event) => {
         //Hide all option open
         hideAll();
+        //If it's a plus, is not a card or a column, return
+        if (component.classList.contains('new-card-plus') || !component.classList.contains('card') || !component.closest('.card')
+            || !component.classList.contains('column-header') || !component.closest('.column-header')) return;
         //Component that is moving is the component that get the listener
         dragging = component;
         //Allow the visual effect of moving
@@ -433,6 +436,9 @@ function dragAndDrop(component, position) {
     //Allow drop the component
     component.addEventListener('dragover', (event) => {
         event.preventDefault();
+        //If it's a plus, is not a card or a column, return
+        if (component.classList.contains('new-card-plus') || !component.classList.contains('card') || !component.closest('.card')
+            || !component.classList.contains('column-header') || !component.closest('.column-header')) return;
         event.dataTransfer.dropEffect = "move";
     })
 }
