@@ -422,7 +422,6 @@ function dragAndDrop(component, position) {
     }
     //Allow start moving a component
     component.addEventListener('dragstart', (event) => {
-        console.log(component);
         //Hide all option open
         hideAll();
         //If it's a plus, is not a card or a column, return
