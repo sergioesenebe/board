@@ -387,7 +387,10 @@ function dragAndDrop(component, position) {
         event.preventDefault();
         //If it's not a card or a column, return
         if ((!component.classList.contains('card') && !component.closest('.card')
-            && !component.classList.contains('column-header') && !component.closest('.column-header'))) return;
+            && !component.classList.contains('column-header') && !component.closest('.column-header'))) {
+            dragging = null;
+            return;
+        }
         //Dragging & component must be different
         if (dragging && dragging !== component) {
             //In case the browser take the column instead of the column-header, take the header
@@ -424,7 +427,10 @@ function dragAndDrop(component, position) {
         hideAll();
         //If it's a plus, is not a card or a column, return
         if (component.classList.contains('new-card-plus') || (!component.classList.contains('card') && !component.closest('.card')
-            && !component.classList.contains('column-header') && !component.closest('.column-header'))) return;
+            && !component.classList.contains('column-header') && !component.closest('.column-header'))) {
+            dragging = null;
+            return;
+        }
         //Component that is moving is the component that get the listener
         dragging = component;
         //Allow the visual effect of moving
@@ -439,7 +445,10 @@ function dragAndDrop(component, position) {
         event.preventDefault();
         //If it's not a card or a column, return
         if ((!component.classList.contains('card') && !component.closest('.card')
-            && !component.classList.contains('column-header') && !component.closest('.column-header'))) return;
+            && !component.classList.contains('column-header') && !component.closest('.column-header'))) {
+            dragging = null;
+            return;
+        }
         event.dataTransfer.dropEffect = "move";
     })
 }
