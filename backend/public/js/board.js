@@ -393,8 +393,9 @@ function dragAndDrop(component, position) {
     component.addEventListener('dragstart', (event) => {
         //Hide all option open
         hideAll();
-        //If it's a plus return
-        if (component.classList.contains('new-card-plus') || component.id === 'new-column-plus') return;
+        //If it's a plus, pen or options return
+        if (component.classList.contains('new-card-plus') || component.id === 'new-column-plus' ||
+            component.classList.contains('card-pen-icon') || component.classList.contains('column-options-icon')) return;
         //Component that is moving is the component that get the listener
         dragging = component;
         //Allow the visual effect of moving
