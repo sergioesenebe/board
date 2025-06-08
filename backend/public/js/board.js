@@ -382,6 +382,7 @@ function openCardToClick() {
 
 //Function to allow moving components
 function dragAndDrop(component, position) {
+    console.log(component);
     //Manage the drop
     component.addEventListener('drop', (event) => {
         event.preventDefault();
