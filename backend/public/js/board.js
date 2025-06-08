@@ -385,8 +385,8 @@ function dragAndDrop(component, position) {
     //Manage the drop
     component.addEventListener('drop', (event) => {
         event.preventDefault();
-        //If it's a plus, is not a card or a column, return
-        if (component.classList.contains('new-card-plus') || (!component.classList.contains('card') && !component.closest('.card')
+        //If it's not a card or a column, return
+        if ((!component.classList.contains('card') && !component.closest('.card')
             && !component.classList.contains('column-header') && !component.closest('.column-header'))) return;
         //Dragging & component must be different
         if (dragging && dragging !== component) {
@@ -436,11 +436,9 @@ function dragAndDrop(component, position) {
     //Allow drop the component
     component.addEventListener('dragover', (event) => {
         event.preventDefault();
-        //If it's a plus, is not a card or a column, return
-        //If it's a plus, is not a card or a column, return
-        if (component.classList.contains('new-card-plus') || (!component.classList.contains('card') && !component.closest('.card')
+        //If it's not a card or a column, return
+        if ((!component.classList.contains('card') && !component.closest('.card')
             && !component.classList.contains('column-header') && !component.closest('.column-header'))) return;
-
         event.dataTransfer.dropEffect = "move";
     })
 }
