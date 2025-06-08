@@ -382,8 +382,6 @@ function openCardToClick() {
 
 //Function to allow moving components
 function dragAndDrop(component, position) {
-    //If it's a plus return
-    if (component.classList.contains('new-card-plus') || component.id === 'new-column-plus') return;
     //Allow to move cards between columns
     let className = component.className;
     if (className == 'column') {
@@ -395,6 +393,8 @@ function dragAndDrop(component, position) {
     component.addEventListener('dragstart', (event) => {
         //Hide all option open
         hideAll();
+        //If it's a plus return
+        if (component.classList.contains('new-card-plus') || component.id === 'new-column-plus') return;
         //Component that is moving is the component that get the listener
         dragging = component;
         //Allow the visual effect of moving
