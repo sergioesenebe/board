@@ -451,6 +451,10 @@ function dragAndDrop(component, position) {
         }
         event.dataTransfer.dropEffect = "move";
     })
+    //When drag finish, remove dragging element
+    component.addEventListener('dragend', () => {
+        dragging = null;
+    });    
 }
 //Function to allow moving components in mobile
 function enableTouchDrag(component, position) {
