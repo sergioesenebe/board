@@ -394,8 +394,7 @@ function dragAndDrop(component, position) {
         //Hide all option open
         hideAll();
         //If it's a plus, pen or options return
-        if (component.classList.contains('new-card-plus') || component.id === 'new-column-plus' ||
-            component.classList.contains('card-pen-icon') || component.classList.contains('column-options-icon')) return;
+        if (component.classList.contains('new-card-plus') || component.id === 'new-column-plus') return;
         //Component that is moving is the component that get the listener
         dragging = component;
         //Allow the visual effect of moving
@@ -1339,6 +1338,7 @@ function moveComponents(component, dragging, isAfter) {
     const isCard = (dragging.classList.contains('card') && component.classList.contains('card'));
     //If it's not a column or a card, return
     if (!isColumn && !isCard) {
+        console.log('aaaaaa')
         return;
     }
     //create variables that will be used
