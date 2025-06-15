@@ -288,7 +288,7 @@ app.post('/getCardContent', async (req, res) => {
   }
   try {
     // SELECT to show content from card
-    const [results] = await db.query('SELECT content FROM `cards` WHERE card_id=?', [cardId], (err, results));
+    const [results] = await db.query('SELECT content FROM `cards` WHERE card_id=?', [cardId]);
     // If the card has content return it
     if (results.length > 0) {
       return res.status(200).json(results);
