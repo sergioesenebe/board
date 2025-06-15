@@ -23,7 +23,7 @@ app.use(express.json());
 
 
 /*Query for the login*/
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
   console.log('Body of the application:', req.body);
   // Takes the usernames and passwords from the body
   const { username, password } = req.body;
@@ -31,13 +31,10 @@ app.post('/login', (req, res) => {
   if (!username || !password) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
+  try {
+    // SELECT to verify if the user and password are correct
+    const [results] = await db.query('SELECT * FROM users WHERE user_id = ? AND password = ?', [username, password]);
 
-  // SELECT to verify if the user and password are correct
-  db.query('SELECT * FROM users WHERE user_id = ? AND password = ?', [username, password], (err, results) => {
-    if (err) {
-      console.error('Error in the query:', err);
-      return res.status(500).json({ success: false, message: 'Error in the Database' });
-    }
 
     // If the users are correct will return true
     if (results.length > 0) {
@@ -45,7 +42,11 @@ app.post('/login', (req, res) => {
     } else {
       return res.status(200).json({ success: false, message: 'Incorrect User or Password' });
     }
-  });
+  }
+  catch (error) {
+      console.error('Error in the query:', err);
+      return res.status(500).json({ success: false, message: 'Error in the Database' });
+  }
 });
 
 /*Query to check if username exists for signup*/
@@ -515,7 +516,7 @@ app.post('/updateBoardName', (req, res) => {
 
     // If there is a change return true
     if (results.affectedRows > 0) {
-      return res.status(200).json({success: true, message: 'Board not found'});
+      return res.status(200).json({ success: true, message: 'Board not found' });
     } else {
       return res.status(200).json({ success: false, message: 'Board not found' });
     }
@@ -554,7 +555,7 @@ app.post('/updateCardName', (req, res) => {
   // Takes the newname, card id and board id from the body
   const { newName, cardId } = req.body;
   // Validate that the necessary data is provided
-  if (!newName || !cardId ) {
+  if (!newName || !cardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
@@ -649,7 +650,7 @@ app.post('/updateCardOrderIncrease', (req, res) => {
   // Takes the board id, card id and new order from the body
   const { cardId, newOrder } = req.body;
 
-  if ( !cardId || isNaN(newOrder)) {
+  if (!cardId || isNaN(newOrder)) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
   // Update the order of cards by decrementing the order of cards after the selected one
@@ -682,7 +683,7 @@ app.post('/updateCardOrderDecrease', (req, res) => {
   // Get values from the request body
   const { cardId, newOrder } = req.body;
   // Validate that the necessary data is provided
-  if ( !cardId || isNaN(newOrder)) {
+  if (!cardId || isNaN(newOrder)) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
   // Update the order of cards by incrementing the order of cards after the selected one
@@ -742,7 +743,7 @@ app.post('/updateCardDifferentColumn', (req, res) => {
     })
     // If there is cahange will return true
     if (results.affectedRows > 0) {
-      return res.status(200).json({success: true, message: 'Card order updated successfully'});
+      return res.status(200).json({ success: true, message: 'Card order updated successfully' });
     } else {
       return res.status(200).json({ success: false, message: 'Card order not updated' });
     }
@@ -844,7 +845,7 @@ app.post('/insertProperty', (req, res) => {
   const { v4: uuidv4 } = require('uuid');
   const newPropertyId = uuidv4();
   // Validate that the necessary data is provided
-  if (!newPropertyName || !newPropertyId || !boardId ) {
+  if (!newPropertyName || !newPropertyId || !boardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
@@ -872,7 +873,7 @@ app.post('/insertPropType', (req, res) => {
   const { v4: uuidv4 } = require('uuid');
   const newPropTypeId = uuidv4();
   // Validate that the necessary data is provided
-  if (!newPropTypeName || !newPropTypeId || !propertyId ) {
+  if (!newPropTypeName || !newPropTypeId || !propertyId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
@@ -942,7 +943,7 @@ app.post('/deleteColumn', (req, res) => {
     });
     // If it is deleted return true
     if (results.affectedRows > 0) {
-      return res.status(200).json({success: true, message: 'Column deleted'});
+      return res.status(200).json({ success: true, message: 'Column deleted' });
     } else {
       return res.status(200).json({ success: false, message: 'Column not deleted' });
     }
@@ -954,7 +955,7 @@ app.post('/deleteCard', (req, res) => {
   // Takes the cardId and boardId from the body
   const { cardId } = req.body;
   // Validate that the necessary data is provided
-  if (!cardId ) {
+  if (!cardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
   //Move the cards to the bottom after the column
@@ -984,7 +985,7 @@ app.post('/deleteProperty', (req, res) => {
   // Takes the propertyId and boardId from the body
   const { propertyId } = req.body;
   // Validate that the necessary data is provided
-  if (!propertyId ) {
+  if (!propertyId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
   // Delete property with the id
@@ -1008,7 +1009,7 @@ app.post('/deletePropType', (req, res) => {
   // Takes the propTypeId and boardId from the body
   const { propTypeId } = req.body;
   // Validate that the necessary data is provided
-  if (!propTypeId ) {
+  if (!propTypeId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
   // Delete property Type with the id
@@ -1032,7 +1033,7 @@ app.post('/deletePropTypeCard', (req, res) => {
   // Takes the propTypeId, cardId and boardId from the body
   const { propTypeId, cardId } = req.body;
   // Validate that the necessary data is provided
-  if (!propTypeId || !cardId ) {
+  if (!propTypeId || !cardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
   // Delete property Type from the card with bouth ids
@@ -1041,12 +1042,12 @@ app.post('/deletePropTypeCard', (req, res) => {
       console.error('Error in the query:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-      // If there is more than one note will return true
-      if (results.affectedRows > 0) {
-        return res.status(200).json(results);
-      } else {
-        return res.status(200).json({ success: false, message: 'Prop Type not deleted from the card' });
-      }
+    // If there is more than one note will return true
+    if (results.affectedRows > 0) {
+      return res.status(200).json(results);
+    } else {
+      return res.status(200).json({ success: false, message: 'Prop Type not deleted from the card' });
+    }
   });
 });
 //Get event from cards
@@ -1068,7 +1069,7 @@ app.post('/getEventFromCard', (req, res) => {
 
     // If the event doesn't exist will return false
     if (results.length > 0) {
-      return res.status(200).json( results );
+      return res.status(200).json(results);
     } else {
       return res.status(200).json({ success: false, message: 'Event from card not found' });
     }
@@ -1131,7 +1132,7 @@ app.post('/updateCardContent', (req, res) => {
   // Takes the cardId, content and boardId from the body
   const { cardId, content } = req.body;
   // Validate that the necessary data is provided
-  if (!cardId ) {
+  if (!cardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
@@ -1156,7 +1157,7 @@ app.post('/insertCardPropertyType', (req, res) => {
   // Takes the propTypeId, cardId from the body
   const { propTypeId, cardId } = req.body;
   // Validate that the necessary data is provided
-  if (!propTypeId || !cardId ) {
+  if (!propTypeId || !cardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
@@ -1181,7 +1182,7 @@ app.post('/updateCardPropertyType', (req, res) => {
   // Takes the usernames and passwords from the body
   const { oldPropTypeId, propTypeId, cardId } = req.body;
   // Validate that the necessary data is provided
-  if (!oldPropTypeId || !propTypeId || !cardId ) {
+  if (!oldPropTypeId || !propTypeId || !cardId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
@@ -1204,7 +1205,7 @@ app.post('/updatePropertyName', (req, res) => {
   console.log('Body of the application:', req.body);
   const { newName, propertyId } = req.body;
   // Validate that the necessary data is provided
-  if (!newName || !propertyId ) {
+  if (!newName || !propertyId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
   //Update property name with id
@@ -1213,18 +1214,18 @@ app.post('/updatePropertyName', (req, res) => {
       console.error('Error updating property:', err);
       return res.status(500).json({ success: false, message: 'Error in the Database' });
     }
-      if (propResult.affectedRows > 0) {
-        return res.status(200).json({ success: true, message: 'Property updated' });
-      } else {
-        return res.status(200).json({ success: false, message: 'Property not updated (no changes)' });
-      }
+    if (propResult.affectedRows > 0) {
+      return res.status(200).json({ success: true, message: 'Property updated' });
+    } else {
+      return res.status(200).json({ success: false, message: 'Property not updated (no changes)' });
+    }
   });
 });
 //Query to update Property Type Name
 app.post('/updatePropTypeName', (req, res) => {
   const { newName, propTypeId } = req.body;
   // Validate that the necessary data is provided
-  if (!newName || !propTypeId ) {
+  if (!newName || !propTypeId) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
   //Update prop_type name with the id
