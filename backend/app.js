@@ -2,15 +2,20 @@ const express = require('express');
 const mysql = require('mysql2');
 const app = express();
 const port = 8001;
-/*Save conexion variable with mysql thanks to environment variables*/
-const db = mysql.createConnection({
+// Create a MySQL connection pool using environment variables
+const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
-  dateStrings: true //Evit convert to string
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+  dateStrings: true // Prevent automatic conversion to Date objects
 });
+// Promisify pool to use async/await syntax (optional but recommended)
+const db = pool.promise();
 /*Connect to mySQL*/
 db.connect(err => {
   if (err) {
