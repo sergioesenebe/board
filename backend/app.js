@@ -16,14 +16,6 @@ const pool = mysql.createPool({
 });
 // Promisify pool to use async/await syntax (optional but recommended)
 const db = pool.promise();
-/*Connect to mySQL*/
-db.connect(err => {
-  if (err) {
-    console.error('MySQL conexion error:', err);
-    return;
-  }
-  console.log('Connected to MySQL');
-});
 /*Show public data for HTML, CSS and JS*/
 app.use(express.static('public'));
 app.use(express.json());
