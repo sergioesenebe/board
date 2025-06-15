@@ -1212,7 +1212,7 @@ app.post('/updatePropTypeName', async (req, res) => {
     //Update prop_type name with the id
     const [results] = await db.query('UPDATE `prop_types` SET `name`=? WHERE prop_type_id =?', [newName, propTypeId]);
     //Return result true if done
-    if (propResult.affectedRows > 0) {
+    if (results.affectedRows > 0) {
       return res.status(200).json({ success: true, message: 'Property Type updated' });
     } else {
       return res.status(200).json({ success: false, message: 'Property Type not updated' });
