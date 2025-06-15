@@ -389,7 +389,7 @@ app.post('/getPropTypes', async (req, res) => {
   }
   try {
     // SELECT to show properties of a card
-    const [results] = await db.query('SELECT P.property_id, P.name AS property_name, PT.prop_type_id, PT.name AS prop_type_name FROM `properties` P, prop_types PT WHERE P.property_id = PT.property_id AND P.property_id=? ORDER BY prop_type_name')
+    const [results] = await db.query('SELECT P.property_id, P.name AS property_name, PT.prop_type_id, PT.name AS prop_type_name FROM `properties` P, prop_types PT WHERE P.property_id = PT.property_id AND P.property_id=? ORDER BY prop_type_name', [propertyId]);
     // If there are properties return them
     if (results.length > 0) {
       return res.status(200).json(results);
@@ -593,7 +593,7 @@ app.post('/updateColumnOrderIncrease', async (req, res) => {
   }
   try {
     // Update the order of columns by decrementing the order of columns after the selected one
-    const [results] = await db.query('UPDATE `columns` AS c  JOIN ( SELECT `order`,`board_id` FROM `columns` WHERE column_id = ? LIMIT 1 ) AS subquery ON c.`board_id` = subquery.`board_id` AND c.`order` <= ? AND c.`order` >= subquery.`order` SET c.`order` = c.`order` - 1; ');
+    const [results] = await db.query('UPDATE `columns` AS c  JOIN ( SELECT `order`,`board_id` FROM `columns` WHERE column_id = ? LIMIT 1 ) AS subquery ON c.`board_id` = subquery.`board_id` AND c.`order` <= ? AND c.`order` >= subquery.`order` SET c.`order` = c.`order` - 1;',[columnId, newOrder]);
     //Update column new order
     const [result] = await db.query('UPDATE `columns` SET `order`=? WHERE `column_id`=?;', [newOrder, columnId]);
     // If column order updated
@@ -710,8 +710,7 @@ app.post('/updateCardDifferentColumn', async (req, res) => {
     //Update cards in future column, increment order in bigger order (where it will be)
     const [result] = await db.query('UPDATE `cards` SET `order`=`order` + 1 WHERE `order` >= ? AND column_id = ?; ', [newOrder, newColumnId]);
     //Update card column and order
-    const [resul] = db.query('UPDATE `cards` SET `order`=?, column_id = ? WHERE `card_id`=?;', [newOrder, newColumnId, cardId])
-    console.log('Resultado de la segunda consulta:', results);
+    const [resul] = await db.query('UPDATE `cards` SET `order`=?, column_id = ? WHERE `card_id`=?;', [newOrder, newColumnId, cardId]);
     // If there is cahange will return true
     if (results.affectedRows > 0) {
       return res.status(200).json({ success: true, message: 'Card order updated successfully' });
@@ -1182,7 +1181,6 @@ app.post('/updateCardPropertyType', async (req, res) => {
 });
 //Query to update Property Name for a property of a card
 app.post('/updatePropertyName', async (req, res) => {
-  console.log('Body of the application:', req.body);
   const { newName, propertyId } = req.body;
   // Validate that the necessary data is provided
   if (!newName || !propertyId) {
@@ -1191,7 +1189,7 @@ app.post('/updatePropertyName', async (req, res) => {
   try {
     //Update property name with id
     const [results] = await db.query('UPDATE `properties` SET `name`=? WHERE property_id = ?', [newName, propertyId]);
-    if (propResult.affectedRows > 0) {
+    if (results.affectedRows > 0) {
       return res.status(200).json({ success: true, message: 'Property updated' });
     } else {
       return res.status(200).json({ success: false, message: 'Property not updated (no changes)' });
