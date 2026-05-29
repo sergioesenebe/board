@@ -7,10 +7,10 @@ services:
       - "${BACKEND_PORT}:8001"
     restart: unless-stopped
     environment:
-      MYSQL_HOST: ${MYSQL_HOST}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_HOST: ${DB_HOST}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
     depends_on:
       - mysql
 
@@ -19,10 +19,10 @@ services:
     container_name: mysql-db
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
     ports:
-      - "${MYSQL_PORT}:3306"
+      - "${DB_PORT}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
 
