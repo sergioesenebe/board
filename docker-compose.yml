@@ -3,7 +3,7 @@ services:
     build: .
     container_name: backend-node
     ports:
-      - "8002:8001"
+      - "${BACKEND_PORT}:8001"
     restart: unless-stopped
     environment:
       MYSQL_HOST: ${MYSQL_HOST}
@@ -21,7 +21,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
-      - "3307:3306"
+      - "${MYSQL_PORT}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
 
