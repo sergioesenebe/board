@@ -1,7 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2');
 const app = express();
-const port = 8001;
+const port = env.BACKEND_PORT;
 // Create a MySQL connection pool using environment variables
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
