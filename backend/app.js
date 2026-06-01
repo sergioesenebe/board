@@ -70,7 +70,7 @@ app.post('/checkUsername', async (req, res) => {
     }
   }
   //Catch the error
-  catch {
+  catch (error) {
     console.error('Error in the query:', error);
     return res.status(500).json({ success: false, message: 'Error in the Database' });
   }
