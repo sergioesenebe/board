@@ -2,7 +2,7 @@ services:
   backend:
     build:
       context: ./backend
-    container_name: backend-node
+    container_name: backend-node-board
     ports:
       - "${BACKEND_PORT}:8001"
     restart: unless-stopped
