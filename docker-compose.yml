@@ -9,8 +9,8 @@ services:
     environment:
       MYSQL_HOST: mysql
       MYSQL_USER: root
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_PASSWORD: x
+      MYSQL_DATABASE: x
     depends_on:
       - mysql
 
