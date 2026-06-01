@@ -30,7 +30,5 @@ volumes:
   mysql_data:
 
 environment:
-  DB_HOST: ${DB_HOST}
-  DB_USER: ${DB_USER}
-  DB_PASSWORD: ${DB_PASSWORD}
-  DB_DATABASE: ${DB_DATABASE}
+  DB_HOST: mysql
+  DB_USER: root
