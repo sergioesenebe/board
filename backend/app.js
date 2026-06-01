@@ -13,8 +13,8 @@ const pool = mysql.createPool({
   connectionLimit: 10,
   queueLimit: 0,
   dateStrings: true // Prevent automatic conversion to Date objects
-  console.log("DB_HOST:", process.env.DB_HOST);
 });
+console.log("DB_HOST:", process.env.DB_HOST);
 // Promisify pool to use async/await syntax (optional but recommended)
 const db = pool.promise();
 /*Show public data for HTML, CSS and JS*/
