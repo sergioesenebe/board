@@ -14,7 +14,6 @@ const pool = mysql.createPool({
   queueLimit: 0,
   dateStrings: true // Prevent automatic conversion to Date objects
 });
-console.log("DB_HOST:", process.env.DB_HOST);
 // Promisify pool to use async/await syntax (optional but recommended)
 const db = pool.promise();
 /*Show public data for HTML, CSS and JS*/
@@ -33,6 +32,7 @@ app.post('/login', async (req, res) => {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
   try {
+    console.log("DB_HOST:", process.env.DB_HOST);
     // SELECT to verify if the user and password are correct
     const [results] = await db.query('SELECT * FROM users WHERE user_id = ? AND password = ?', [username, password]);
 
