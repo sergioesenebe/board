@@ -27,6 +27,7 @@ app.post('/login', async (req, res) => {
   console.log('DB HOST:', process.env.DB_HOST);
   // Takes the usernames and passwords from the body
   const { username, password } = req.body;
+  console.log('Username: ', username);
   // Validate that the necessary data is provided
   if (!username || !password) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
