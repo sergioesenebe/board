@@ -1,7 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2');
 const app = express();
-const port = 8001;
+const port = process.env.BACKEND_PORT;
 // Create a MySQL connection pool using environment variables
 const pool = mysql.createPool({
   host: 'mysql',
@@ -24,10 +24,8 @@ app.use(express.json());
 
 /*Query for the login*/
 app.post('/login', async (req, res) => {
-  console.log('DB HOST:', process.env.DB_HOST);
   // Takes the usernames and passwords from the body
   const { username, password } = req.body;
-  console.log('Username: ', username);
   // Validate that the necessary data is provided
   if (!username || !password) {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
