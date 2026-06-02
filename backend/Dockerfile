@@ -14,7 +14,7 @@ RUN npm install express mysql2 uuid
 COPY . .
 
 # Expose port for Node
-EXPOSE 8002
+EXPOSE 8001
 
 # Start the app
 CMD ["npm", "start"]
