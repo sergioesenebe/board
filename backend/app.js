@@ -1,14 +1,14 @@
 const express = require('express');
 const mysql = require('mysql2');
 const app = express();
-const port = '8001';
+const port = process.env.BACKEND_PORT;
 // Create a MySQL connection pool using environment variables
 const pool = mysql.createPool({
   host: 'mysql',
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  port: '3306',
+  port: process.env.DB_PORT,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
