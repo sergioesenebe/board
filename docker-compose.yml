@@ -31,5 +31,7 @@ services:
 volumes:
   mysql_data:
 networks:
-  - proxy
-  - internal
+  proxy:
+    external: true
+  internal:
+    external: true
