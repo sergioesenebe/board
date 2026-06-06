@@ -25,12 +25,12 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
     volumes:
-      - mysql_data:/var/lib/mysql
+      - board_mysql_data:/var/lib/mysql
     networks:
       - internal
 
 volumes:
-  mysql_data:
+  board_mysql_data:
     external: true
 networks:
   proxy:
