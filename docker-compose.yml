@@ -3,8 +3,6 @@ services:
     build:
       context: ./backend
     container_name: board-backend
-    ports:
-      - "${BACKEND_PORT}:8001"
     restart: unless-stopped
     environment:
       DB_HOST: ${DB_HOST}
@@ -14,6 +12,8 @@ services:
       DB_PORT: ${DB_PORT}
     depends_on:
       - mysql
+    networks:
+      - proxy
 
   mysql:
     image: mysql:8
@@ -22,10 +22,13 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
-    ports:
-      - "${DB_PORT}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - internal
 
 volumes:
   mysql_data:
+networks:
+  - proxy
+  - internal
